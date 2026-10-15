@@ -8,6 +8,7 @@ import { SPELLS } from '../data/spells.js';
 import { UNITS, ABILITY_INFO } from '../data/units.js';
 import { spellIcon } from '../render/icons.js';
 import { portraitImg, unitStatsHtml } from './common.js';
+import { figure } from '../render/figures.js';
 import { dialog, toast, info } from './dialogs.js';
 import { HEROES } from '../data/heroes.js';
 
@@ -54,7 +55,7 @@ export class BattleScreen {
       } else box.append(el('div.battle-side-info', el('div.name', sd.name)));
       return box;
     };
-    top.append(side(0), el('div.battle-round', 'Runde 1'), side(1));
+    top.append(side(0), el('div.battle-mid', el('div.battle-round', 'Runde 1'), el('div.turn-order')), side(1));
     const bar = this.root.querySelector('.battle-bar');
     bar.innerHTML = '';
     this.btns = {
@@ -70,9 +71,23 @@ export class BattleScreen {
     this.canvas.onpointermove = (e) => { const hx = this.r.hexAt(...this.evPos(e)); this.r.hover = hx; };
   }
   evPos(e) { const r = this.canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+  updateOrder() {
+    const b = this.b;
+    const box = this.root.querySelector('.turn-order'); if (!box) return;
+    box.innerHTML = '';
+    const list = [];
+    if (b.current && !b.current.dead) list.push(b.current);
+    for (const st of b.queue) if (!st.dead && !list.includes(st)) list.push(st);
+    for (const st of b.waitQueue) if (!st.dead && !list.includes(st)) list.push(st);
+    for (const st of list.slice(0, 9)) {
+      const f = figure(st.unit, 48, st.side === 1);
+      box.append(el('div.turn-chip' + (st.side === 0 ? '.a' : '.d') + (st === b.current ? '.now' : ''), el('img', { src: f.toDataURL(), width: 26, height: 26 }), el('span', String(st.count))));
+    }
+  }
   updateTop() {
     const b = this.b;
     this.root.querySelector('.battle-round').textContent = `Runde ${b.round}`;
+    this.updateOrder();
     const manas = this.root.querySelectorAll('.mana');
     [0, 1].forEach((i) => { if (b.sides[i].hero && manas[i]) manas[i].textContent = `Mana ${b.heroes[i].mana}`; });
   }
@@ -82,7 +97,7 @@ export class BattleScreen {
     for (const ev of events) {
       switch (ev.type) {
         case 'round': this.updateTop(); if (ev.n > 1) toast(`Runde ${ev.n}`, 900); break;
-        case 'move': { const st = b.getStack(ev.id); await r.animateMove(st, ev.path, ev.flying); break; }
+        case 'move': { const st = b.getStack(ev.id); this.updateOrder(); await r.animateMove(st, ev.path, ev.flying); break; }
         case 'melee': {
           const a = b.getStack(ev.id), d = b.getStack(ev.target);
           await r.animateAttack(a, d);
@@ -127,6 +142,7 @@ export class BattleScreen {
   playerAction(b, st) {
     return new Promise((resolve) => {
       this.pending = { st, resolve };
+      this.updateOrder();
       this.r.activeId = st.id;
       this.r.highlight = b.reachable(st);
       this.reach = this.r.highlight;

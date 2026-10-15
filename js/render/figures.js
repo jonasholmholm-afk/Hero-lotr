@@ -1,8 +1,10 @@
 // Procedural creature figures (side view, facing right) used both on the
 // adventure map and on the battlefield.
-import { mk, mkS, poly, circle, ellipse, rrect, line, lgrad, shade, lighten, rgba, outline, shadeSprite, softShadow } from './draw.js';
+import { mk, mkS, poly, circle, ellipse, rrect, line, lgrad, rgrad, shade, lighten, rgba, outline, shadeSprite, softShadow } from './draw.js';
 
 const cache = new Map();
+const vol = (ctx, x0, y0, x1, y1, c) => lgrad(ctx, x0, y0, x1, y1, [[0, lighten(c, 0.28)], [0.5, c], [1, shade(c, 0.62)]]);
+const metalG = (ctx, x0, y0, x1, y1) => lgrad(ctx, x0, y0, x1, y1, [[0, '#f0f3f7'], [0.45, '#b9bec6'], [0.55, '#7d838c'], [1, '#c9ccd2']]);
 
 /** Returns a canvas with the creature drawn, ground line at y = S*0.92 */
 export function figure(unit, S = 96, flip = false) {
@@ -45,7 +47,7 @@ export function figure(unit, S = 96, flip = false) {
 function outlineStyle(ctx) { ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 1.2; ctx.lineJoin = 'round'; }
 
 function weapon(ctx, kind, col, hx, hy, big = false) {
-  const metal = '#c9ccd2', dark = '#5a5e66', wood = '#6b4a2a';
+  const metal = metalG(ctx, -10, -40, 20, 0), dark = '#4a4e56', wood = lgrad(ctx, 0, 0, 10, 0, [[0, '#8a6238'], [1, '#4a2e14']]);
   ctx.save();
   ctx.translate(hx, hy);
   switch (kind) {
@@ -61,14 +63,14 @@ function weapon(ctx, kind, col, hx, hy, big = false) {
     case 'spear': line(ctx, -6, 14, 14, -40, wood, 3); poly(ctx, [[14, -40], [10, -32], [20, -34]], metal, dark); break;
     case 'sword': line(ctx, 0, 0, 16, -30, metal, 4); line(ctx, -3, -3, 7, -9, dark, 3); break;
     case 'dagger': line(ctx, 2, 0, 12, -14, metal, 3); break;
-    case 'club': line(ctx, 0, 4, 12, -30, wood, 5); ellipse(ctx, 14, -34, 8, 11, shade(wood, 0.8), 0.6); break;
+    case 'club': line(ctx, 0, 4, 12, -30, wood, 5); ellipse(ctx, 14, -34, 8, 11, lgrad(ctx, 6, 0, 22, 0, [[0, '#7a5a3a'], [1, '#3a2614']]), 0.6); break;
     case 'twinblades': line(ctx, 0, 0, 18, -24, metal, 3); line(ctx, -2, 2, -20, -22, metal, 3); break;
   }
   ctx.restore();
 }
 
 function head(ctx, x, y, r, col, a) {
-  circle(ctx, x, y, r, col.skin);
+  circle(ctx, x, y, r, rgrad(ctx, x - r * 0.35, y - r * 0.4, 1, r * 1.2, [[0, lighten(col.skin, 0.25)], [0.6, col.skin], [1, shade(col.skin, 0.65)]]));
   // eye
   circle(ctx, x + r * 0.45, y - r * 0.1, r * 0.14, '#111');
   if (a.tusks) { poly(ctx, [[x + r * 0.5, y + r * 0.5], [x + r * 0.7, y + r * 0.1], [x + r * 0.85, y + r * 0.55]], '#f0ead0'); }
@@ -85,15 +87,16 @@ function humanoid(ctx, a, col, skeleton = false) {
   // legs
   line(ctx, -6, -30, -9, -4, skeleton ? skin : cloth, skeleton ? 3 : 8);
   line(ctx, 5, -30, 9, -4, skeleton ? skin : cloth, skeleton ? 3 : 8);
-  rrect(ctx, -14, -6, 10, 6, 2, metal); rrect(ctx, 5, -6, 10, 6, 2, metal);
+  rrect(ctx, -14, -6, 10, 6, 2, shade(metal, 0.7)); rrect(ctx, 5, -6, 10, 6, 2, shade(metal, 0.7)); line(ctx, -12, -5, -6, -5, lighten(metal, 0.3), 1); line(ctx, 7, -5, 13, -5, lighten(metal, 0.3), 1);
   // cloak
   if (a.hood) poly(ctx, [[-8, -56], [-20, -12], [6, -16], [10, -52]], shade(cloth, 0.75));
   // torso
-  rrect(ctx, -10, -56, 20, 30, 6, a.armor ? metal : cloth);
-  if (a.armor) { line(ctx, -8, -46, 8, -46, shade(metal, 0.6), 1.5); line(ctx, -8, -38, 8, -38, shade(metal, 0.6), 1.5); }
+  rrect(ctx, -10, -56, 20, 30, 6, a.armor ? vol(ctx, -10, 0, 10, 0, metal) : vol(ctx, -10, 0, 10, 0, cloth));
+  if (a.armor) { line(ctx, -8, -46, 8, -46, shade(metal, 0.5), 1.5); line(ctx, -8, -38, 8, -38, shade(metal, 0.5), 1.5); circle(ctx, 0, -50, 2.2, lighten(metal, 0.4)); }
+  else { line(ctx, 0, -54, 0, -36, shade(cloth, 0.6), 1.2); line(ctx, -9, -50, -3, -54, lighten(cloth, 0.3), 1.2); }
   if (skeleton) { for (let i = 0; i < 4; i++) line(ctx, -8, -52 + i * 6, 8, -52 + i * 6, shade(skin, 0.6), 1.5); }
-  // belt
-  rrect(ctx, -10, -32, 20, 4, 1, shade(cloth, 0.5));
+  // belt with buckle
+  rrect(ctx, -10, -32, 20, 4, 1, shade(cloth, 0.45)); rrect(ctx, -2, -32.5, 4, 5, 1, '#d9a93a');
   // head
   head(ctx, 2, -66, 10, { skin }, a);
   // hair/helmet/hood
@@ -133,16 +136,18 @@ function beast(ctx, a, col, scale = 1) {
   line(ctx, -16, -22, -20, -2, col.cloth, 6); line(ctx, -8, -22, -6, -2, col.metal, 6);
   line(ctx, 10, -22, 8, -2, col.metal, 6); line(ctx, 18, -22, 22, -2, col.cloth, 6);
   // body
-  ellipse(ctx, 0, -28, 26, 12, col.cloth, -0.05);
-  ellipse(ctx, -4, -24, 20, 7, shade(col.cloth, 0.85), 0);
+  ellipse(ctx, 0, -28, 26, 12, lgrad(ctx, 0, -40, 0, -16, [[0, lighten(col.cloth, 0.3)], [0.5, col.cloth], [1, shade(col.cloth, 0.55)]]), -0.05);
+  ellipse(ctx, -4, -24, 20, 7, shade(col.cloth, 0.8), 0);
+  for (let k = 0; k < 6; k++) line(ctx, -18 + k * 6, -36 + (k % 2) * 2, -20 + k * 6, -30, lighten(col.cloth, 0.35), 1.2);
   // tail
   ctx.beginPath(); ctx.moveTo(-24, -30); ctx.quadraticCurveTo(-40, -36, -38, -50); ctx.strokeStyle = col.cloth; ctx.lineWidth = 5; ctx.stroke();
   // head
   ellipse(ctx, 26, -36, 12, 9, col.cloth, 0.2);
   poly(ctx, [[34, -40], [46, -36], [34, -30]], col.cloth);
   poly(ctx, [[18, -44], [22, -56], [27, -44]], col.cloth); poly(ctx, [[26, -45], [31, -56], [34, -44]], col.cloth);
-  circle(ctx, 30, -38, 2, col.accent);
+  circle(ctx, 30, -38, 2.6, col.accent); circle(ctx, 30.6, -38.4, 1, '#fff');
   circle(ctx, 45, -35, 1.5, '#111');
+  for (let i = 0; i < 3; i++) poly(ctx, [[35 + i * 3, -34], [36 + i * 3, -31], [37.5 + i * 3, -34]], '#f0f0e0');
   ctx.restore();
 }
 
@@ -185,7 +190,7 @@ function eagle(ctx, a, col) {
     ctx.quadraticCurveTo(s * 44, -62, s * 50, -50);
     ctx.quadraticCurveTo(s * 34, -48, s * 42, -36);
     ctx.quadraticCurveTo(s * 20, -40, 0, -36); ctx.closePath();
-    ctx.fillStyle = s < 0 ? shade(f, 0.8) : f; ctx.fill();
+    ctx.fillStyle = lgrad(ctx, 0, -90, 0, -36, [[0, lighten(f, 0.3)], [1, shade(f, s < 0 ? 0.55 : 0.75)]]); ctx.fill();
     for (let i = 0; i < 4; i++) line(ctx, s * (14 + i * 9), -56 + i * 2, s * (18 + i * 9), -76 + i * 1, shade(f, 0.65), 1);
   }
   ellipse(ctx, 0, -44, 11, 18, f);
@@ -208,6 +213,7 @@ function treeman(ctx, a, col) {
   ctx.beginPath(); ctx.moveTo(-6, -46); ctx.quadraticCurveTo(1, -42, 8, -46); ctx.strokeStyle = shade(bark, 0.5); ctx.lineWidth = 2; ctx.stroke();
   for (const [x, y, r] of [[-14, -82, 16], [10, -86, 18], [-2, -96, 14], [-28, -92, 12], [-48, -96, 9]]) circle(ctx, x, y, r, leaf);
   for (const [x, y, r] of [[-10, -86, 8], [14, -92, 9], [-30, -96, 6], [0, -100, 6]]) circle(ctx, x, y, r, leaf2);
+  for (let k = 0; k < 8; k++) ellipse(ctx, -44 + k * 8, -88 - (k % 3) * 6, 2.6, 1.3, '#d8ff9a', k * 0.6);
 }
 
 function giant(ctx, a, col) {
@@ -215,8 +221,9 @@ function giant(ctx, a, col) {
   const skin = col.skin === col.accent ? col.cloth : col.skin;
   const body = col.cloth;
   line(ctx, -8, -30, -12, -2, body, 10); line(ctx, 8, -30, 14, -2, body, 10);
-  rrect(ctx, -14, -58, 28, 32, 9, body);
-  rrect(ctx, -14, -36, 28, 10, 2, col.metal);
+  rrect(ctx, -14, -58, 28, 32, 9, vol(ctx, -14, 0, 14, 0, body));
+  ellipse(ctx, -5, -48, 5, 7, lighten(body, 0.15)); ellipse(ctx, 5, -48, 5, 7, lighten(body, 0.15));
+  rrect(ctx, -14, -36, 28, 10, 2, vol(ctx, -14, 0, 14, 0, col.metal)); line(ctx, -14, -31, 14, -31, shade(col.metal, 0.5), 1);
   line(ctx, -8, -50, -22, -30, body, 8);
   head(ctx, 2, -66, 9, { skin: body }, a);
   line(ctx, 8, -50, 22, -36, body, 8);
@@ -231,8 +238,8 @@ function spider(ctx, a, col) {
     const mx = s * (16 + i * 4), my = -44 + i * 6, ex = s * (26 + i * 6), ey = -2;
     ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(mx, my); ctx.lineTo(ex, ey); ctx.strokeStyle = b; ctx.lineWidth = 3; ctx.lineJoin = 'round'; ctx.stroke();
   }
-  ellipse(ctx, -12, -28, 20, 14, b);
-  ellipse(ctx, -12, -28, 10, 6, col.metal, 0.3);
+  ellipse(ctx, -12, -28, 20, 14, rgrad(ctx, -18, -36, 2, 24, [[0, lighten(b, 0.35)], [0.5, b], [1, shade(b, 0.5)]]));
+  ellipse(ctx, -12, -28, 10, 6, col.metal, 0.3); ellipse(ctx, -18, -34, 5, 2.5, 'rgba(255,255,255,0.25)', -0.4);
   ellipse(ctx, 12, -26, 11, 9, shade(b, 1.2));
   circle(ctx, 18, -30, 2, col.accent); circle(ctx, 22, -27, 2, col.accent); circle(ctx, 15, -25, 1.5, col.accent);
   poly(ctx, [[20, -20], [26, -14], [22, -16]], col.metal); poly(ctx, [[14, -19], [10, -12], [15, -15]], col.metal);
@@ -242,10 +249,12 @@ function dragon(ctx, a, col) {
   const b = col.cloth, d = col.metal, acc = col.accent;
   // wing
   ctx.beginPath(); ctx.moveTo(-6, -50); ctx.quadraticCurveTo(-30, -100, -60, -86); ctx.lineTo(-50, -66); ctx.lineTo(-40, -74); ctx.lineTo(-32, -58); ctx.lineTo(-20, -64); ctx.lineTo(-12, -48); ctx.closePath();
-  ctx.fillStyle = d; ctx.fill();
+  ctx.fillStyle = lgrad(ctx, -60, -100, 0, -40, [[0, lighten(d, 0.25)], [1, shade(d, 0.6)]]); ctx.fill();
+  for (let k = 0; k < 4; k++) line(ctx, -6, -50, -22 - k * 10, -62 - k * 7, shade(d, 0.5), 1.4);
   line(ctx, -14, -30, -20, -2, b, 8); line(ctx, 10, -30, 14, -2, b, 8);
   ctx.beginPath(); ctx.moveTo(-30, -36); ctx.quadraticCurveTo(-54, -34, -58, -12); ctx.strokeStyle = b; ctx.lineWidth = 7; ctx.stroke();
-  ellipse(ctx, -4, -40, 30, 16, b);
+  ellipse(ctx, -4, -40, 30, 16, lgrad(ctx, 0, -56, 0, -24, [[0, lighten(b, 0.3)], [0.6, b], [1, shade(b, 0.55)]]));
+  for (let k = 0; k < 8; k++) ellipse(ctx, -24 + k * 6, -42 + (k % 2) * 3, 3, 2, shade(b, 0.7), 0);
   ellipse(ctx, -4, -34, 22, 7, acc, 0);
   ctx.beginPath(); ctx.moveTo(18, -48); ctx.quadraticCurveTo(34, -60, 36, -80); ctx.strokeStyle = b; ctx.lineWidth = 10; ctx.stroke();
   ellipse(ctx, 40, -84, 13, 8, b, 0.1);

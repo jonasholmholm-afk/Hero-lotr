@@ -3,7 +3,7 @@
 Et turbaseret fantasy-strategispil i stil med *Heroes of Might and Magic III*, sat i et univers der
 blander **Ringenes Herre (Midgård)** og **Warhammer Fantasy (Den Gamle Verden)**.
 
-Version 1.0: **Skovelvere** (Athel Loren / Lothlórien) mod **Orker** (Mordor / de Grønne Horder) – mod én AI-modstander.
+Version 1.1: **Skovelvere** (Athel Loren / Lothlórien) mod **Orker** (Mordor / de Grønne Horder) – mod én AI-modstander.
 
 Spillet er en ren web-app (HTML5 Canvas + JavaScript, ingen build-step) lavet til Android-telefoner i liggende format.
 Det kan installeres som app (PWA) og virker offline.
@@ -23,6 +23,16 @@ Repoet indeholder alt der skal til. I GitHub: *Settings → Pages → Deploy fro
 Spillet ligger derefter på `https://<brugernavn>.github.io/<repo>/`.
 
 Lokalt kan du teste med `python3 -m http.server 8000` og åbne `http://localhost:8000/`.
+
+## Grafik (1.1)
+
+Al grafik er procedurel Canvas-tegning i høj opløsning (2× sprites, skarpt på telefoner):
+
+- Sømløse terræntexturer med håndtegnede detaljer pr. felt, malede overgange med skygge, sandstrande ved søer og storskala lys/skygge.
+- Træer, bjerge, klipper, miner, boliger, byer og helte med outlines, volumen, glødende vinduer, røg og flag.
+- Enhedsfigurer med outline og shading; skyet, drivende tåge; atmosfæriske partikler (gyldne blade, gløder, sne, ildfluer).
+- Slagmark med malet jord, slag-/skud-/besværgelseseffekter (ildkugle, lyn, kædelyn, heling, buffs), partikler og kamerarystelse, samt turrækkefølge-strimmel.
+- Malet hovedmenu-scene, panoramabanner i byskærmen, minimap (🗺) og et gennemført UI-tema med guldrammer.
 
 ## Spillets indhold (1.0)
 

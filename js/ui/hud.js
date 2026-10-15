@@ -15,6 +15,8 @@ import { ARTIFACTS } from '../data/artifacts.js';
 import { OBJ_INFO } from '../data/objects.js';
 import { townSprite } from '../render/sprites.js';
 import { fortLevel } from '../game/town.js';
+import { T } from '../data/terrain.js';
+import { dialog as dlg } from './dialogs.js';
 
 export class Hud {
   constructor(app) {
@@ -49,6 +51,7 @@ export class Hud {
     top.append(resBox);
     const d = ordinalDay(s.day);
     top.append(el('div.date', `Dag ${d.d} · Uge ${d.w} · Måned ${d.m}`));
+    top.append(el('button.btn.small', { onclick: () => this.openMinimap() }, '🗺'));
     top.append(el('button.btn.small', { onclick: () => this.app.openMenu() }, '☰'));
     // right column: heroes + towns
     const right = this.root.querySelector('.hud-right');
@@ -78,6 +81,50 @@ export class Hud {
     btns.append(el('button.btn.small', { onclick: () => this.nextHero() }, '➜ Næste helt'));
     btns.append(el('button.btn.small.primary', { onclick: () => this.endTurn() }, '⌛ Afslut tur'));
     bottom.append(btns);
+  }
+
+  openMinimap() {
+    const s = G.s, m = s.map, p = human();
+    const maxW = Math.min(window.innerWidth - 60, 520), maxH = Math.min(window.innerHeight - 140, 400);
+    const scale = Math.max(1, Math.floor(Math.min(maxW / m.w, maxH / m.h)));
+    const cv = el('canvas.minimap', { width: m.w * scale, height: m.h * scale, style: { width: m.w * scale + 'px', height: m.h * scale + 'px' } });
+    const ctx = cv.getContext('2d');
+    const cols = { [T.WATER]: '#2c6088', [T.GRASS]: '#5a9a44', [T.DIRT]: '#997a4e', [T.ROUGH]: '#978a6c', [T.SWAMP]: '#587040', [T.SNOW]: '#e4ecf4', [T.ASH]: '#534d4a' };
+    for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) {
+      const i = y * m.w + x;
+      if (!p.fog[i]) { ctx.fillStyle = '#07090d'; ctx.fillRect(x * scale, y * scale, scale, scale); continue; }
+      ctx.fillStyle = cols[m.terrain[i]] || '#444'; ctx.fillRect(x * scale, y * scale, scale, scale);
+      if (m.decor[i] && m.decor[i] !== 7 && m.decor[i] !== 8 && m.decor[i] !== 10 && m.decor[i] !== 11) { ctx.fillStyle = m.decor[i] === 5 ? '#8a847c' : 'rgba(20,60,20,0.55)'; ctx.fillRect(x * scale, y * scale, scale, scale); }
+      if (m.road[i]) { ctx.fillStyle = 'rgba(150,120,80,0.8)'; ctx.fillRect(x * scale, y * scale, scale, scale); }
+    }
+    for (const o of Object.values(m.objects)) {
+      if (!p.fog[o.y * m.w + o.x]) continue;
+      let c = null, r = scale;
+      if (o.type === OBJ.TOWN) { c = o.owner >= 0 ? s.players[o.owner].color : '#cccccc'; r = scale * 2.2; }
+      else if (o.type === OBJ.MINE || o.type === OBJ.DWELLING) { c = o.owner >= 0 ? s.players[o.owner].color : '#e0d0a0'; r = scale * 1.3; }
+      else if (o.type === OBJ.MONSTER) { c = '#ff5a46'; r = scale * 0.9; }
+      else if (o.type === OBJ.ARTIFACT || o.type === OBJ.CHEST || o.type === OBJ.RESOURCE) { c = '#ffe28a'; r = scale * 0.8; }
+      if (!c) continue;
+      ctx.fillStyle = c; ctx.beginPath(); ctx.arc((o.x + 0.5) * scale, (o.y + 0.5) * scale, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.6)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    for (const h of Object.values(s.heroes)) {
+      if (h.inTavern || !p.fog[h.y * m.w + h.x]) continue;
+      ctx.fillStyle = s.players[h.owner].color; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc((h.x + 0.5) * scale, (h.y + 0.5) * scale, scale * 1.8, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+    // viewport
+    const r = this.r;
+    ctx.strokeStyle = '#ffe28a'; ctx.lineWidth = 1.5;
+    ctx.strokeRect(r.cam.x / 64 * scale, r.cam.y / 64 * scale, r.w / r.cam.zoom / 64 * scale, r.h / r.cam.zoom / 64 * scale);
+    let closeFn = null;
+    cv.addEventListener('click', (e) => {
+      const rc = cv.getBoundingClientRect();
+      const tx = Math.floor((e.clientX - rc.left) / scale), ty = Math.floor((e.clientY - rc.top) / scale);
+      this.r.centerOn(tx, ty);
+      if (closeFn) closeFn(null);
+    });
+    dlg({ title: 'Kort', body: el('div', { style: { width: '100%', textAlign: 'center' } }, cv, el('div.muted.small', 'Tryk på kortet for at flytte udsynet.')), buttons: [{ label: 'Luk', value: null }], init: (c) => { closeFn = c; } });
   }
 
   select(h, center = true) {
