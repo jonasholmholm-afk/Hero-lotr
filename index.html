@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b0e14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Troner af Skov & Jern – et turbaseret strategispil i stil med Heroes of Might and Magic, sat i Midgård og Warhammers Gamle Verden.">
+<title>Troner af Skov & Jern</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <section id="menu" class="screen"></section>
+
+  <section id="adventure" class="screen">
+    <canvas></canvas>
+    <div class="hud-top"></div>
+    <div class="hud-right"></div>
+    <div class="hud-bottom"></div>
+  </section>
+
+  <section id="town" class="screen scroll"></section>
+  <section id="hero" class="screen scroll"></section>
+
+  <section id="battle" class="screen">
+    <div class="battle-top"></div>
+    <canvas></canvas>
+    <div class="battle-info"></div>
+    <div class="battle-bar"></div>
+  </section>
+
+  <div id="overlay"><div class="spinner"></div><div class="overlay-text"></div></div>
+  <div id="toast"></div>
+  <div id="dialogs"></div>
+  <div id="portrait-hint">Vend telefonen til liggende format for den bedste oplevelse</div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

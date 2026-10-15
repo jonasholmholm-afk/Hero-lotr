@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="70%"><stop offset="0" stop-color="#2a3d2a"/><stop offset="1" stop-color="#0b0e14"/></radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset="1" stop-color="#b8821e"/></linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9ad56a"/><stop offset="1" stop-color="#2e6b2a"/></linearGradient>
+    <linearGradient id="iron" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa0a8"/><stop offset="1" stop-color="#3a3f45"/></linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="26" fill="url(#bg)"/>
+  <circle cx="64" cy="64" r="46" fill="none" stroke="url(#gold)" stroke-width="4"/>
+  <path d="M64 24 L74 44 L96 48 L80 64 L84 86 L64 76 L44 86 L48 64 L32 48 L54 44 Z" fill="url(#gold)" opacity="0.25"/>
+  <path d="M40 92 C 40 60, 56 44, 64 30 C 60 56, 52 70, 40 92 Z" fill="url(#leaf)"/>
+  <path d="M88 92 L74 36 L82 32 L92 90 Z" fill="url(#iron)"/>
+  <path d="M70 40 L86 34 L88 40 L72 46 Z" fill="url(#iron)"/>
+  <path d="M60 92 L96 92" stroke="url(#gold)" stroke-width="5" stroke-linecap="round"/>
+</svg>

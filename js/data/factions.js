@@ -1,0 +1,43 @@
+export const FACTIONS = {
+  elves: {
+    id: 'elves',
+    name: 'Skovelvere',
+    adj: 'elvisk',
+    title: 'Athel Lorens vogtere',
+    desc: 'Skovens børn fra Athel Loren og Lothlórien. Hurtige, dødbringende bueskytter og ældgamle skovvæsner, der kæmper for at bevare de hellige lunde.',
+    color: '#4fbf6a',
+    color2: '#e3c56a',
+    dark: '#1d3d24',
+    units: ['dryad', 'glade_guard', 'eternal_guard', 'wardancer', 'wild_rider', 'great_eagle', 'treeman'],
+    rare: 'gems',
+    rare2: 'mithril',
+    heroClasses: {
+      might: { name: 'Skovvogter', stats: [1, 3, 1, 1], levelUp: [35, 45, 10, 10] },
+      magic: { name: 'Sangvæver', stats: [0, 2, 2, 2], levelUp: [10, 20, 35, 35] },
+    },
+    specialName: 'Verdensrødderne',
+    specialDesc: 'En besøgende helt får +1 Held i sin næste kamp.',
+    specialKey: 'luck',
+  },
+  orcs: {
+    id: 'orcs',
+    name: 'Orker',
+    adj: 'orkisk',
+    title: 'Waaagh! fra Mordor og Ødemarkerne',
+    desc: 'Mordors og de Grønne Horders krigere. Talrige, brutale og altid sultne efter kamp. Deres styrke er masse, trolde og kæmper.',
+    color: '#d9452f',
+    color2: '#3a3a3a',
+    dark: '#3b1510',
+    units: ['goblin', 'orc_boy', 'orc_archer', 'warg_rider', 'black_orc', 'troll', 'giant'],
+    rare: 'warpstone',
+    rare2: 'ore',
+    heroClasses: {
+      might: { name: 'Warboss', stats: [4, 0, 1, 1], levelUp: [55, 25, 10, 10] },
+      magic: { name: 'Shaman', stats: [1, 1, 2, 2], levelUp: [20, 20, 30, 30] },
+    },
+    specialName: 'Krigstrommerne',
+    specialDesc: 'En besøgende helt får +1 Moral i sin næste kamp.',
+    specialKey: 'morale',
+  },
+};
+export const PLAYER_COLORS = ['#59c66f', '#e0533a', '#4a8ff0', '#d8b74a'];
