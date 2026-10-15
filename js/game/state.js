@@ -32,7 +32,7 @@ export function newGame({ seed, size = 'medium', playerFaction = 'elves', diffic
     tavernPool: [],
   });
   const s = {
-    version: 1, seed, day: 1, current: 0, difficulty, winner: null,
+    version: 1, playerFaction, seed, day: 1, current: 0, difficulty, winner: null,
     map, players: [
       mkPlayer(0, playerFaction, false, diff.player, playerName),
       mkPlayer(1, aiFaction, true, diff.ai, FACTIONS[aiFaction].name + ' (AI)'),

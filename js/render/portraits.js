@@ -58,6 +58,17 @@ export function portrait(defId, size = 64) {
     case 'antlers': ctx.beginPath(); ctx.arc(32, 20, 13, Math.PI, Math.PI * 2); ctx.fillStyle = p.hair; ctx.fill(); for (const s of [-1, 1]) { line(ctx, 32 + s * 8, 12, 32 + s * 14, 0, '#d8c8a0', 2.5); line(ctx, 32 + s * 11, 6, 32 + s * 18, 4, '#d8c8a0', 2); line(ctx, 32 + s * 12, 4, 32 + s * 10, -2, '#d8c8a0', 2); } break;
     case 'bald': default: ctx.beginPath(); ctx.arc(32, 20, 12.5, Math.PI * 1.05, Math.PI * 1.95); ctx.fillStyle = p.style === 'bald' ? shade(p.skin, 0.9) : p.hair; ctx.fill(); break;
   }
+  // accessories
+  if (p.crown && p.style !== 'crown') {
+    const gold = def.faction === 'elves' ? '#d9a93a' : '#6a6a70';
+    for (let i = 0; i < 5; i++) poly(ctx, [[21 + i * 5.5, 13], [23.5 + i * 5.5, 4 - (i === 2 ? 3 : 0)], [26 + i * 5.5, 13]], gold);
+    rrect(ctx, 20, 11, 24, 4, 1, gold);
+    if (def.faction === 'elves') for (let i = 0; i < 4; i++) circle(ctx, 23 + i * 6, 7, 1.2, '#c0392b');
+  }
+  if (p.helm) {
+    ctx.beginPath(); ctx.arc(32, 19, 13.5, Math.PI, Math.PI * 2); ctx.fillStyle = lgrad(ctx, 18, 6, 46, 20, [[0, '#c8c0a0'], [1, '#6a6450']]); ctx.fill();
+    rrect(ctx, 18, 17, 28, 4, 1, '#8a8470'); poly(ctx, [[32, 5], [36, 0], [40, 6]], '#d9a93a');
+  }
   // frame
   ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 2; ctx.strokeRect(1, 1, 62, 62);
   cache.set(key, c);

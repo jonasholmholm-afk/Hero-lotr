@@ -47,7 +47,7 @@ export function saveInfo(slot = 'auto') {
     const str = localStorage.getItem(KEY + ':' + slot);
     if (!str) return null;
     const m = str.match(/"day":(\d+)/);
-    const f = str.match(/"faction":"(\w+)"/);
+    const f = str.match(/"playerFaction":"(\w+)"/);
     return { day: m ? +m[1] : '?', faction: f ? f[1] : '?' };
   } catch { return null; }
 }
