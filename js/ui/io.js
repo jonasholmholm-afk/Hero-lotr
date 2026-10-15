@@ -83,8 +83,15 @@ export class GameIO {
   battleIO(setup) {
     const humanInvolved = setup.attacker.owner === 0 || setup.defender.owner === 0;
     if (!humanInvolved) return silentIO;
+    // Hide the "AI is thinking" overlay while the player fights
+    this.savedOverlay = this.app.overlayText || null;
+    this.app.setOverlay(null);
     this.currentBattle = new BattleScreen(this.app, setup);
     return this.currentBattle;
+  }
+  restoreOverlay() {
+    if (this.savedOverlay && G.s.current !== 0) this.app.setOverlay(this.savedOverlay);
+    this.savedOverlay = null;
   }
   async battleResult(hero, enemy, res, battle, attackerWon) {
     const humanInvolved = battle.sides[0].owner === 0 || battle.sides[1].owner === 0;
@@ -92,6 +99,7 @@ export class GameIO {
     if (window.__autoPlay) {
       if (this.currentBattle) { this.currentBattle.close(); this.currentBattle = null; }
       this.app.showScreen('adventure'); this.app.hud.refresh(); this.app.renderer.invalidateFog();
+      this.restoreOverlay();
       return;
     }
     const humanSide = battle.sides[0].owner === 0 ? 0 : 1;
@@ -112,6 +120,7 @@ export class GameIO {
     this.app.showScreen('adventure');
     this.app.hud.refresh();
     this.app.renderer.invalidateFog();
+    this.restoreOverlay();
   }
   async step(hero, st, i, path, prev) {
     const r = this.app.renderer;

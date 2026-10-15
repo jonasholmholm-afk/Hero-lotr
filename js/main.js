@@ -23,6 +23,7 @@ const app = {
   },
   setOverlay(text) {
     const o = document.getElementById('overlay');
+    this.overlayText = text;
     if (!text) { o.classList.remove('show'); return; }
     o.querySelector('.overlay-text').textContent = text;
     o.classList.add('show');
