@@ -16,6 +16,7 @@ import { ArmyEditor } from './heroScreen.js';
 import { spellIcon } from '../render/icons.js';
 import { mk, poly, circle, ellipse, rrect, line, lgrad, rgrad, shade, lighten } from '../render/draw.js';
 import { townSprite } from '../render/sprites.js';
+import { drawTownBanner } from '../render/scenes.js';
 
 export function openTownScreen(app, town) {
   return new Promise((resolve) => {
@@ -35,7 +36,7 @@ export function openTownScreen(app, town) {
       root.append(resourceBar(p));
       const banner = el('canvas.town-banner');
       root.append(banner);
-      requestAnimationFrame(() => drawBanner(banner, town));
+      requestAnimationFrame(() => drawTownBanner(banner, town, fortLevel(town), mageLevel(town), dwellingUnit));
       const tabs = el('div.tabs');
       const tabDefs = [['build', 'Byg'], ['recruit', 'Hvervning'], ['army', 'Hær'], ['tavern', 'Taverne'], ['mage', 'Magi'], ['market', 'Marked']];
       for (const [id, label] of tabDefs) tabs.append(el('button.tab' + (tab === id ? '.active' : ''), { onclick: () => { tab = id; render(); } }, label));
@@ -195,38 +196,4 @@ export function resourceBar(p) {
   const bar = el('div.res-bar');
   for (const r of RES) bar.append(el('span.res', resIcon(r, 16), String(p.resources[r])));
   return bar;
-}
-
-function drawBanner(canvas, town) {
-  const w = canvas.clientWidth || 600, h = 150;
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  canvas.width = w * dpr; canvas.height = h * dpr;
-  const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
-  const elf = town.faction === 'elves';
-  ctx.fillStyle = lgrad(ctx, 0, 0, 0, h, elf ? [[0, '#1a2d2a'], [0.5, '#6a8a5a'], [1, '#d9c27a']] : [[0, '#120a0a'], [0.5, '#5a2418'], [1, '#c8612a']]);
-  ctx.fillRect(0, 0, w, h);
-  // sun / moon
-  circle(ctx, w * 0.78, h * 0.35, 22, rgrad(ctx, w * 0.78, h * 0.35, 2, 30, elf ? [[0, '#fff6d0'], [1, 'rgba(255,230,160,0)']] : [[0, '#ffb080'], [1, 'rgba(255,120,60,0)']]));
-  // hills
-  for (let i = 0; i < 3; i++) {
-    ctx.beginPath(); ctx.moveTo(0, h);
-    for (let x = 0; x <= w; x += 20) ctx.lineTo(x, h * (0.55 + i * 0.12) + Math.sin(x / (60 + i * 30) + i) * 10 + Math.cos(x / 23) * 3);
-    ctx.lineTo(w, h); ctx.closePath();
-    ctx.fillStyle = elf ? ['#2e5a3a', '#3f7a46', '#4f8a3a'][i] : ['#2a2020', '#3a2a24', '#4a4544'][i]; ctx.fill();
-  }
-  // buildings as silhouettes
-  const b = town.buildings;
-  const sp = townSprite(town.faction, fortLevel(town), null);
-  const sc = 0.78;
-  ctx.drawImage(sp, w / 2 - sp.width * sc / 2, h - sp.height * sc + 6, sp.width * sc, sp.height * sc);
-  let x = 30;
-  const house = (label, hgt, col) => { rrect(ctx, x, h - 18 - hgt, 34, hgt, 3, col); poly(ctx, [[x - 4, h - 18 - hgt], [x + 17, h - 18 - hgt - 14], [x + 38, h - 18 - hgt]], shade(col, 0.6)); rrect(ctx, x + 13, h - 30, 8, 12, 2, '#ffe28a'); ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(label, x + 17, h - 6); x += 48; };
-  const col = elf ? '#e8e0c8' : '#5a4a3a';
-  if (b.tavern) house('Taverne', 26, col);
-  if (b.market) house('Marked', 22, col);
-  const ml = mageLevel(town); if (ml) house(`Magi ${roman(ml)}`, 30 + ml * 8, elf ? '#cfd8ff' : '#6a4a6a');
-  if (b.silo) house('Lager', 24, col);
-  if (b.special) house('Special', 28, elf ? '#9ad56a' : '#8a2a2a');
-  x = w - 50;
-  for (let i = 6; i >= 0; i--) { const dw = 'dw' + (i + 1); if (!b[dw]) continue; const u = UNITS[dwellingUnit(town, dw)]; rrect(ctx, x, h - 18 - 16 - i * 3, 28, 16 + i * 3, 3, elf ? '#a8c890' : '#3a3a3a'); ctx.fillStyle = 'rgba(255,255,255,0.75)'; ctx.font = '8px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(roman(i + 1), x + 14, h - 6); x -= 36; }
 }

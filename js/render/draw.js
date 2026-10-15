@@ -70,3 +70,76 @@ export function art_rng(seed) {
   let s = (seed * 2654435761) >>> 0 || 1;
   return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return (s % 10000) / 10000; };
 }
+
+// ---------- Hi-res sprite canvases ----------
+// Sprites are rasterised at SPR× resolution and carry their logical size in lw/lh,
+// so they stay crisp on high-DPI phones.
+export const SPR = 2;
+export function mkS(w, h) {
+  const c = mk(Math.ceil(w * SPR), Math.ceil(h * SPR));
+  c.lw = w; c.lh = h;
+  c.getContext('2d').scale(SPR, SPR);
+  return c;
+}
+export function blit(ctx, c, x, y, w = c.lw || c.width, h = c.lh || c.height) {
+  ctx.drawImage(c, x, y, w, h);
+}
+/** Adds a dark outline around the opaque pixels of a sprite canvas (in place). */
+export function outline(c, color = 'rgba(10,8,6,0.75)', px = 1) {
+  const w = c.width, h = c.height;
+  const tmp = mk(w, h); const t = tmp.getContext('2d');
+  t.drawImage(c, 0, 0);
+  t.globalCompositeOperation = 'source-in'; t.fillStyle = color; t.fillRect(0, 0, w, h);
+  const out = mk(w, h); const o = out.getContext('2d');
+  const d = px * SPR;
+  for (const [dx, dy] of [[d, 0], [-d, 0], [0, d], [0, -d], [d, d], [-d, d], [d, -d], [-d, -d]]) o.drawImage(tmp, dx, dy);
+  o.drawImage(c, 0, 0);
+  const ctx = c.getContext('2d');
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w, h); ctx.drawImage(out, 0, 0); ctx.restore();
+  return c;
+}
+/** Overlays a vertical light->shade gradient on the opaque pixels (volume). */
+export function shadeSprite(c, top = 'rgba(255,245,220,0.18)', bottom = 'rgba(0,0,20,0.28)') {
+  const ctx = c.getContext('2d');
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-atop';
+  const g = ctx.createLinearGradient(0, 0, 0, c.height);
+  g.addColorStop(0, top); g.addColorStop(0.55, 'rgba(0,0,0,0)'); g.addColorStop(1, bottom);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, c.width, c.height);
+  ctx.restore();
+  return c;
+}
+export function softShadow(ctx, x, y, rx, ry, a = 0.35) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, rx);
+  g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(0.6, `rgba(0,0,0,${a * 0.6})`); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.save(); ctx.translate(x, y); ctx.scale(1, ry / rx); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rx, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+}
+export function glow(ctx, x, y, r, color, a = 0.6) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, rgba(color, a)); g.addColorStop(1, rgba(color, 0));
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+}
+/** Jagged / organic polygon helper: returns points around (cx,cy) with radius r and noise. */
+export function blobPts(cx, cy, r, n, rnd, jag = 0.25) {
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2;
+    const rr = r * (1 - jag / 2 + rnd() * jag);
+    pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
+  }
+  return pts;
+}
+export function smoothPoly(ctx, pts, fill, stroke, lw = 1) {
+  ctx.beginPath();
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[i], p1 = pts[(i + 1) % n];
+    const mx = (p0[0] + p1[0]) / 2, my = (p0[1] + p1[1]) / 2;
+    if (i === 0) ctx.moveTo(mx, my); else ctx.quadraticCurveTo(p0[0], p0[1], mx, my);
+  }
+  const p0 = pts[0], p1 = pts[1];
+  ctx.quadraticCurveTo(p0[0], p0[1], (p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2);
+  ctx.closePath();
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.stroke(); }
+}

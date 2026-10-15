@@ -1,6 +1,6 @@
 // Procedural creature figures (side view, facing right) used both on the
 // adventure map and on the battlefield.
-import { mk, poly, circle, ellipse, rrect, line, lgrad, shade, lighten, rgba } from './draw.js';
+import { mk, mkS, poly, circle, ellipse, rrect, line, lgrad, shade, lighten, rgba, outline, shadeSprite, softShadow } from './draw.js';
 
 const cache = new Map();
 
@@ -8,7 +8,7 @@ const cache = new Map();
 export function figure(unit, S = 96, flip = false) {
   const key = `${unit.id}:${S}:${flip ? 1 : 0}`;
   if (cache.has(key)) return cache.get(key);
-  const c = mk(S, S);
+  const c = mkS(S, S);
   const ctx = c.getContext('2d');
   ctx.save();
   if (flip) { ctx.translate(S, 0); ctx.scale(-1, 1); }
@@ -16,8 +16,6 @@ export function figure(unit, S = 96, flip = false) {
   const sc = (a.scale || 1) * S / 96;
   ctx.translate(S / 2, S * 0.92);
   ctx.scale(sc, sc);
-  // ground shadow
-  ellipse(ctx, 0, 0, 26, 7, 'rgba(0,0,0,0.28)');
   const col = { cloth: a.c1, metal: a.c2, accent: a.c3, skin: a.skin || a.c3 };
   switch (a.shape) {
     case 'humanoid': humanoid(ctx, a, col); break;
@@ -34,11 +32,17 @@ export function figure(unit, S = 96, flip = false) {
     default: humanoid(ctx, a, col);
   }
   ctx.restore();
-  cache.set(key, c);
-  return c;
+  outline(c, 'rgba(14,10,8,0.8)', 1);
+  shadeSprite(c, 'rgba(255,245,225,0.2)', 'rgba(0,0,20,0.3)');
+  // ground shadow underneath everything
+  const out = mkS(S, S); const octx = out.getContext('2d');
+  softShadow(octx, S / 2, S * 0.92, S * 0.3 * (a.scale || 1), S * 0.08 * (a.scale || 1), 0.4);
+  octx.drawImage(c, 0, 0, S, S);
+  cache.set(key, out);
+  return out;
 }
 
-function outline(ctx) { ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 1.2; ctx.lineJoin = 'round'; }
+function outlineStyle(ctx) { ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 1.2; ctx.lineJoin = 'round'; }
 
 function weapon(ctx, kind, col, hx, hy, big = false) {
   const metal = '#c9ccd2', dark = '#5a5e66', wood = '#6b4a2a';

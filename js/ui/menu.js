@@ -7,28 +7,45 @@ import { hasSave, saveInfo } from '../game/save.js';
 import { unitCard, unitStatsHtml } from './common.js';
 import { dialog } from './dialogs.js';
 import { townSprite } from '../render/sprites.js';
+import { MenuScene } from '../render/scenes.js';
+
+let scene = null, sceneRaf = 0;
+function ensureScene(root) {
+  let cv = document.getElementById('menu-bg');
+  if (!cv) { cv = el('canvas#menu-bg'); }
+  root.prepend(cv);
+  if (!scene || scene.canvas !== cv) { scene = new MenuScene(cv); }
+  scene.resize();
+  cancelAnimationFrame(sceneRaf);
+  const loop = () => { if (!document.getElementById('menu').classList.contains('active')) { sceneRaf = 0; return; } scene.draw(); sceneRaf = requestAnimationFrame(loop); };
+  sceneRaf = requestAnimationFrame(loop);
+}
+export function stopMenuScene() { cancelAnimationFrame(sceneRaf); sceneRaf = 0; }
 
 export function renderMenu(app) {
   const root = document.getElementById('menu');
   root.innerHTML = '';
+  app.showScreen('menu');
+  ensureScene(root);
   const box = el('div.menu-box');
-  box.append(el('h1.title', 'Troner af Skov & Jern'));
+  box.append(el('h1.title.gold-text', 'Troner af Skov & Jern'));
+  box.append(el('div.ornament'));
   box.append(el('div.subtitle', 'Et strategispil i Midgård og Den Gamle Verden'));
   const si = saveInfo();
   if (hasSave() && si) box.append(el('button.btn.primary.big', { onclick: () => app.continueGame() }, `Fortsæt (Dag ${si.day}, ${FACTIONS[si.faction] ? FACTIONS[si.faction].name : ''})`));
   box.append(el('button.btn.big', { onclick: () => renderSetup(app) }, 'Nyt spil'));
   box.append(el('button.btn.big', { onclick: () => showHelp() }, 'Sådan spiller du'));
-  box.append(el('div.version', 'Version 1.0 · Skovelvere & Orker'));
+  box.append(el('div.version', 'Version 1.1 · Skovelvere & Orker'));
   root.append(box);
-  app.showScreen('menu');
 }
 
 function renderSetup(app) {
   const root = document.getElementById('menu');
   root.innerHTML = '';
+  ensureScene(root);
   const state = { faction: 'elves', size: 'medium', difficulty: 'normal', seed: '' };
   const box = el('div.menu-box.wide');
-  box.append(el('h2', 'Vælg din fraktion'));
+  box.append(el('h2.gold-text', 'Vælg din fraktion'));
   const facRow = el('div.faction-row');
   const render = () => {
     facRow.innerHTML = '';
@@ -62,7 +79,8 @@ function renderSetup(app) {
   };
   const opts = el('div.opts');
   render();
-  box.append(facRow, opts);
+  const panel = el('div.menu-panel', opts);
+  box.append(facRow, panel);
   const row = el('div.dialog-buttons');
   row.append(el('button.btn', { onclick: () => renderMenu(app) }, 'Tilbage'));
   row.append(el('button.btn.primary.big', { onclick: () => {

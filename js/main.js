@@ -5,7 +5,7 @@ import { saveGame, loadGame, deleteSave } from './game/save.js';
 import { AdventureRenderer } from './render/adventure.js';
 import { Hud } from './ui/hud.js';
 import { GameIO } from './ui/io.js';
-import { renderMenu, showHelp } from './ui/menu.js';
+import { renderMenu, showHelp, stopMenuScene } from './ui/menu.js';
 import { openTownScreen } from './ui/townScreen.js';
 import { openHeroScreen } from './ui/heroScreen.js';
 import { dialog, toast, confirm } from './ui/dialogs.js';
@@ -18,6 +18,7 @@ const app = {
   showScreen(id) {
     for (const s of this.screens) document.getElementById(s).classList.toggle('active', s === id);
     this.current = id;
+    if (id !== 'menu') stopMenuScene();
     if (id === 'adventure' && this.renderer) requestAnimationFrame(() => this.renderer.resize());
     if (id === 'adventure') document.body.classList.remove('in-screen'); else document.body.classList.add('in-screen');
   },
