@@ -110,7 +110,24 @@ window.addEventListener('beforeunload', () => { if (G.s && app.current !== 'menu
 document.addEventListener('visibilitychange', () => { if (document.hidden && G.s) saveGame(); });
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+  window.addEventListener('load', async () => {
+    let reg = null;
+    try { reg = await navigator.serviceWorker.register('./sw.js'); } catch { return; }
+    // check for a new version whenever the app is opened or brought back to the front
+    const check = () => reg.update().catch(() => {});
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });
+    setInterval(check, 10 * 60 * 1000);
+    // when a new worker takes over, reload once so the new files are used right away
+    let hadController = !!navigator.serviceWorker.controller, reloading = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!hadController || reloading) { hadController = true; return; }
+      reloading = true;
+      if (G.s && app.current !== 'menu') saveGame();
+      toast('Ny version hentet – genstarter…', 2500, 'good');
+      setTimeout(() => location.reload(), 900);
+    });
+    reg.addEventListener('updatefound', () => { const w = reg.installing; if (w) w.addEventListener('statechange', () => { if (w.state === 'installed' && navigator.serviceWorker.controller) w.postMessage('SKIP_WAITING'); }); });
+  });
 }
 // Orientation hint
 function checkOrientation() { document.body.classList.toggle('portrait', window.innerHeight > window.innerWidth && window.innerWidth < 700); }

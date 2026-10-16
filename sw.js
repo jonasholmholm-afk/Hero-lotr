@@ -1,12 +1,12 @@
 // Service worker: cache-first for app files so the game works offline once installed.
-const VERSION = 'tsj-v1.6.3';
+const VERSION = 'tsj-v1.6.4';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/style.css', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
   './js/main.js',
   './js/core/rng.js', './js/core/noise.js', './js/core/utils.js',
   './js/data/resources.js', './js/data/terrain.js', './js/data/factions.js', './js/data/units.js', './js/data/skills.js', './js/data/heroes.js', './js/data/spells.js', './js/data/artifacts.js', './js/data/buildings.js', './js/data/objects.js',
   './js/map/pathfinding.js', './js/map/mapgen.js',
-  './js/game/state.js', './js/game/fog.js', './js/game/hero.js', './js/game/town.js', './js/game/movement.js', './js/game/actions.js', './js/game/turn.js', './js/game/save.js',
+  './js/game/state.js', './js/game/fog.js', './js/game/hero.js', './js/game/town.js', './js/game/movement.js', './js/game/actions.js', './js/game/turn.js', './js/game/save.js', './js/game/settings.js', './js/game/rumours.js', './js/version.js',
   './js/combat/hex.js', './js/combat/battle.js', './js/combat/battleAI.js', './js/combat/runner.js',
   './js/ai/ai.js',
   './js/render/draw.js', './js/render/figures.js', './js/render/sprites.js', './js/render/portraits.js', './js/render/icons.js', './js/render/adventure.js', './js/render/battleRender.js', './js/render/scenes.js', './js/render/assets.js', './js/render/cacheControl.js', './js/data/assetCatalog.js', './js/ui/assetStudio.js', './assets/manifest.json',
@@ -18,6 +18,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
+self.addEventListener('message', (e) => { if (e.data === 'SKIP_WAITING') self.skipWaiting(); });
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) {

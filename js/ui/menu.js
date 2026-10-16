@@ -8,6 +8,7 @@ import { unitCard, unitStatsHtml } from './common.js';
 import { dialog } from './dialogs.js';
 import { townSprite } from '../render/sprites.js';
 import { MenuScene } from '../render/scenes.js';
+import { APP_VERSION } from '../version.js';
 
 let scene = null, sceneRaf = 0;
 function ensureScene(root) {
@@ -36,7 +37,7 @@ export function renderMenu(app) {
   box.append(el('button.btn.big', { onclick: () => renderSetup(app) }, 'Nyt spil'));
   box.append(el('button.btn.big', { onclick: () => showHelp() }, 'Sådan spiller du'));
   box.append(el('button.btn.big', { onclick: () => app.openStudio('menu') }, 'Grafikværksted'));
-  box.append(el('div.version', 'Version 1.6 · Skovelvere & Orker'));
+  box.append(el('div.version', `Version ${APP_VERSION} · Skovelvere & Orker`));
   root.append(box);
 }
 
