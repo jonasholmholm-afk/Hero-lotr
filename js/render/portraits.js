@@ -5,6 +5,7 @@ import { FACTIONS } from '../data/factions.js';
 import { assetCanvas } from './assets.js';
 
 const cache = new Map();
+export function clearPortraitCache() { cache.clear(); }
 export function portrait(defId, size = 64) {
   const key = `${defId}:${size}`;
   if (cache.has(key)) return cache.get(key);

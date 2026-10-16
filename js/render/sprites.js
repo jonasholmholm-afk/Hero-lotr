@@ -9,6 +9,7 @@ import { assetCanvas, assetImage } from './assets.js';
 
 export const TILE = 64;
 const cache = new Map();
+export function clearSpriteCache() { cache.clear(); }
 function cached(key, fn) {
   if (!cache.has(key)) cache.set(key, fn());
   return cache.get(key);

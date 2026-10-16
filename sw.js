@@ -1,5 +1,5 @@
 // Service worker: cache-first for app files so the game works offline once installed.
-const VERSION = 'tsj-v1.2.0';
+const VERSION = 'tsj-v1.3.0';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/style.css', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
   './js/main.js',
@@ -9,7 +9,7 @@ const FILES = [
   './js/game/state.js', './js/game/fog.js', './js/game/hero.js', './js/game/town.js', './js/game/movement.js', './js/game/actions.js', './js/game/turn.js', './js/game/save.js',
   './js/combat/hex.js', './js/combat/battle.js', './js/combat/battleAI.js', './js/combat/runner.js',
   './js/ai/ai.js',
-  './js/render/draw.js', './js/render/figures.js', './js/render/sprites.js', './js/render/portraits.js', './js/render/icons.js', './js/render/adventure.js', './js/render/battleRender.js', './js/render/scenes.js', './js/render/assets.js',
+  './js/render/draw.js', './js/render/figures.js', './js/render/sprites.js', './js/render/portraits.js', './js/render/icons.js', './js/render/adventure.js', './js/render/battleRender.js', './js/render/scenes.js', './js/render/assets.js', './js/render/cacheControl.js', './js/data/assetCatalog.js', './js/ui/assetStudio.js', './assets/manifest.json',
   './js/ui/dialogs.js', './js/ui/common.js', './js/ui/battleScreen.js', './js/ui/heroScreen.js', './js/ui/townScreen.js', './js/ui/hud.js', './js/ui/io.js', './js/ui/menu.js',
 ];
 self.addEventListener('install', (e) => {

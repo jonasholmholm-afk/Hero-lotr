@@ -5,6 +5,7 @@ import { mk, mkS, poly, circle, ellipse, rrect, line, lgrad, rgrad, shade, light
 import { assetCanvas } from './assets.js';
 
 const cache = new Map();
+export function clearFigureCache() { cache.clear(); }
 const vol = (ctx, x0, y0, x1, y1, c) => lgrad(ctx, x0, y0, x1, y1, [[0, lighten(c, 0.3)], [0.5, c], [1, shade(c, 0.6)]]);
 const volR = (ctx, x, y, r, c) => rgrad(ctx, x - r * 0.35, y - r * 0.4, 1, r * 1.25, [[0, lighten(c, 0.3)], [0.6, c], [1, shade(c, 0.6)]]);
 const metalG = (ctx, x0, y0, x1, y1) => lgrad(ctx, x0, y0, x1, y1, [[0, '#f4f6f9'], [0.4, '#b9bec6'], [0.55, '#7d838c'], [1, '#d4d8de']]);

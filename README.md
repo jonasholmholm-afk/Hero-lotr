@@ -34,12 +34,20 @@ Al grafik er procedurel Canvas-tegning i høj opløsning (2× sprites, skarpt p�
 - Slagmark med malet jord, slag-/skud-/besværgelseseffekter (ildkugle, lyn, kædelyn, heling, buffs), partikler og kamerarystelse, samt turrækkefølge-strimmel.
 - Malet hovedmenu-scene, panoramabanner i byskærmen, minimap (🗺) og et gennemført UI-tema med guldrammer.
 
-## Egne billeder / realistisk grafik
+## Egne billeder / realistisk grafik (Grafikværksted)
 
 Al grafik er procedurel, og der er en naturlig grænse for hvor "realistisk" kodetegnet grafik kan blive.
-Spillet understøtter derfor **billed-assets**: Læg PNG-filer i `assets/` og list dem i `assets/manifest.json`, så bruges de
-automatisk i stedet for den tegnede grafik (enheder, helte, portrætter, byer, objekter, træer, terræn). Se `assets/README.md`
-for filnavne og størrelser. Mangler et billede, falder spillet tilbage til den procedurelle tegning.
+Spillet har derfor et **Grafikværksted** (knap i hovedmenuen og i spilmenuen) og en **prompt-pakke** (`assets/PROMPTS.md`,
+genereres med `node scripts/gen-prompts.mjs`):
+
+1. Kopiér prompten for en plads (fx "Dryader") i Grafikværkstedet og lav billedet i en billed-AI (Midjourney, DALL·E,
+   Stable Diffusion, Ideogram …). Alle prompts deler samme stilbeskrivelse, så billederne hænger sammen.
+2. Gem billedet på telefonen og tryk **Vælg billede** på pladsen. Magenta/ensfarvet baggrund fjernes automatisk, billedet
+   beskæres til motivet og skaleres til spillets størrelse. Det bruges med det samme og gemmes på enheden (IndexedDB).
+3. Tryk **Download ZIP** for at få alle billeder plus `manifest.json`. Pak den ud i `assets/` i repoet og bump `VERSION` i
+   `sw.js`, så følger grafikken med til alle enheder. Filer i `assets/` kan også lægges manuelt (se `assets/README.md`).
+
+Mangler et billede, falder spillet tilbage til den procedurelle tegning for netop den plads.
 
 ## Spillets indhold (1.0)
 

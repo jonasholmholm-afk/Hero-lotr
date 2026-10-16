@@ -4,6 +4,7 @@ import { SPELLS } from '../data/spells.js';
 import { ARTIFACTS } from '../data/artifacts.js';
 
 const cache = new Map();
+export function clearIconCache() { cache.clear(); }
 
 function glyph(ctx, g, col, S) {
   const c = S / 2;

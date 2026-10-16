@@ -35,6 +35,7 @@ export function renderMenu(app) {
   if (hasSave() && si) box.append(el('button.btn.primary.big', { onclick: () => app.continueGame() }, `Fortsæt (Dag ${si.day}, ${FACTIONS[si.faction] ? FACTIONS[si.faction].name : ''})`));
   box.append(el('button.btn.big', { onclick: () => renderSetup(app) }, 'Nyt spil'));
   box.append(el('button.btn.big', { onclick: () => showHelp() }, 'Sådan spiller du'));
+  box.append(el('button.btn.big', { onclick: () => app.openStudio('menu') }, 'Grafikværksted'));
   box.append(el('div.version', 'Version 1.1 · Skovelvere & Orker'));
   root.append(box);
 }

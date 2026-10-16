@@ -238,3 +238,17 @@ canvas.minimap { border-radius: 6px; box-shadow: var(--frame-sm); image-renderin
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M2 12 L2 22 L12 22' fill='none' stroke='%23e3c56a' stroke-width='1.5'/><circle cx='2' cy='22' r='1.6' fill='%23e3c56a'/><path d='M6 18 L2 22' stroke='%23e3c56a' stroke-width='1'/></svg>") left bottom / 22px 22px no-repeat,
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M22 12 L22 22 L12 22' fill='none' stroke='%23e3c56a' stroke-width='1.5'/><circle cx='22' cy='22' r='1.6' fill='%23e3c56a'/><path d='M18 18 L22 22' stroke='%23e3c56a' stroke-width='1'/></svg>") right bottom / 22px 22px no-repeat; opacity: 0.8; }
 .hero-col, .tab-content, .sel-hero { position: relative; }
+
+/* ---------- Asset studio ---------- */
+.studio-tools { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+.studio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.studio-card { gap: 6px; }
+.studio-preview { position: relative; height: 150px; border-radius: 8px; background: radial-gradient(circle at 50% 40%, #2c3545, #0e1218 80%), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><rect width='8' height='8' fill='%23ffffff' opacity='0.05'/><rect x='8' y='8' width='8' height='8' fill='%23ffffff' opacity='0.05'/></svg>"); display: flex; align-items: flex-end; justify-content: center; overflow: hidden; box-shadow: inset 0 0 0 1px #3a2e18; }
+.studio-preview img { max-width: 92%; max-height: 92%; object-fit: contain; margin-bottom: 4px; }
+.studio-preview.square img { max-height: 100%; margin-bottom: 0; }
+.studio-badge { position: absolute; top: 6px; left: 6px; font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; background: rgba(0,0,0,0.6); color: var(--muted); }
+.studio-badge.own { color: #fff; background: rgba(89,198,111,0.7); }
+.studio-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.prompt-details summary { cursor: pointer; color: var(--gold); font-size: 0.85rem; }
+.prompt-text { font-size: 0.8rem; color: #cfc8b8; line-height: 1.35; margin-top: 4px; user-select: text; }
+.prompt-box { width: 100%; min-height: 160px; background: #0d1118; color: var(--text); border: 1px solid #3a3326; border-radius: 8px; padding: 8px; font-family: var(--font-body); font-size: 0.9rem; }
