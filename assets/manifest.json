@@ -1,7 +1,9 @@
 {
   "files": [
+    "units/beastman.png",
     "units/black_orc.png",
     "units/dryad.png",
+    "units/dunlending.png",
     "units/eternal_guard.png",
     "units/giant.png",
     "units/glade_guard.png",
@@ -10,10 +12,13 @@
     "units/orc_archer.png",
     "units/orc_boy.png",
     "units/skeleton.png",
+    "units/spider.png",
     "units/treeman.png",
     "units/troll.png",
     "units/wardancer.png",
     "units/warg_rider.png",
-    "units/wild_rider.png"
+    "units/wight.png",
+    "units/wild_rider.png",
+    "units/wolf.png"
   ]
 }
