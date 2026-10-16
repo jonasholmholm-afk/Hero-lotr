@@ -64,6 +64,10 @@ export function terrainSheet(t, px = 96) {
   return cached(`tsheet:${t}:${px}`, () => {
     const P = px * 2;
     const tex = makeSeamless(aimg, P);
+    if (t === T.ASH) { // imported lava reads too hot: darken to ash with glowing cracks
+      const x = tex.getContext('2d');
+      x.fillStyle = 'rgba(14,8,8,0.5)'; x.fillRect(0, 0, P, P);
+    }
     const sh = mk(P * 2, P * 2); const ctx = sh.getContext('2d');
     for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) ctx.drawImage(tex, i * P, j * P);
     return sh;
