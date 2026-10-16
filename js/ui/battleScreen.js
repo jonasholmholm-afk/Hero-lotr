@@ -77,7 +77,8 @@ export class BattleScreen {
     const c = this.canvas;
     this.pointers = new Map(); this.drag = null; this.pinch = null;
     c.onpointerdown = (e) => {
-      c.setPointerCapture(e.pointerId);
+      if (!this.running || (this.b && this.b.finished)) return;
+      try { c.setPointerCapture(e.pointerId); } catch { /* ignore */ }
       this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (this.pointers.size === 1) this.drag = { x: e.clientX, y: e.clientY, moved: false };
       else if (this.pointers.size === 2) { const [a, b] = [...this.pointers.values()]; this.pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; this.drag = null; }
@@ -108,7 +109,8 @@ export class BattleScreen {
       this.pointers.delete(e.pointerId);
       if (this.pointers.size < 2) this.pinch = null;
       if (this.pointers.size === 0) this.drag = null;
-      if (wasTap) this.onTap(e);
+      try { if (c.hasPointerCapture && c.hasPointerCapture(e.pointerId)) c.releasePointerCapture(e.pointerId); } catch { /* ignore */ }
+      if (wasTap && this.running && !(this.b && this.b.finished)) this.onTap(e);
     };
     c.onpointerup = up; c.onpointercancel = up;
     c.onwheel = (e) => { e.preventDefault(); const [x, y] = this.evPos(e); this.r.zoomAt(x, y, e.deltaY < 0 ? 1.15 : 1 / 1.15); };
@@ -313,6 +315,7 @@ export class BattleScreen {
   }
   close() {
     this.running = false;
+    this.pointers = new Map(); this.drag = null; this.pinch = null;
     cancelAnimationFrame(this.raf);
     window.removeEventListener('resize', this.onResize);
   }

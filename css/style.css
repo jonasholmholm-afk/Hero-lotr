@@ -103,19 +103,19 @@ input.seed { background: #0d1118; border: 1px solid #4a3a22; color: var(--text);
 .army-label { font-family: var(--font-head); font-size: 0.85rem; color: var(--gold); min-width: 120px; }
 
 /* ---------- Dialogs ---------- */
-#dialogs { position: absolute; inset: 0; pointer-events: none; z-index: 50; }
-.dialog-back { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; pointer-events: auto; opacity: 0; transition: opacity .16s; padding: 12px; backdrop-filter: blur(2px); }
+#dialogs { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+.dialog-back { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; pointer-events: auto; opacity: 0; transition: opacity .16s; padding: 12px; backdrop-filter: blur(2px); }
 .dialog-back.open { opacity: 1; } .dialog-back.closing { opacity: 0; }
-.dialog { position: relative; background: linear-gradient(180deg, #1f2531, #11151d 60%, #0e1117); border-radius: 12px; max-width: min(580px, 96vw); width: 100%; max-height: 92vh; display: flex; flex-direction: column; box-shadow: var(--frame); transform: scale(0.96); transition: transform .16s; }
+.dialog { position: relative; background: linear-gradient(180deg, #1f2531, #11151d 60%, #0e1117); border-radius: 12px; max-width: min(580px, 96vw); width: 100%; max-height: min(92vh, 92svh, calc(100% - 16px)); max-height: min(92dvh, calc(100% - 16px)); display: flex; flex-direction: column; box-shadow: var(--frame); transform: scale(0.96); transition: transform .16s; }
 .dialog::before { content: ''; position: absolute; inset: 0; background-image: var(--tex); opacity: 0.45; border-radius: 12px; pointer-events: none; }
 .dialog > * { position: relative; }
 .dialog-back.open .dialog { transform: scale(1); }
 .dialog-title { padding: 14px 18px 10px; font-size: 1.2rem; text-align: center; display: flex; align-items: center; gap: 12px; justify-content: center; background: linear-gradient(180deg, #fff1bf 0%, #e3c56a 45%, #a7761a 80%, #f3dc8e 100%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 1px 1px #000); }
 .dialog-title::before, .dialog-title::after { content: '✦'; font-size: 0.8rem; opacity: 0.8; }
-.dialog-body { padding: 12px 18px; overflow-y: auto; touch-action: pan-y; display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; border-top: 1px solid rgba(227,197,106,0.25); }
+.dialog-body { padding: 12px 18px; overflow-y: auto; min-height: 0; -webkit-overflow-scrolling: touch; touch-action: pan-y; display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; border-top: 1px solid rgba(227,197,106,0.25); }
 .dialog-icon { flex: 0 0 auto; filter: drop-shadow(0 0 8px rgba(227,197,106,0.4)); }
 .dialog-text { flex: 1 1 200px; line-height: 1.45; }
-.dialog-buttons { padding: 10px 14px 12px; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; border-top: 1px solid rgba(227,197,106,0.25); }
+.dialog-buttons { flex: 0 0 auto; padding: 10px 14px 12px; display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; border-top: 1px solid rgba(227,197,106,0.25); }
 .dialog.victory { box-shadow: 0 0 0 1px #2a2016, 0 0 0 2px var(--gold), 0 0 0 3px #2a2016, 0 0 50px rgba(227,197,106,0.45); }
 .dialog.defeat { box-shadow: 0 0 0 1px #2a2016, 0 0 0 2px #8a2a1a, 0 0 0 3px #2a2016, 0 0 40px rgba(180,40,20,0.35); }
 .dialog.help-dialog .dialog-text, .help { font-size: 0.95rem; line-height: 1.45; }
@@ -283,3 +283,7 @@ canvas.minimap { border-radius: 6px; box-shadow: var(--frame-sm); image-renderin
 .set-row { display: flex; justify-content: space-between; gap: 8px; font-size: 0.82rem; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.03); color: var(--muted); }
 .set-row.active { background: rgba(227,197,106,0.12); color: #ffe9b0; box-shadow: 0 0 0 1px #5a4420; }
 .set-row .set-name { font-family: var(--font-head); }
+
+.dialog-buttons .btn { touch-action: manipulation; }
+.dialog.shake { animation: dlgShake .3s; }
+@keyframes dlgShake { 0%, 100% { transform: translateX(0) scale(1); } 25% { transform: translateX(-6px) scale(1); } 75% { transform: translateX(6px) scale(1); } }

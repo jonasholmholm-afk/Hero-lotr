@@ -7,7 +7,8 @@ export function dialog({ title, body, buttons = [{ label: 'OK', value: true }], 
   return new Promise((resolve) => {
     const box = el('div.dialog' + (cls ? '.' + cls : ''));
     const back = el('div.dialog-back', box);
-    const close = (v) => { back.classList.add('closing'); setTimeout(() => back.remove(), 160); resolve(v); };
+    let done = false;
+    const close = (v) => { if (done) return; done = true; back.classList.add('closing'); setTimeout(() => back.remove(), 160); resolve(v); };
     if (title) box.append(el('h2.dialog-title', title));
     const content = el('div.dialog-body');
     if (icon) content.append(el('div.dialog-icon', icon));
@@ -15,9 +16,15 @@ export function dialog({ title, body, buttons = [{ label: 'OK', value: true }], 
     else if (body) content.append(body);
     box.append(content);
     const row = el('div.dialog-buttons');
-    for (const b of buttons) row.append(el('button.btn' + (b.primary ? '.primary' : '') + (b.danger ? '.danger' : ''), { onclick: () => close(b.value), disabled: b.disabled }, b.label));
+    for (const b of buttons) {
+      const btn = el('button.btn' + (b.primary ? '.primary' : '') + (b.danger ? '.danger' : ''), { onclick: () => close(b.value), disabled: b.disabled }, b.label);
+      // touch fallback: some browsers drop the click after a canvas held pointer capture
+      btn.addEventListener('pointerup', (e) => { if (e.pointerType === 'touch' && !btn.disabled) { e.preventDefault(); setTimeout(() => close(b.value), 0); } });
+      row.append(btn);
+    }
     box.append(row);
     if (closable) back.addEventListener('click', (e) => { if (e.target === back) close(buttons[buttons.length - 1].value); });
+    else back.addEventListener('click', (e) => { if (e.target === back) { box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); } });
     layer().append(back);
     if (init) init(close);
     requestAnimationFrame(() => back.classList.add('open'));

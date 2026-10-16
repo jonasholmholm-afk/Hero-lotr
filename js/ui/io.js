@@ -152,7 +152,7 @@ export class GameIO {
     body.append(el('h3', battle.sides[0].name), cas(0), el('h3', battle.sides[1].name), cas(1));
     if (won) body.append(el('div.dialog-text', `Erfaring: +${res.exp[humanSide]}`));
     if (res.fled !== null && res.fled !== undefined) body.append(el('div.dialog-text', res.fled === humanSide ? 'Din helt flygtede.' : 'Fjenden flygtede.'));
-    await dialog({ title: won ? 'Sejr!' : 'Nederlag', body, cls: won ? 'victory' : 'defeat', buttons: [{ label: 'Fortsæt', value: true, primary: true }], closable: false });
+    await dialog({ title: won ? 'Sejr!' : 'Nederlag', body, cls: won ? 'victory' : 'defeat', buttons: [{ label: 'Fortsæt', value: true, primary: true }], closable: true });
     if (this.currentBattle) { this.currentBattle.close(); this.currentBattle = null; }
     this.app.showScreen('adventure');
     this.app.hud.refresh();
@@ -163,14 +163,16 @@ export class GameIO {
     const r = this.app.renderer;
     if (this.isHuman(hero)) {
       r.invalidateFog();
-      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, 320);
+      const mode = path.length === 1 ? 'single' : i === 0 ? 'first' : i === path.length - 1 ? 'last' : 'mid';
+      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, mode === 'mid' ? 260 : 320, mode);
       const [sx, sy] = r.worldToScreen((hero.x + 0.5) * 64, (hero.y + 0.5) * 64);
       if (sx < 80 || sy < 80 || sx > r.w - 80 || sy > r.h - 140) r.centerOn(hero.x, hero.y);
       return;
     }
     if (this.visible(st.x, st.y) || this.visible(prev.x, prev.y)) {
       r.centerOn(hero.x, hero.y);
-      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, 230);
+      const mode = path.length === 1 ? 'single' : i === 0 ? 'first' : i === path.length - 1 ? 'last' : 'mid';
+      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, mode === 'mid' ? 190 : 230, mode);
     }
   }
   async aiTurnStart(p) {

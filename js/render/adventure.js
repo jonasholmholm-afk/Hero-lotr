@@ -173,38 +173,65 @@ export class AdventureRenderer {
       if (t < 0) continue;
       if (!sheet(t)) drawTileDetails(ctx, t, i * TS, j * TS, TS, hash(x, y));
     }
-    // roads
+    // roads: each tile draws its own half-segments as smooth curves through a jittered centre
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     const roadAt = (x, y) => x >= 0 && y >= 0 && x < m.w && y < m.h && m.road[y * m.w + x];
-    const links = (x, y) => {
+    const allLinks = (x, y) => {
       const out = [];
-      if (roadAt(x + 1, y)) out.push([1, 0]);
-      if (roadAt(x, y + 1)) out.push([0, 1]);
-      if (roadAt(x + 1, y + 1) && !(roadAt(x + 1, y) && roadAt(x, y + 1))) out.push([1, 1]);
-      if (roadAt(x - 1, y + 1) && !(roadAt(x - 1, y) && roadAt(x, y + 1))) out.push([-1, 1]);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) {
+        if (!roadAt(x + dx, y + dy)) continue;
+        if (dx && dy && roadAt(x + dx, y) && roadAt(x, y + dy)) continue; // diagonal already covered by the two orthogonals
+        out.push([dx, dy]);
+      }
       return out;
     };
-    for (const [w, col] of [[18, 'rgba(45,34,22,0.45)'], [12, '#8e7656'], [10, 'rgba(160,135,100,0.35)'], [3, 'rgba(225,205,170,0.22)']]) {
-      ctx.strokeStyle = col; ctx.lineWidth = w * CS;
-      for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
-        const x = x0 + i, y = y0 + j;
-        if (!roadAt(x, y)) continue;
-        const cxp = i * TS + TS / 2, cyp = j * TS + TS / 2;
-        const h = hash(x, y);
-        const jx = ((h & 7) - 3.5) * 1.2 * CS, jy = (((h >> 3) & 7) - 3.5) * 1.2 * CS;
-        for (const [dx, dy] of links(x, y)) {
-          const h2 = hash(x + dx, y + dy);
-          const jx2 = ((h2 & 7) - 3.5) * 1.2 * CS, jy2 = (((h2 >> 3) & 7) - 3.5) * 1.2 * CS;
-          ctx.beginPath(); ctx.moveTo(cxp + jx, cyp + jy); ctx.lineTo(cxp + dx * TS + jx2, cyp + dy * TS + jy2); ctx.stroke();
-        }
-        ctx.beginPath(); ctx.arc(cxp + jx, cyp + jy, w * CS / 2, 0, Math.PI * 2); ctx.fillStyle = col; ctx.fill();
-      }
-    }
-    // road pebbles
+    const jit = (x, y) => { const h = hash(x, y); return [((h & 7) - 3.5) * 0.9 * CS, (((h >> 3) & 7) - 3.5) * 0.9 * CS]; };
+    const roadPath = new Path2D();
+    const roadTiles = [];
     for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
-      const x = x0 + i, y = y0 + j; if (!roadAt(x, y)) continue;
-      const h = hash(x, y);
-      for (let k = 0; k < 3; k++) { const px = i * TS + TS * 0.3 + ((h >> (k * 5)) & 15) / 15 * TS * 0.4, py = j * TS + TS * 0.3 + ((h >> (k * 5 + 2)) & 15) / 15 * TS * 0.4; circle(ctx, px, py, 1.3 * CS, 'rgba(70,55,40,0.45)'); }
+      const x = x0 + i, y = y0 + j;
+      if (!roadAt(x, y)) continue;
+      const [jx, jy] = jit(x, y);
+      const cxp = i * TS + TS / 2 + jx, cyp = j * TS + TS / 2 + jy;
+      const L = allLinks(x, y);
+      const mids = L.map(([dx, dy]) => { const [jx2, jy2] = jit(x + dx, y + dy); return [(cxp + i * TS + TS / 2 + dx * TS + jx2) / 2, (cyp + j * TS + TS / 2 + dy * TS + jy2) / 2]; });
+      roadTiles.push([cxp, cyp, mids.length]);
+      if (mids.length === 2) { roadPath.moveTo(mids[0][0], mids[0][1]); roadPath.quadraticCurveTo(cxp, cyp, mids[1][0], mids[1][1]); }
+      else if (mids.length === 1) { roadPath.moveTo(cxp, cyp); roadPath.lineTo(mids[0][0], mids[0][1]); }
+      else if (mids.length >= 3) {
+        // pair opposite-ish links into smooth curves, remaining ones as spokes
+        const used = new Set();
+        for (let a = 0; a < mids.length; a++) {
+          if (used.has(a)) continue;
+          let best = -1, bd = -2;
+          for (let b2 = a + 1; b2 < mids.length; b2++) { if (used.has(b2)) continue; const d = -(L[a][0] * L[b2][0] + L[a][1] * L[b2][1]) / (Math.hypot(...L[a]) * Math.hypot(...L[b2])); if (d > bd) { bd = d; best = b2; } }
+          if (best >= 0 && bd > 0.3) { used.add(a); used.add(best); roadPath.moveTo(mids[a][0], mids[a][1]); roadPath.quadraticCurveTo(cxp, cyp, mids[best][0], mids[best][1]); }
+          else { used.add(a); roadPath.moveTo(cxp, cyp); roadPath.lineTo(mids[a][0], mids[a][1]); }
+        }
+      } else { roadPath.moveTo(cxp, cyp); roadPath.lineTo(cxp + 0.1, cyp); }
+    }
+    if (roadTiles.length) {
+      const W = 11.5 * CS;
+      const dirt = pattern(T.DIRT);
+      const stroke = (style, w, alpha = 1, ox = 0, oy = 0) => { ctx.save(); ctx.globalAlpha = alpha; ctx.translate(ox, oy); ctx.strokeStyle = style; ctx.lineWidth = w; ctx.stroke(roadPath); ctx.restore(); };
+      stroke('rgba(0,0,0,1)', W + 7 * CS, 0.22, 1.5 * CS, 2.5 * CS);      // soft shadow
+      stroke('#3f3122', W + 2.6 * CS, 0.9);                                // dark edge
+      stroke(dirt, W);                                                      // packed-earth body
+      stroke('#a8865a', W, 0.42);                                           // warm tint so the road reads on any ground
+      stroke('rgba(255,235,200,1)', W - 3 * CS, 0.1);                      // sun-bleached crown
+      stroke('rgba(55,40,26,1)', W * 0.52, 0.55);                           // rut band
+      stroke(dirt, W * 0.52 - 2.6 * CS);                                   // crown between the ruts
+      stroke('#b08f62', W * 0.52 - 2.6 * CS, 0.35);
+      // worn edges: tiny grass tufts and pebbles along the sides
+      for (const [cxp, cyp] of roadTiles) {
+        const h = hash(Math.round(cxp), Math.round(cyp));
+        for (let k = 0; k < 4; k++) {
+          const a = ((h >> (k * 4)) & 15) / 15 * Math.PI * 2, r = W * 0.42 + ((h >> (k * 3 + 1)) & 3) * CS;
+          const px = cxp + Math.cos(a) * r, py = cyp + Math.sin(a) * r * 0.9;
+          if (k < 2) circle(ctx, px, py, (1 + ((h >> k) & 1) * 0.6) * CS, 'rgba(85,68,48,0.6)');
+          else circle(ctx, px, py, 1.1 * CS, 'rgba(230,215,180,0.35)');
+        }
+      }
     }
     // large-scale tonal variation (hills & light) to break up the tile grid
     {
@@ -351,8 +378,9 @@ export class AdventureRenderer {
   }
 
   // ---------- Hero animation ----------
-  animateHero(hero, fx, fy, tx, ty, dur) {
-    this.heroAnim.set(hero.id, { fx, fy, tx, ty, t0: performance.now(), dur });
+  /** mode: 'single' (ease in+out), 'first' (ease in), 'mid' (constant speed), 'last' (ease out). */
+  animateHero(hero, fx, fy, tx, ty, dur, mode = 'single') {
+    this.heroAnim.set(hero.id, { fx, fy, tx, ty, t0: performance.now(), dur, mode, lastDust: 0 });
     if (tx !== fx) this.heroFacing.set(hero.id, tx < fx);
     return new Promise((r) => setTimeout(r, dur));
   }
@@ -361,8 +389,27 @@ export class AdventureRenderer {
     if (!a) return [h.x, h.y];
     const t = clamp((performance.now() - a.t0) / a.dur, 0, 1);
     if (t >= 1) { this.heroAnim.delete(h.id); return [h.x, h.y]; }
-    const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
-    return [a.fx + (a.tx - a.fx) * e, a.fy + (a.ty - a.fy) * e];
+    let e = t;
+    if (a.mode === 'single') e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    else if (a.mode === 'first') e = t * t * (2 - t) * 0.5 + t * 0.5;
+    else if (a.mode === 'last') e = 1 - (1 - t) * (1 - t) * 0.6 - (1 - t) * 0.4;
+    return [a.fx + (a.tx - a.fx) * e, a.fy + (a.ty - a.fy) * e, t];
+  }
+  /** Dust kicked up by a riding hero. */
+  spawnDust(x, y, dir) {
+    this.dust = this.dust || [];
+    for (let k = 0; k < 3; k++) this.dust.push({ x: x - dir * (4 + k * 4) + (Math.random() - 0.5) * 6, y: y + (Math.random() - 0.5) * 4, r: 3 + Math.random() * 3, vx: -dir * (10 + Math.random() * 14), vy: -6 - Math.random() * 8, age: 0, life: 0.5 + Math.random() * 0.25 });
+  }
+  drawDust(dt) {
+    if (!this.dust || !this.dust.length) return;
+    const { ctx } = this;
+    for (const d of this.dust) {
+      d.age += dt; d.x += d.vx * dt; d.y += d.vy * dt; d.vx *= 0.96;
+      const t = d.age / d.life; if (t >= 1) { d.dead = true; continue; }
+      ctx.fillStyle = `rgba(214,196,160,${0.45 * (1 - t)})`;
+      ctx.beginPath(); ctx.ellipse(d.x, d.y, d.r * (1 + t * 1.6), d.r * (0.7 + t * 0.9), 0, 0, Math.PI * 2); ctx.fill();
+    }
+    this.dust = this.dust.filter((d) => !d.dead);
   }
 
   // ---------- Ambient particles ----------
@@ -437,6 +484,7 @@ export class AdventureRenderer {
         }
       }
     }
+    this.drawDust(dt);
     // sprites sorted by row
     const heroes = Object.values(s.heroes).filter((h) => !h.inTavern);
     const heroByRow = new Map();
@@ -526,8 +574,26 @@ export class AdventureRenderer {
     }
     const frame = Math.floor(this.time * 3.5) & 3;
     const sp = heroSprite(h.faction, p.color, flip, frame);
-    const bob = this.heroAnim.has(h.id) ? Math.sin(this.time * 18) * 2 : 0;
-    blit(ctx, sp, px - sp.lw / 2, py - sp.lh + 8 + bob);
+    const anim = this.heroAnim.get(h.id);
+    const t = anim ? (hy === h.y && hx === h.x ? 1 : (this.heroPos(h)[2] || 0)) : 0;
+    const dir = flip ? -1 : 1;
+    if (anim) {
+      // gallop: two strides per tile, lean into the ride, dust behind the hooves
+      const stride = Math.sin(t * Math.PI * 4);
+      const bob = -Math.abs(stride) * 5;
+      const rot = stride * 0.06 * dir;
+      const sy = 1 + Math.abs(stride) * 0.04, sx = 1 - Math.abs(stride) * 0.03;
+      const now = performance.now();
+      if (now - anim.lastDust > 85 && t > 0.05 && t < 0.95) { anim.lastDust = now; this.spawnDust(px - dir * sp.lw * 0.3, py + 4, dir); }
+      ctx.fillStyle = `rgba(0,0,0,${0.3 + bob * 0.02})`;
+      ctx.beginPath(); ctx.ellipse(px, py + 4, sp.lw * 0.36 * (1 + bob * 0.015), 7 * (1 + bob * 0.02), 0, 0, Math.PI * 2); ctx.fill();
+      ctx.save(); ctx.translate(px, py + 8); ctx.rotate(rot); ctx.scale(sx, sy);
+      blit(ctx, sp, -sp.lw / 2, -sp.lh + bob);
+      ctx.restore();
+    } else {
+      const breathe = Math.sin(this.time * 1.6 + h.id) * 0.6;
+      blit(ctx, sp, px - sp.lw / 2, py - sp.lh + 8 + breathe);
+    }
   }
 
   // ---------- Planned route ----------
