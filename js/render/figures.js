@@ -11,10 +11,15 @@ const volR = (ctx, x, y, r, c) => rgrad(ctx, x - r * 0.35, y - r * 0.4, 1, r * 1
 const metalG = (ctx, x0, y0, x1, y1) => lgrad(ctx, x0, y0, x1, y1, [[0, '#f4f6f9'], [0.4, '#b9bec6'], [0.55, '#7d838c'], [1, '#d4d8de']]);
 const WOOD = '#6b4a2a';
 
+// relative height of imported (painted) figures, so a goblin is not as tall as an ent
+const TIER_H = { 1: 0.66, 2: 0.73, 3: 0.79, 4: 0.85, 5: 0.9, 6: 0.95, 7: 1 };
+const UNIT_H = { goblin: 0.58, dryad: 0.74, skeleton: 0.7, wolf: 0.6, spider: 0.66, wild_rider: 0.95, warg_rider: 0.9, great_eagle: 0.97, dragon: 1, treeman: 1, giant: 1, troll: 0.97, cave_troll: 0.97 };
+export function assetScale(unit) { return (unit.art && unit.art.h) || UNIT_H[unit.id] || TIER_H[unit.tier] || 0.85; }
+
 export function figure(unit, S = 96, flip = false) {
   const key = `${unit.id}:${S}:${flip ? 1 : 0}`;
   if (cache.has(key)) return cache.get(key);
-  const asset = assetCanvas(`units/${unit.id}`, S, S, flip);
+  const asset = assetCanvas(`units/${unit.id}`, S, S, flip, assetScale(unit));
   if (asset) { cache.set(key, asset); return asset; }
   const c = mkS(S, S);
   const ctx = c.getContext('2d');

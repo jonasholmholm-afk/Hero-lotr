@@ -1,5 +1,5 @@
 // Service worker: cache-first for app files so the game works offline once installed.
-const VERSION = 'tsj-v1.3.1';
+const VERSION = 'tsj-v1.3.2';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/style.css', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
   './js/main.js',

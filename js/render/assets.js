@@ -64,13 +64,15 @@ export function isUserAsset(key) { return userKeys.has(key); }
 export function assetImage(key) { return images.get(key) || null; }
 export function assetKeys() { return [...images.keys()]; }
 /** Returns a canvas with the image drawn to (w,h) logical size, or null. */
-export function assetCanvas(key, w, h, flip = false) {
+/** Rasterises an imported asset into a 2x sprite; `scale` shrinks it around the baseline (small creatures). */
+export function assetCanvas(key, w, h, flip = false, scale = 1, baseline = 0.92) {
   const img = images.get(key);
   if (!img) return null;
   const c = mk(Math.round(w * 2), Math.round(h * 2)); c.lw = w; c.lh = h;
   const ctx = c.getContext('2d');
   if (flip) { ctx.translate(c.width, 0); ctx.scale(-1, 1); }
-  ctx.drawImage(img, 0, 0, c.width, c.height);
+  const dw = c.width * scale, dh = c.height * scale;
+  ctx.drawImage(img, (c.width - dw) / 2, c.height * baseline * (1 - scale), dw, dh);
   return c;
 }
 
