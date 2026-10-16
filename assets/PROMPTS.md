@@ -2,7 +2,7 @@
 
 ## Ark-prompts (5 motiver pr. billede)
 
-40 prompts dækker alle 179 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
+43 prompts dækker alle 193 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
 
 **Negativ prompt (hvis værktøjet understøtter det):** text, watermark, signature, frame, border, blurry, low detail, cropped, multiple subjects, photo, 3d render, overlapping figures, collage frame, grid lines
 
@@ -277,6 +277,27 @@ Indhold fra venstre mod højre: 1. Intelligens, 2. Lærdom, 3. Godser, 4. Troldd
 
 ```
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Four separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a glowing blue gem shaped like a star over an open scroll; 2) a quill writing glowing green letters in a book; 3) a golden crown over a pile of gold coins and a manor house; 4) a hand conjuring a swirling pink-red magical flame. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `boliger-1` – Boliger (5 motiver)
+Indhold fra venstre mod højre: 1. Dryaders bolig, 2. Lysningsvogteres bolig, 3. Evige Garderes bolig, 4. Krigsdanseres bolig, 5. Gobliners bolig
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a sacred elven glade: a ring of silver-barked trees around a mossy stone circle with floating faerie lights; 2) a wood elf outpost: a platform house built high in a great tree with rope ladders and green banners; 3) an elven guard hall of white stone and carved wood with tall spears and shields at the entrance; 4) an elven dancing ground: a ring of standing stones with purple and white silk banners and a fire; 5) a goblin hole: a ragged tent over a hole in the ground with skulls, bones and a crooked totem. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `boliger-2` – Boliger (5 motiver)
+Indhold fra venstre mod højre: 1. Ork-drenges bolig, 2. Ork-bueskytters bolig, 3. Varg-rytteres bolig, 4. Varges bolig, 5. Dunlændinges bolig
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) an orc camp of hide tents, a bonfire, crude weapon racks and a skull pole; 2) an orc archery den: a cave entrance with straw target dummies, bows and black banners; 3) a warg stable of crude timber and bones with wolf skulls and chains; 4) a wolf den: a dark cave in a rocky hillside with bones scattered at the entrance; 5) a wildman village hut of rough stone and thatch with a totem of antlers and hides. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `boliger-3` – Boliger (4 motiver)
+Indhold fra venstre mod højre: 1. Udyrmænds bolig, 2. Kæmpeedderkoppers bolig, 3. Gravvætters bolig, 4. Skeletters bolig
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Four separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a beastman herdstone: a jagged black monolith with crude red runes, skulls and bones around it; 2) a spider nest: dead trees wrapped in thick white webs with egg sacs; 3) a barrow mound: a grassy burial hill with a dark stone doorway and standing stones; 4) an ancient crypt: a half-sunken stone tomb entrance with an iron gate and skulls. No text, numbers, labels, frames or watermarks.
 ```
 
 ### Ark `byer-1` – Byer (4 motiver)
@@ -1398,5 +1419,92 @@ Hand-painted fantasy game art in the style of Heroes of Might and Magic III and 
 
 ```
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a hand conjuring a swirling pink-red magical flame, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+
+### Boliger
+
+**Dryaders bolig** – `assets/objects/dwelling_dryad.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a sacred elven glade: a ring of silver-barked trees around a mossy stone circle with floating faerie lights. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Lysningsvogteres bolig** – `assets/objects/dwelling_glade_guard.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a wood elf outpost: a platform house built high in a great tree with rope ladders and green banners. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Evige Garderes bolig** – `assets/objects/dwelling_eternal_guard.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: an elven guard hall of white stone and carved wood with tall spears and shields at the entrance. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Krigsdanseres bolig** – `assets/objects/dwelling_wardancer.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: an elven dancing ground: a ring of standing stones with purple and white silk banners and a fire. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Gobliners bolig** – `assets/objects/dwelling_goblin.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a goblin hole: a ragged tent over a hole in the ground with skulls, bones and a crooked totem. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Ork-drenges bolig** – `assets/objects/dwelling_orc_boy.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: an orc camp of hide tents, a bonfire, crude weapon racks and a skull pole. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Ork-bueskytters bolig** – `assets/objects/dwelling_orc_archer.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: an orc archery den: a cave entrance with straw target dummies, bows and black banners. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Varg-rytteres bolig** – `assets/objects/dwelling_warg_rider.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a warg stable of crude timber and bones with wolf skulls and chains. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Varges bolig** – `assets/objects/dwelling_wolf.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a wolf den: a dark cave in a rocky hillside with bones scattered at the entrance. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Dunlændinges bolig** – `assets/objects/dwelling_dunlending.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a wildman village hut of rough stone and thatch with a totem of antlers and hides. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Udyrmænds bolig** – `assets/objects/dwelling_beastman.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a beastman herdstone: a jagged black monolith with crude red runes, skulls and bones around it. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Kæmpeedderkoppers bolig** – `assets/objects/dwelling_spider.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a spider nest: dead trees wrapped in thick white webs with egg sacs. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Gravvætters bolig** – `assets/objects/dwelling_wight.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: a barrow mound: a grassy burial hill with a dark stone doorway and standing stones. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Skeletters bolig** – `assets/objects/dwelling_skeleton.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map building for a strategy game, a creature dwelling: an ancient crypt: a half-sunken stone tomb entrance with an iron gate and skulls. Front-side view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
 ```
 

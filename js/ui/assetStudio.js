@@ -26,6 +26,7 @@ function previewCanvas(slot) {
       case 'objects': {
         if (id.startsWith('mine_')) return objectSprite({ type: 'mine', res: id.slice(5) }, null);
         if (id.startsWith('resource_')) return objectSprite({ type: 'resource', res: id.slice(9) }, null);
+        if (id.startsWith('dwelling_')) return objectSprite({ type: 'dwelling', unit: id.slice(9) }, null);
         return objectSprite({ type: id }, null);
       }
       case 'decor': return decorSprite(DECOR_IDS[id], 0);

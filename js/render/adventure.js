@@ -211,25 +211,25 @@ export class AdventureRenderer {
       } else { roadPath.moveTo(cxp, cyp); roadPath.lineTo(cxp + 0.1, cyp); }
     }
     if (roadTiles.length) {
-      const W = 11.5 * CS;
+      // trodden earth that fades into the ground: no hard edges, low contrast
+      const W = 8.5 * CS;
       const dirt = pattern(T.DIRT);
-      const stroke = (style, w, alpha = 1, ox = 0, oy = 0) => { ctx.save(); ctx.globalAlpha = alpha; ctx.translate(ox, oy); ctx.strokeStyle = style; ctx.lineWidth = w; ctx.stroke(roadPath); ctx.restore(); };
-      stroke('rgba(0,0,0,1)', W + 7 * CS, 0.22, 1.5 * CS, 2.5 * CS);      // soft shadow
-      stroke('#3f3122', W + 2.6 * CS, 0.9);                                // dark edge
-      stroke(dirt, W);                                                      // packed-earth body
-      stroke('#a8865a', W, 0.42);                                           // warm tint so the road reads on any ground
-      stroke('rgba(255,235,200,1)', W - 3 * CS, 0.1);                      // sun-bleached crown
-      stroke('rgba(55,40,26,1)', W * 0.52, 0.55);                           // rut band
-      stroke(dirt, W * 0.52 - 2.6 * CS);                                   // crown between the ruts
-      stroke('#b08f62', W * 0.52 - 2.6 * CS, 0.35);
-      // worn edges: tiny grass tufts and pebbles along the sides
+      const stroke = (style, w, alpha = 1) => { ctx.save(); ctx.globalAlpha = alpha; ctx.strokeStyle = style; ctx.lineWidth = w; ctx.stroke(roadPath); ctx.restore(); };
+      stroke(dirt, W + 6 * CS, 0.16);                 // feathered verge
+      stroke(dirt, W + 3 * CS, 0.22);
+      stroke(dirt, W, 0.55);                          // packed earth
+      stroke('rgba(120,96,64,1)', W, 0.16);           // a little warmth
+      stroke('rgba(60,45,30,1)', W * 0.5, 0.14);      // faint wheel ruts
+      stroke(dirt, W * 0.5 - 2.4 * CS, 0.35);
+      stroke('rgba(255,240,210,1)', W * 0.5 - 2.4 * CS, 0.06);
+      // sparse pebbles and grass creeping in from the sides
       for (const [cxp, cyp] of roadTiles) {
         const h = hash(Math.round(cxp), Math.round(cyp));
-        for (let k = 0; k < 4; k++) {
-          const a = ((h >> (k * 4)) & 15) / 15 * Math.PI * 2, r = W * 0.42 + ((h >> (k * 3 + 1)) & 3) * CS;
+        for (let k = 0; k < 3; k++) {
+          const a = ((h >> (k * 4)) & 15) / 15 * Math.PI * 2, r = W * 0.3 + ((h >> (k * 3 + 1)) & 3) * CS;
           const px = cxp + Math.cos(a) * r, py = cyp + Math.sin(a) * r * 0.9;
-          if (k < 2) circle(ctx, px, py, (1 + ((h >> k) & 1) * 0.6) * CS, 'rgba(85,68,48,0.6)');
-          else circle(ctx, px, py, 1.1 * CS, 'rgba(230,215,180,0.35)');
+          if (k === 0) circle(ctx, px, py, 1.1 * CS, 'rgba(90,72,50,0.35)');
+          else circle(ctx, px, py, 1.4 * CS, 'rgba(96,128,52,0.28)');
         }
       }
     }
@@ -546,7 +546,10 @@ export class AdventureRenderer {
       const u = UNITS[o.unit];
       const f = figure(u, 72, false);
       const bob = Math.sin(this.time * 2 + x) * 1.5;
-      blit(ctx, f, px - 36, py - 66 + bob, 72, 72);
+      // a few figures hint at the size of the band
+      const n = u.tier >= 6 ? 1 : o.count >= 20 ? 3 : o.count >= 6 ? 2 : 1;
+      const spots = n === 1 ? [[0, 0, 1]] : n === 2 ? [[-9, -6, 0.82], [8, 2, 0.86]] : [[-12, -8, 0.74], [10, -6, 0.74], [-1, 3, 0.78]];
+      for (const [ox, oy, sc] of spots) { const s2 = 72 * sc; blit(ctx, f, px + ox - s2 / 2, py + oy + 6 - s2 * 0.92 + bob, s2, s2); }
       return;
     }
     const col = o.owner >= 0 ? s.players[o.owner].color : null;

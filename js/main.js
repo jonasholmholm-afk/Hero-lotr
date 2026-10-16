@@ -9,6 +9,7 @@ import { renderMenu, showHelp, stopMenuScene } from './ui/menu.js';
 import { openTownScreen } from './ui/townScreen.js';
 import { openHeroScreen } from './ui/heroScreen.js';
 import { dialog, toast, confirm } from './ui/dialogs.js';
+import { cycleAnimSpeed, animLabel } from './game/settings.js';
 import { heroesOf } from './game/state.js';
 import { loadAssets } from './render/assets.js';
 import { openAssetStudio } from './ui/assetStudio.js';
@@ -71,8 +72,9 @@ const app = {
   openHero(hero) { return openHeroScreen(this, hero); },
   async openMenu() {
     const v = await dialog({ title: 'Menu', body: 'Spillet gemmes automatisk ved hver afsluttet tur.', buttons: [
-      { label: 'Gem nu', value: 'save' }, { label: 'Hjælp', value: 'help' }, { label: 'Grafikværksted', value: 'studio' }, { label: 'Til hovedmenu', value: 'quit', danger: true }, { label: 'Tilbage', value: null, primary: true }] });
+      { label: 'Gem nu', value: 'save' }, { label: `Animationer: ${animLabel()}`, value: 'anim' }, { label: 'Hjælp', value: 'help' }, { label: 'Grafikværksted', value: 'studio' }, { label: 'Til hovedmenu', value: 'quit', danger: true }, { label: 'Tilbage', value: null, primary: true }] });
     if (v === 'save') { saveGame(); toast('Spillet er gemt'); }
+    if (v === 'anim') { cycleAnimSpeed(); toast(`Animationer: ${animLabel()}`, 1500); return this.openMenu(); }
     if (v === 'help') showHelp();
     if (v === 'studio') { await this.openStudio('adventure'); this.hud.refresh(); }
     if (v === 'quit') { const ok = await confirm('Til hovedmenu?', 'Ugemt fremskridt siden sidste tur går tabt.'); if (ok) { saveGame(); this.toMenu(); } }

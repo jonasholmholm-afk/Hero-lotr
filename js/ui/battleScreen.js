@@ -11,6 +11,7 @@ import { portraitImg, unitStatsHtml } from './common.js';
 import { figure } from '../render/figures.js';
 import { dialog, toast, info } from './dialogs.js';
 import { HEROES } from '../data/heroes.js';
+import { animMult, cycleAnimSpeed, animLabel } from '../game/settings.js';
 
 export class BattleScreen {
   constructor(app, setup) {
@@ -19,7 +20,7 @@ export class BattleScreen {
     this.auto = !!window.__autoPlay;
     this.root = document.getElementById('battle');
     this.canvas = this.root.querySelector('canvas');
-    this.speed = 1;
+    this.speed = animMult();
   }
   isHuman(side) { return this.humanSides.includes(side) && !this.auto; }
 
@@ -63,9 +64,10 @@ export class BattleScreen {
       wait: el('button.btn.icon', { onclick: () => this.resolveAction({ type: 'wait' }) }, '⏳ Vent'),
       defend: el('button.btn.icon', { onclick: () => this.resolveAction({ type: 'defend' }) }, '🛡 Forsvar'),
       auto: el('button.btn.icon', { onclick: () => this.toggleAuto() }, '⚙ Auto'),
+      speed: el('button.btn.icon', { title: 'Animationshastighed', onclick: () => { cycleAnimSpeed(); this.speed = animMult(); this.r.speed = this.speed; this.btns.speed.textContent = animLabel(); toast(`Animationer: ${animLabel()}`, 1200); } }, animLabel()),
       flee: el('button.btn.icon.danger', { onclick: () => this.flee() }, '🏃 Flygt'),
     };
-    bar.append(this.btns.spell, this.btns.wait, this.btns.defend, this.btns.auto, this.btns.flee);
+    bar.append(this.btns.spell, this.btns.wait, this.btns.defend, this.btns.auto, this.btns.speed, this.btns.flee);
     this.info = this.root.querySelector('.battle-info');
     this.bindInput();
     let zb = this.root.querySelector('.battle-zoom');
@@ -150,7 +152,7 @@ export class BattleScreen {
     for (const ev of events) {
       switch (ev.type) {
         case 'round': this.updateTop(); if (ev.n > 1) toast(`Runde ${ev.n}`, 900); break;
-        case 'move': { const st = b.getStack(ev.id); this.updateOrder(); await r.animateMove(st, ev.path, ev.flying); break; }
+        case 'move': { const st = b.getStack(ev.id); this.updateOrder(); await r.animateMove(st, ev.path, ev.flying, ev.from); break; }
         case 'melee': {
           const a = b.getStack(ev.id), d = b.getStack(ev.target);
           await r.animateAttack(a, d);
@@ -184,7 +186,7 @@ export class BattleScreen {
           break;
         }
         case 'morale': { const st = b.getStack(ev.id); r.floater(st, ev.good ? 'Høj moral!' : 'Lav moral…', ev.good ? '#ffe066' : '#9aa0a6'); await wait(600 / this.speed); break; }
-        case 'wait': case 'defend': { const st = b.getStack(ev.id); r.floater(st, ev.type === 'wait' ? 'venter' : 'forsvarer', '#cfd8e3'); await wait(320); break; }
+        case 'wait': case 'defend': { const st = b.getStack(ev.id); r.floater(st, ev.type === 'wait' ? 'venter' : 'forsvarer', '#cfd8e3'); await wait(320 / this.speed); break; }
         case 'regen': { const st = b.getStack(ev.id); r.floater(st, `+${ev.amount}`, '#8fe0a0'); break; }
         case 'flee': toast('Helten flygter fra slagmarken!', 1500); break;
         case 'end': break;

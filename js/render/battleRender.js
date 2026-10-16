@@ -7,6 +7,7 @@ import { tileTexture, terrainSheet, drawTileDetails, decorSprite } from './sprit
 import { T, D } from '../data/terrain.js';
 import { SPELLS } from '../data/spells.js';
 import { clamp } from '../core/utils.js';
+import { animMult } from '../game/settings.js';
 
 const silCache = new WeakMap();
 function whiteSilhouette(f) {
@@ -17,6 +18,18 @@ function whiteSilhouette(f) {
   x.drawImage(f, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
   silCache.set(f, c);
   return c;
+}
+
+/** How many figures a stack shows and where they stand (offsets in hex sizes, scale). Front figures are last. */
+export function formation(count, tier) {
+  const n = tier >= 7 ? 1 : tier >= 6 ? (count >= 2 ? 2 : 1) : count >= 25 ? 5 : count >= 10 ? 4 : count >= 5 ? 3 : count >= 2 ? 2 : 1;
+  switch (n) {
+    case 1: return [[0, 0, 1]];
+    case 2: return tier >= 6 ? [[-0.22, -0.14, 0.86], [0.2, 0.06, 0.9]] : [[-0.26, -0.16, 0.78], [0.22, 0.08, 0.8]];
+    case 3: return [[-0.3, -0.2, 0.7], [0.3, -0.16, 0.7], [0, 0.1, 0.74]];
+    case 4: return [[-0.34, -0.24, 0.66], [0.3, -0.22, 0.66], [-0.08, -0.02, 0.68], [0.36, 0.14, 0.68], [-0.42, 0.1, 0.66]].slice(0, 4);
+    default: return [[-0.36, -0.26, 0.62], [0.08, -0.3, 0.62], [0.42, -0.14, 0.62], [-0.32, 0.02, 0.64], [0.12, 0.08, 0.66]];
+  }
 }
 
 export class BattleRenderer {
@@ -38,6 +51,7 @@ export class BattleRenderer {
     this.shake = 0;
     this.bg = null;
     this.view = { zoom: 1, x: 0, y: 0 }; this.minZoom = 1; this.maxZoom = 2.4;
+    this.speed = animMult();
     this.resize();
   }
   // -------- camera (zoom & pan inside the battlefield) --------
@@ -123,8 +137,10 @@ export class BattleRenderer {
 
   // -------- animation API --------
   pos(st) { return this.stackPos.get(st.id) || [st.x, st.y]; }
+  /** Scales a duration by the animation-speed setting. */
+  d(ms) { return ms / (this.speed || 1); }
   /** Plays a pose animation for a stack: fn(t) returns {dx,dy,rot,sx,sy} (dx/dy in hex sizes). */
-  posePlay(id, dur, fn) { return new Promise((resolve) => this.poseAnims.push({ id, t0: performance.now(), dur, fn, resolve })); }
+  posePlay(id, dur, fn) { return new Promise((resolve) => this.poseAnims.push({ id, t0: performance.now(), dur: this.d(dur), fn, resolve })); }
   poseOf(id, now) {
     const p = { dx: 0, dy: 0, rot: 0, sx: 1, sy: 1 };
     for (const a of this.poseAnims) {
@@ -145,16 +161,20 @@ export class BattleRenderer {
     const [cx, cy] = this.center(...this.pos(st));
     this.fx.push({ type: 'impact', x: cx, y: cy - this.size * 0.55, t0: performance.now() });
   }
-  async animateMove(st, path, flying) {
-    let from = this.pos(st);
+  async animateMove(st, path, flying, fromHex = null) {
+    // the battle state already holds the destination; animate from where the stack came from
+    let from = fromHex ? [fromHex[0], fromHex[1]] : this.pos(st);
+    this.stackPos.set(st.id, [from[0], from[1], 0]);
     if (flying && path.length > 1) {
       const to = path[path.length - 1];
-      await this.tween(st.id, from, to, Math.max(520, path.length * 140), true);
+      await this.tween(st.id, from, to, this.d(Math.max(520, path.length * 140)), true);
       this.stackPos.delete(st.id);
       return;
     }
-    for (const to of path) {
-      await this.tween(st.id, from, to, 270, false);
+    for (let i = 0; i < path.length; i++) {
+      const to = path[i];
+      const ease = path.length === 1 ? 'inout' : i === 0 ? 'in' : i === path.length - 1 ? 'out' : 'linear';
+      await this.tween(st.id, from, to, this.d(path.length === 1 ? 270 : 210), false, ease);
       this.dust(to);
       from = to;
     }
@@ -175,7 +195,7 @@ export class BattleRenderer {
     await this.posePlay(att.id, 180, (t) => { const k = Math.sin(t * Math.PI * 0.5); return { dx: -ux * 0.1 * k, rot: -0.12 * sgn * k, sx: 1 - 0.05 * k, sy: 1 + 0.05 * k }; });
     // lunge: stretch into the blow
     const lunge = this.posePlay(att.id, 170, (t) => ({ dx: -ux * 0.1 * (1 - t), rot: (-0.12 + 0.3 * t) * sgn, sx: 1 + 0.14 * t, sy: 1 - 0.1 * t }));
-    await this.tween(att.id, a, mid, 170, 'flat', 'out');
+    await this.tween(att.id, a, mid, this.d(170), 'flat', 'out');
     await lunge;
     // impact
     const now = performance.now();
@@ -188,7 +208,7 @@ export class BattleRenderer {
     await this.posePlay(att.id, 90, () => ({ rot: 0.18 * sgn, sx: 1.12, sy: 0.92 }));
     // return and settle
     const settle = this.posePlay(att.id, 300, (t) => { const k = 1 - t; const w = Math.sin(t * Math.PI * 2) * 0.03 * k; return { rot: 0.18 * sgn * k * k, sx: 1 + 0.12 * k * k + w, sy: 1 - 0.08 * k * k - w }; });
-    await this.tween(att.id, mid, a, 280, 'flat', 'inout');
+    await this.tween(att.id, mid, a, this.d(280), 'flat', 'inout');
     await settle;
     this.stackPos.delete(att.id);
   }
@@ -200,7 +220,7 @@ export class BattleRenderer {
     await this.posePlay(att.id, 260, (t) => { const k = Math.sin(t * Math.PI * 0.5); return { rot: -0.1 * sgn * k, sx: 1 + 0.05 * k, dx: -ux * 0.05 * k }; });
     this.posePlay(att.id, 260, (t) => { const k = 1 - t; return { rot: (-0.1 + 0.16 * Math.min(1, t * 3)) * sgn * k, sx: 1 + 0.05 * k }; });
     const dist = Math.hypot(dx - ax, dy - ay);
-    await new Promise((resolve) => this.anims.push({ proj: true, from: [ax, ay - this.size * 0.7], to: [dx, dy - this.size * 0.5], t0: performance.now(), dur: 260 + dist * 0.6, resolve, trail: [] }));
+    await new Promise((resolve) => this.anims.push({ proj: true, from: [ax, ay - this.size * 0.7], to: [dx, dy - this.size * 0.5], t0: performance.now(), dur: this.d(260 + dist * 0.6), resolve, trail: [] }));
     this.flash.set(def.id, performance.now());
     this.spawnHit(def);
     this.impactFx(def);
@@ -235,7 +255,7 @@ export class BattleRenderer {
     }
     for (const id of targets) this.flash.set(id, now + (g === 'fire' ? 380 : 120));
     this.spellFlash = { t0: now, col };
-    await new Promise((r) => setTimeout(r, g === 'fire' ? 1100 : 800));
+    await new Promise((r) => setTimeout(r, this.d(g === 'fire' ? 1100 : 800)));
   }
   floater(st, text, col = '#fff') {
     const [cx, cy] = this.center(...this.pos(st));
@@ -257,9 +277,9 @@ export class BattleRenderer {
     const sgn = st.side === 0 ? -1 : 1; // fall away from the enemy
     // topple: stagger, then fall and sink into the ground
     this.posePlay(st.id, 700, (t) => { const k = t < 0.25 ? 0 : (t - 0.25) / 0.75; const e = k * k; return { rot: sgn * 1.25 * e, dx: sgn * 0.15 * e, dy: 0.18 * e, sy: 1 - 0.1 * e, sx: 1 + 0.04 * Math.sin(t * Math.PI * 3) * (1 - t) }; });
-    setTimeout(() => { for (let i = 0; i < 14; i++) this.particles.push({ x: cx + (Math.random() - 0.5) * this.size * 1.4, y: cy + this.size * 0.4, vx: (Math.random() - 0.5) * 40, vy: -15 - Math.random() * 25, life: 0.7, col: '#c8b89a', r: 2.5 + Math.random() * 3, grav: -10 }); this.shake = Math.max(this.shake, 2); }, 420);
+    setTimeout(() => { for (let i = 0; i < 14; i++) this.particles.push({ x: cx + (Math.random() - 0.5) * this.size * 1.4, y: cy + this.size * 0.4, vx: (Math.random() - 0.5) * 40, vy: -15 - Math.random() * 25, life: 0.7, col: '#c8b89a', r: 2.5 + Math.random() * 3, grav: -10 }); this.shake = Math.max(this.shake, 2); }, this.d(420));
     for (let i = 0; i < 8; i++) this.particles.push({ x: cx + (Math.random() - 0.5) * this.size, y: cy - this.size * 0.3, vx: (Math.random() - 0.5) * 20, vy: -20 - Math.random() * 20, life: 0.8, col: '#777', r: 3 + Math.random() * 3, grav: -10 });
-    await new Promise((r) => setTimeout(r, 720));
+    await new Promise((r) => setTimeout(r, this.d(720)));
   }
 
   // -------- draw --------
@@ -275,7 +295,7 @@ export class BattleRenderer {
     for (const a of this.anims) {
       if (a.proj) continue;
       const t = clamp((now - a.t0) / a.dur, 0, 1);
-      const e = a.ease === 'out' ? 1 - (1 - t) * (1 - t) : a.ease === 'in' ? t * t : t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const e = a.ease === 'out' ? 1 - (1 - t) * (1 - t) : a.ease === 'in' ? t * t : a.ease === 'linear' ? t : t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
       const x = a.from[0] + (a.to[0] - a.from[0]) * e, y = a.from[1] + (a.to[1] - a.from[1]) * e;
       this.stackPos.set(a.id, [x, y, a.arc === true ? Math.sin(t * Math.PI) * 1.3 : a.arc === 'flat' ? 0 : Math.abs(Math.sin(t * Math.PI * 2)) * 0.12]);
       if (t >= 1) { a.done = true; a.resolve(); }
@@ -297,7 +317,7 @@ export class BattleRenderer {
     }
     // ground fx (rings, mist) below units
     this.drawFx(now, 'below');
-    const stacks = b.stacks.filter((s) => !s.dead || (this.dying && this.dying.has(s.id) && now - this.dying.get(s.id) < 720)).sort((p, q) => this.pos(p)[1] - this.pos(q)[1] || p.x - q.x);
+    const stacks = b.stacks.filter((s) => !s.dead || (this.dying && this.dying.has(s.id) && now - this.dying.get(s.id) < this.d(720))).sort((p, q) => this.pos(p)[1] - this.pos(q)[1] || p.x - q.x);
     for (const st of stacks) this.drawStack(st, now);
     // projectiles
     for (const a of this.anims) {
@@ -462,7 +482,7 @@ export class BattleRenderer {
     const f = figure(st.unit, 96, flip);
     const dying = this.dying && this.dying.get(st.id);
     ctx.save();
-    if (dying) { const t = clamp((now - dying) / 700, 0, 1); ctx.globalAlpha = 1 - t * t; }
+    if (dying) { const t = clamp((now - dying) / this.d(700), 0, 1); ctx.globalAlpha = 1 - t * t; }
     if (this.activeId === st.id) {
       const pulse = 0.5 + 0.5 * Math.sin(now / 180);
       glow(ctx, cx, cy0, this.size * 1.2, '#9fe0ff', 0.25 + pulse * 0.15);
@@ -476,8 +496,11 @@ export class BattleRenderer {
     const pz = this.poseOf(st.id, now);
     const footX = cx + pz.dx * this.size, footY = cy0 + this.size * 0.55 - lift + pz.dy * this.size;
     ctx.save(); ctx.translate(footX, footY); ctx.rotate(pz.rot); ctx.scale(pz.sx, pz.sy);
-    blit(ctx, f, -S / 2, -S * 0.92, S, S);
-    if (flashing) { ctx.save(); ctx.globalAlpha = 0.6; blit(ctx, whiteSilhouette(f), -S / 2, -S * 0.92, S, S); ctx.restore(); }
+    for (const [ox, oy, sc] of formation(st.count, st.unit.tier)) {
+      const s2 = S * sc, px = ox * this.size, py = oy * this.size;
+      blit(ctx, f, px - s2 / 2, py - s2 * 0.92, s2, s2);
+      if (flashing) { ctx.save(); ctx.globalAlpha = 0.6; blit(ctx, whiteSilhouette(f), px - s2 / 2, py - s2 * 0.92, s2, s2); ctx.restore(); }
+    }
     ctx.restore();
     if (!st.dead) {
       const col = st.side === 0 ? '#2d6fb3' : '#b33a2d';

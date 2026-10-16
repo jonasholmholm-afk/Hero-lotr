@@ -201,6 +201,23 @@ const SKILL_PROMPT = {
   sorcery: 'a hand conjuring a swirling pink-red magical flame',
 };
 
+const DWELLING_PROMPT = {
+  dryad: 'a sacred elven glade: a ring of silver-barked trees around a mossy stone circle with floating faerie lights',
+  glade_guard: 'a wood elf outpost: a platform house built high in a great tree with rope ladders and green banners',
+  eternal_guard: 'an elven guard hall of white stone and carved wood with tall spears and shields at the entrance',
+  wardancer: 'an elven dancing ground: a ring of standing stones with purple and white silk banners and a fire',
+  goblin: 'a goblin hole: a ragged tent over a hole in the ground with skulls, bones and a crooked totem',
+  orc_boy: 'an orc camp of hide tents, a bonfire, crude weapon racks and a skull pole',
+  orc_archer: 'an orc archery den: a cave entrance with straw target dummies, bows and black banners',
+  warg_rider: 'a warg stable of crude timber and bones with wolf skulls and chains',
+  wolf: 'a wolf den: a dark cave in a rocky hillside with bones scattered at the entrance',
+  dunlending: 'a wildman village hut of rough stone and thatch with a totem of antlers and hides',
+  beastman: 'a beastman herdstone: a jagged black monolith with crude red runes, skulls and bones around it',
+  spider: 'a spider nest: dead trees wrapped in thick white webs with egg sacs',
+  wight: 'a barrow mound: a grassy burial hill with a dark stone doorway and standing stones',
+  skeleton: 'an ancient crypt: a half-sunken stone tomb entrance with an iron gate and skulls',
+};
+
 const slot = (key, category, label, size, prompt, opts = {}) => ({ key, category, label, size, prompt, baseline: 0.92, keying: true, subject: '', ...opts });
 
 export function buildCatalog() {
@@ -220,6 +237,9 @@ export function buildCatalog() {
   for (const [k, p] of Object.entries(OBJ_PROMPT)) {
     const label = k.startsWith('mine_') ? MINE_NAMES[k.slice(5)] : k.startsWith('resource_') ? RES_INFO[k.slice(9)].name : k === 'artifact' ? 'Artefakt' : (OBJ_INFO[k] ? OBJ_INFO[k].name : k);
     out.push(slot(`objects/${k}`, 'Objekter', label, [160, 168], `${STYLE} Small map object for a strategy game: ${p}. Front-side view from slightly above, whole object visible, base at the bottom. ${ISOLATED}`, { baseline: 0.905, subject: p }));
+  }
+  for (const [k, p] of Object.entries(DWELLING_PROMPT)) {
+    out.push(slot(`objects/dwelling_${k}`, 'Boliger', `${UNITS[k].plural}s bolig`, [160, 168], `${STYLE} Small map building for a strategy game, a creature dwelling: ${p}. Front-side view from slightly above, whole building visible, base at the bottom. ${ISOLATED}`, { baseline: 0.905, subject: p }));
   }
   for (const [k, p] of Object.entries(DECOR_PROMPT)) {
     const sz = DECOR_SIZES[k];
@@ -243,7 +263,7 @@ export function buildCatalog() {
   }
   return out;
 }
-export const CATEGORIES = ['Enheder', 'Portrætter', 'Helte på kortet', 'Byer', 'Objekter', 'Natur', 'Terræn', 'Bygninger', 'Besværgelser', 'Artefakter', 'Færdigheder'];
+export const CATEGORIES = ['Enheder', 'Portrætter', 'Helte på kortet', 'Byer', 'Objekter', 'Natur', 'Terræn', 'Bygninger', 'Besværgelser', 'Artefakter', 'Færdigheder', 'Boliger'];
 
 /** Groups the slots into sheets of up to 5 subjects, each with one prompt. */
 export function buildSheets() {
@@ -257,7 +277,7 @@ export function buildSheets() {
     if (category === 'Artefakter' || category === 'Færdigheder') return `${N} separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
     if (category === 'Terræn') return `${N} separate square seamless top-down ground texture swatches in one horizontal row, left to right, same size, even lighting, no objects, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
     if (category === 'Byer') return `${N} separate subjects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
-    if (category === 'Objekter' || category === 'Natur' || category === 'Bygninger') return `${N} separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
+    if (category === 'Objekter' || category === 'Natur' || category === 'Bygninger' || category === 'Boliger') return `${N} separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
     return `${N} separate creatures standing in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible from head to feet, side view facing right, same scale, feet on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
   };
   const groups = [];
@@ -270,7 +290,7 @@ export function buildSheets() {
   let counters = {};
   for (const g of groups) {
     counters[g.category] = (counters[g.category] || 0) + 1;
-    const SLUG = { 'Enheder': 'enheder', 'Portrætter': 'portraetter', 'Objekter': 'objekter', 'Natur': 'natur', 'Terræn': 'terraen', 'Byer': 'byer', 'Bygninger': 'bygninger', 'Besværgelser': 'besvaergelser', 'Artefakter': 'artefakter', 'Færdigheder': 'faerdigheder' };
+    const SLUG = { 'Enheder': 'enheder', 'Portrætter': 'portraetter', 'Objekter': 'objekter', 'Natur': 'natur', 'Terræn': 'terraen', 'Byer': 'byer', 'Bygninger': 'bygninger', 'Besværgelser': 'besvaergelser', 'Artefakter': 'artefakter', 'Færdigheder': 'faerdigheder', 'Boliger': 'boliger' };
     const id = `${SLUG[g.category]}-${counters[g.category]}`;
     const n = g.slots.length;
     const subjects = g.slots.map((s, i) => `${i + 1}) ${s.subject}`).join('; ');

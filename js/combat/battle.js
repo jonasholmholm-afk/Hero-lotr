@@ -295,7 +295,7 @@ export class Battle {
     const reach = this.reachable(st);
     const r = reach.get(hexKey(x, y));
     if (!r) return false;
-    this.events.push({ type: 'move', id: st.id, path: r.path, flying: this.isFlying(st) });
+    this.events.push({ type: 'move', id: st.id, from: [st.x, st.y], path: r.path, flying: this.isFlying(st) });
     st.x = x; st.y = y;
     st.movedDist = r.dist;
     this.endAction(st);
@@ -317,7 +317,7 @@ export class Battle {
     if (viaX !== st.x || viaY !== st.y) {
       const r = reach.get(hexKey(viaX, viaY));
       if (!r || hexDist(viaX, viaY, target.x, target.y) !== 1) return false;
-      this.events.push({ type: 'move', id: st.id, path: r.path, flying: this.isFlying(st) });
+      this.events.push({ type: 'move', id: st.id, from: [st.x, st.y], path: r.path, flying: this.isFlying(st) });
       st.x = viaX; st.y = viaY; dist = r.dist;
     }
     this.melee(st, target, dist, false);

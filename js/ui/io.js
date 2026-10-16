@@ -19,6 +19,7 @@ import { RES } from '../data/resources.js';
 import { tradeRate } from '../game/town.js';
 import { resIcon } from './common.js';
 import { OBJ } from '../data/objects.js';
+import { animMult } from '../game/settings.js';
 
 export class GameIO {
   constructor(app) { this.app = app; }
@@ -164,7 +165,7 @@ export class GameIO {
     if (this.isHuman(hero)) {
       r.invalidateFog();
       const mode = path.length === 1 ? 'single' : i === 0 ? 'first' : i === path.length - 1 ? 'last' : 'mid';
-      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, mode === 'mid' ? 260 : 320, mode);
+      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, (mode === 'mid' ? 260 : 320) / animMult(), mode);
       const [sx, sy] = r.worldToScreen((hero.x + 0.5) * 64, (hero.y + 0.5) * 64);
       if (sx < 80 || sy < 80 || sx > r.w - 80 || sy > r.h - 140) r.centerOn(hero.x, hero.y);
       return;
@@ -172,7 +173,7 @@ export class GameIO {
     if (this.visible(st.x, st.y) || this.visible(prev.x, prev.y)) {
       r.centerOn(hero.x, hero.y);
       const mode = path.length === 1 ? 'single' : i === 0 ? 'first' : i === path.length - 1 ? 'last' : 'mid';
-      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, mode === 'mid' ? 190 : 230, mode);
+      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, (mode === 'mid' ? 190 : 230) / animMult(), mode);
     }
   }
   async aiTurnStart(p) {
