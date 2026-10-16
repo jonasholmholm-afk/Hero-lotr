@@ -8,6 +8,8 @@ import { RES_INFO, MINE_NAMES } from './resources.js';
 import { OBJ_INFO } from './objects.js';
 import { BUILDING_NAMES } from './buildings.js';
 import { SPELLS } from './spells.js';
+import { ARTIFACTS } from './artifacts.js';
+import { SKILLS } from './skills.js';
 
 export const STYLE = 'Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes.';
 export const ISOLATED = 'Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.';
@@ -145,6 +147,52 @@ const SPELL_PROMPT = {
   mass_curse: 'a sinister green orc god face with glowing eyes and black smoke',
 };
 
+const ARTIFACT_PROMPT = {
+  orcrist: 'an elegant elven longsword with a leaf-shaped blade glowing pale blue, white hilt',
+  glamdring: 'a long bright elven sword with silver blade, blue-white glow and a runed hilt',
+  rune_axe: 'a dwarven battle axe with a broad blade engraved with glowing golden runes',
+  bow_galadhrim: 'a slender golden elven longbow of mallorn wood with silver string',
+  gorks_club: 'a massive crude orc club studded with iron spikes and green war paint',
+  shield_rohan: 'a round wooden shield painted green with a white horse emblem and iron rim',
+  uruk_shield: 'a black iron orc shield with a white hand print and jagged edges',
+  mithril_shirt: 'a shimmering silver-white chainmail shirt glowing softly',
+  black_armor: 'a heavy black orc plate armour with spikes and red markings',
+  crown_thranduil: 'a crown of twisted branches, red berries and autumn leaves',
+  iron_helm: 'a crude black iron orc helmet with a white hand print',
+  iron_crown: 'a jagged black iron crown with glowing green runes and dark smoke',
+  elven_cloak: 'a grey-green elven cloak with a silver-green leaf brooch',
+  wolf_pelt: 'a grey wolf pelt cloak with the wolf head as a hood',
+  ring_barahir: 'a silver ring shaped like two serpents with a green emerald',
+  one_ring: 'a plain gold ring with glowing fiery red runes on the inside',
+  evenstar: 'a silver star-shaped pendant with white gems glowing softly',
+  morks_tooth: 'a huge yellow tooth on a leather cord, pulsing with green magic',
+  warpstone_amulet: 'an amulet of glowing sickly green crystal set in dark iron',
+  lucky_charm: 'a golden four-leaf clover charm with a smiling trickster face',
+  boots_strider: 'a pair of worn brown leather travelling boots',
+  troll_boots: 'a pair of heavy grey troll-skin boots with iron buckles',
+  gondor_horn: 'a great white war horn tipped with silver on a baldric',
+  waaagh_banner: 'a ragged red orc war banner with a crude skull emblem on a spiked pole',
+  phial: 'a crystal phial filled with glowing white starlight',
+  palantir: 'a dark glass seeing-stone orb with a fiery eye glimmering inside',
+  spellbook_saruman: 'an open book of many colours with glowing script and a white hand seal',
+};
+const SKILL_PROMPT = {
+  logistics: 'a winged leather boot over a winding road, golden light',
+  pathfinding: 'a glowing green leaf over a forest trail with a compass rose',
+  scouting: 'a brass spyglass over a mountain horizon with an eagle',
+  offense: 'two crossed swords with a red fiery glow',
+  archery: 'a drawn longbow with a glowing golden arrow',
+  armorer: 'a steel breastplate with a blue protective glow',
+  leadership: 'a golden war banner with rays of light',
+  luck: 'a golden sun with a four-leaf clover and sparkles',
+  wisdom: 'an open ancient tome with purple glowing runes',
+  mysticism: 'a glowing violet crystal orb with swirling mist',
+  intelligence: 'a glowing blue gem shaped like a star over an open scroll',
+  learning: 'a quill writing glowing green letters in a book',
+  estates: 'a golden crown over a pile of gold coins and a manor house',
+  sorcery: 'a hand conjuring a swirling pink-red magical flame',
+};
+
 const slot = (key, category, label, size, prompt, opts = {}) => ({ key, category, label, size, prompt, baseline: 0.92, keying: true, subject: '', ...opts });
 
 export function buildCatalog() {
@@ -179,9 +227,15 @@ export function buildCatalog() {
   for (const [k, p] of Object.entries(SPELL_PROMPT)) {
     out.push(slot(`spells/${k}`, 'Besværgelser', SPELLS[k].name, [96, 96], `${STYLE} Square spell icon: ${p}, painted on a dark background with a soft glow, centred, filling the square.`, { keying: false, baseline: 1, subject: p }));
   }
+  for (const [k, p] of Object.entries(ARTIFACT_PROMPT)) {
+    out.push(slot(`artifacts/${k}`, 'Artefakter', ARTIFACTS[k].name, [96, 96], `${STYLE} Square artifact icon: ${p}, painted on a dark background with a soft glow, centred, filling the square.`, { keying: false, baseline: 1, subject: p }));
+  }
+  for (const [k, p] of Object.entries(SKILL_PROMPT)) {
+    out.push(slot(`skills/${k}`, 'Færdigheder', SKILLS[k].name, [96, 96], `${STYLE} Square skill icon: ${p}, painted on a dark background with a soft glow, centred, filling the square.`, { keying: false, baseline: 1, subject: p }));
+  }
   return out;
 }
-export const CATEGORIES = ['Enheder', 'Portrætter', 'Helte på kortet', 'Byer', 'Objekter', 'Natur', 'Terræn', 'Bygninger', 'Besværgelser'];
+export const CATEGORIES = ['Enheder', 'Portrætter', 'Helte på kortet', 'Byer', 'Objekter', 'Natur', 'Terræn', 'Bygninger', 'Besværgelser', 'Artefakter', 'Færdigheder'];
 
 /** Groups the slots into sheets of up to 5 subjects, each with one prompt. */
 export function buildSheets() {
@@ -192,6 +246,7 @@ export function buildSheets() {
     const N = WORDS[n] || n;
     if (category === 'Portrætter') return `${N} separate square head-and-shoulders portraits in one horizontal row, left to right, same size, each portrait with its own painted background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
     if (category === 'Besværgelser') return `${N} separate square spell icons in one horizontal row, left to right, same size, each icon a single glowing magical symbol painted on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
+    if (category === 'Artefakter' || category === 'Færdigheder') return `${N} separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
     if (category === 'Terræn') return `${N} separate square seamless top-down ground texture swatches in one horizontal row, left to right, same size, even lighting, no objects, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
     if (category === 'Byer') return `${N} separate subjects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
     if (category === 'Objekter' || category === 'Natur' || category === 'Bygninger') return `${N} separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
@@ -207,7 +262,7 @@ export function buildSheets() {
   let counters = {};
   for (const g of groups) {
     counters[g.category] = (counters[g.category] || 0) + 1;
-    const SLUG = { 'Enheder': 'enheder', 'Portrætter': 'portraetter', 'Objekter': 'objekter', 'Natur': 'natur', 'Terræn': 'terraen', 'Byer': 'byer', 'Bygninger': 'bygninger', 'Besværgelser': 'besvaergelser' };
+    const SLUG = { 'Enheder': 'enheder', 'Portrætter': 'portraetter', 'Objekter': 'objekter', 'Natur': 'natur', 'Terræn': 'terraen', 'Byer': 'byer', 'Bygninger': 'bygninger', 'Besværgelser': 'besvaergelser', 'Artefakter': 'artefakter', 'Færdigheder': 'faerdigheder' };
     const id = `${SLUG[g.category]}-${counters[g.category]}`;
     const n = g.slots.length;
     const subjects = g.slots.map((s, i) => `${i + 1}) ${s.subject}`).join('; ');

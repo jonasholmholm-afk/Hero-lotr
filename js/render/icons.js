@@ -63,8 +63,10 @@ export function artifactIcon(id, S = 40) {
   const key = `art:${id}:${S}`;
   if (cache.has(key)) return cache.get(key);
   const a = ARTIFACTS[id];
-  const c = mk(S, S); const ctx = c.getContext('2d');
   const border = a.rarity >= 3 ? '#ffd700' : a.rarity === 2 ? '#c0a0ff' : '#a0a0a0';
+  const ak = assetCanvas(`artifacts/${id}`, S, S);
+  if (ak) { const x = ak.getContext('2d'); x.setTransform(2, 0, 0, 2, 0, 0); x.strokeStyle = border; x.lineWidth = 1.5; x.strokeRect(1, 1, S - 2, S - 2); cache.set(key, ak); return ak; }
+  const c = mk(S, S); const ctx = c.getContext('2d');
   rrect(ctx, 1, 1, S - 2, S - 2, S * 0.15, rgrad(ctx, S / 2, S / 2, 2, S * 0.7, [[0, '#2a2a36'], [1, '#0b0e14']]), border, 1.5);
   ctx.shadowColor = a.art.c; ctx.shadowBlur = S * 0.12;
   glyph(ctx, a.art.g, a.art.c, S);
@@ -76,6 +78,8 @@ export function skillIcon(id, S = 40) {
   if (cache.has(key)) return cache.get(key);
   const map = { logistics: ['boots', '#d0a060'], pathfinding: ['leaf', '#80c060'], scouting: ['orb', '#80c0ff'], offense: ['sword', '#ff8060'], archery: ['bow', '#e0c080'], armorer: ['armor', '#a0a8b8'], leadership: ['banner', '#ffd060'], luck: ['sun', '#ffe080'], wisdom: ['book', '#c0a0ff'], mysticism: ['orb', '#a080ff'], intelligence: ['gem', '#80e0ff'], learning: ['book', '#80ff80'], estates: ['crown', '#ffd700'], sorcery: ['fire', '#ff60a0'] };
   const [g, col] = map[id] || ['orb', '#fff'];
+  const ak = assetCanvas(`skills/${id}`, S, S);
+  if (ak) { cache.set(key, ak); return ak; }
   const c = mk(S, S); const ctx = c.getContext('2d');
   rrect(ctx, 1, 1, S - 2, S - 2, S * 0.15, rgrad(ctx, S / 2, S / 2, 2, S * 0.7, [[0, shade(col, 0.4)], [1, '#0b0e14']]), rgba(col, 0.6), 1.5);
   glyph(ctx, g, col, S);

@@ -2,7 +2,7 @@
 
 ## Ark-prompts (5 motiver pr. billede)
 
-29 prompts dækker alle 130 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
+38 prompts dækker alle 171 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
 
 **Negativ prompt (hvis værktøjet understøtter det):** text, watermark, signature, frame, border, blurry, low detail, cropped, multiple subjects, photo, 3d render, overlapping figures, collage frame, grid lines
 
@@ -200,6 +200,69 @@ Indhold fra venstre mod højre: 1. Kædelyn, 2. Genopstandelse, 3. Lorens Velsig
 
 ```
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square spell icons in one horizontal row, left to right, same size, each icon a single glowing magical symbol painted on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) branching chains of lightning jumping between three points; 2) a pale ghostly figure rising in a column of golden light; 3) a golden tree of life radiating light in all directions; 4) a giant green orc foot stamping down from the sky with fire and cracks; 5) a sinister green orc god face with glowing eyes and black smoke. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `artefakter-1` – Artefakter (5 motiver)
+Indhold fra venstre mod højre: 1. Orcrist, Goblinkløveren, 2. Glamdring, 3. Dværgenes Runeøkse, 4. Galadhrims Bue, 5. Gorks Kølle
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) an elegant elven longsword with a leaf-shaped blade glowing pale blue, white hilt; 2) a long bright elven sword with silver blade, blue-white glow and a runed hilt; 3) a dwarven battle axe with a broad blade engraved with glowing golden runes; 4) a slender golden elven longbow of mallorn wood with silver string; 5) a massive crude orc club studded with iron spikes and green war paint. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `artefakter-2` – Artefakter (5 motiver)
+Indhold fra venstre mod højre: 1. Rohans Skjold, 2. Uruk-skjold, 3. Mithril-brynje, 4. Sort Ork-rustning, 5. Skovkongens Krone
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a round wooden shield painted green with a white horse emblem and iron rim; 2) a black iron orc shield with a white hand print and jagged edges; 3) a shimmering silver-white chainmail shirt glowing softly; 4) a heavy black orc plate armour with spikes and red markings; 5) a crown of twisted branches, red berries and autumn leaves. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `artefakter-3` – Artefakter (5 motiver)
+Indhold fra venstre mod højre: 1. Uruk-hjelm, 2. Jernkronen, 3. Lóriens Kappe, 4. Vargepels, 5. Barahirs Ring
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a crude black iron orc helmet with a white hand print; 2) a jagged black iron crown with glowing green runes and dark smoke; 3) a grey-green elven cloak with a silver-green leaf brooch; 4) a grey wolf pelt cloak with the wolf head as a hood; 5) a silver ring shaped like two serpents with a green emerald. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `artefakter-4` – Artefakter (5 motiver)
+Indhold fra venstre mod højre: 1. Den Ene Ring, 2. Aftenstjernen, 3. Morks Tand, 4. Warpstens-amulet, 5. Ranalds Lykkeamulet
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a plain gold ring with glowing fiery red runes on the inside; 2) a silver star-shaped pendant with white gems glowing softly; 3) a huge yellow tooth on a leather cord, pulsing with green magic; 4) an amulet of glowing sickly green crystal set in dark iron; 5) a golden four-leaf clover charm with a smiling trickster face. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `artefakter-5` – Artefakter (5 motiver)
+Indhold fra venstre mod højre: 1. Vandrerens Støvler, 2. Troldeskinds-støvler, 3. Gondors Horn, 4. Waaagh!-banner, 5. Galadriels Flakon
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a pair of worn brown leather travelling boots; 2) a pair of heavy grey troll-skin boots with iron buckles; 3) a great white war horn tipped with silver on a baldric; 4) a ragged red orc war banner with a crude skull emblem on a spiked pole; 5) a crystal phial filled with glowing white starlight. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `artefakter-6` – Artefakter (2 motiver)
+Indhold fra venstre mod højre: 1. Palantír, 2. Sarumans Skrifter
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Two separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a dark glass seeing-stone orb with a fiery eye glimmering inside; 2) an open book of many colours with glowing script and a white hand seal. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `faerdigheder-1` – Færdigheder (5 motiver)
+Indhold fra venstre mod højre: 1. Logistik, 2. Stifinder, 3. Spejder, 4. Angreb, 5. Bueskydning
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a winged leather boot over a winding road, golden light; 2) a glowing green leaf over a forest trail with a compass rose; 3) a brass spyglass over a mountain horizon with an eagle; 4) two crossed swords with a red fiery glow; 5) a drawn longbow with a glowing golden arrow. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `faerdigheder-2` – Færdigheder (5 motiver)
+Indhold fra venstre mod højre: 1. Rustning, 2. Lederskab, 3. Held, 4. Visdom, 5. Mystik
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a steel breastplate with a blue protective glow; 2) a golden war banner with rays of light; 3) a golden sun with a four-leaf clover and sparkles; 4) an open ancient tome with purple glowing runes; 5) a glowing violet crystal orb with swirling mist. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `faerdigheder-3` – Færdigheder (4 motiver)
+Indhold fra venstre mod højre: 1. Intelligens, 2. Lærdom, 3. Godser, 4. Trolddom
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Four separate square icons in one horizontal row, left to right, same size, each icon a single object or symbol painted large on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a glowing blue gem shaped like a star over an open scroll; 2) a quill writing glowing green letters in a book; 3) a golden crown over a pile of gold coins and a manor house; 4) a hand conjuring a swirling pink-red magical flame. No text, numbers, labels, frames or watermarks.
 ```
 
 ### Ark `byer-1` – Byer (4 motiver)
@@ -1021,5 +1084,257 @@ Hand-painted fantasy game art in the style of Heroes of Might and Magic III and 
 
 ```
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a sinister green orc god face with glowing eyes and black smoke, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+
+### Artefakter
+
+**Orcrist, Goblinkløveren** – `assets/artifacts/orcrist.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: an elegant elven longsword with a leaf-shaped blade glowing pale blue, white hilt, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Glamdring** – `assets/artifacts/glamdring.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a long bright elven sword with silver blade, blue-white glow and a runed hilt, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Dværgenes Runeøkse** – `assets/artifacts/rune_axe.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a dwarven battle axe with a broad blade engraved with glowing golden runes, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Galadhrims Bue** – `assets/artifacts/bow_galadhrim.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a slender golden elven longbow of mallorn wood with silver string, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Gorks Kølle** – `assets/artifacts/gorks_club.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a massive crude orc club studded with iron spikes and green war paint, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Rohans Skjold** – `assets/artifacts/shield_rohan.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a round wooden shield painted green with a white horse emblem and iron rim, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Uruk-skjold** – `assets/artifacts/uruk_shield.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a black iron orc shield with a white hand print and jagged edges, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Mithril-brynje** – `assets/artifacts/mithril_shirt.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a shimmering silver-white chainmail shirt glowing softly, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Sort Ork-rustning** – `assets/artifacts/black_armor.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a heavy black orc plate armour with spikes and red markings, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Skovkongens Krone** – `assets/artifacts/crown_thranduil.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a crown of twisted branches, red berries and autumn leaves, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Uruk-hjelm** – `assets/artifacts/iron_helm.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a crude black iron orc helmet with a white hand print, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Jernkronen** – `assets/artifacts/iron_crown.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a jagged black iron crown with glowing green runes and dark smoke, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Lóriens Kappe** – `assets/artifacts/elven_cloak.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a grey-green elven cloak with a silver-green leaf brooch, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Vargepels** – `assets/artifacts/wolf_pelt.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a grey wolf pelt cloak with the wolf head as a hood, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Barahirs Ring** – `assets/artifacts/ring_barahir.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a silver ring shaped like two serpents with a green emerald, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Den Ene Ring** – `assets/artifacts/one_ring.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a plain gold ring with glowing fiery red runes on the inside, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Aftenstjernen** – `assets/artifacts/evenstar.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a silver star-shaped pendant with white gems glowing softly, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Morks Tand** – `assets/artifacts/morks_tooth.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a huge yellow tooth on a leather cord, pulsing with green magic, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Warpstens-amulet** – `assets/artifacts/warpstone_amulet.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: an amulet of glowing sickly green crystal set in dark iron, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Ranalds Lykkeamulet** – `assets/artifacts/lucky_charm.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a golden four-leaf clover charm with a smiling trickster face, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Vandrerens Støvler** – `assets/artifacts/boots_strider.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a pair of worn brown leather travelling boots, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Troldeskinds-støvler** – `assets/artifacts/troll_boots.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a pair of heavy grey troll-skin boots with iron buckles, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Gondors Horn** – `assets/artifacts/gondor_horn.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a great white war horn tipped with silver on a baldric, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Waaagh!-banner** – `assets/artifacts/waaagh_banner.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a ragged red orc war banner with a crude skull emblem on a spiked pole, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Galadriels Flakon** – `assets/artifacts/phial.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a crystal phial filled with glowing white starlight, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Palantír** – `assets/artifacts/palantir.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: a dark glass seeing-stone orb with a fiery eye glimmering inside, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Sarumans Skrifter** – `assets/artifacts/spellbook_saruman.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square artifact icon: an open book of many colours with glowing script and a white hand seal, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+
+### Færdigheder
+
+**Logistik** – `assets/skills/logistics.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a winged leather boot over a winding road, golden light, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Stifinder** – `assets/skills/pathfinding.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a glowing green leaf over a forest trail with a compass rose, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Spejder** – `assets/skills/scouting.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a brass spyglass over a mountain horizon with an eagle, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Angreb** – `assets/skills/offense.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: two crossed swords with a red fiery glow, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Bueskydning** – `assets/skills/archery.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a drawn longbow with a glowing golden arrow, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Rustning** – `assets/skills/armorer.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a steel breastplate with a blue protective glow, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Lederskab** – `assets/skills/leadership.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a golden war banner with rays of light, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Held** – `assets/skills/luck.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a golden sun with a four-leaf clover and sparkles, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Visdom** – `assets/skills/wisdom.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: an open ancient tome with purple glowing runes, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Mystik** – `assets/skills/mysticism.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a glowing violet crystal orb with swirling mist, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Intelligens** – `assets/skills/intelligence.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a glowing blue gem shaped like a star over an open scroll, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Lærdom** – `assets/skills/learning.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a quill writing glowing green letters in a book, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Godser** – `assets/skills/estates.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a golden crown over a pile of gold coins and a manor house, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Trolddom** – `assets/skills/sorcery.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square skill icon: a hand conjuring a swirling pink-red magical flame, painted on a dark background with a soft glow, centred, filling the square.
 ```
 
