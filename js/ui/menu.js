@@ -37,7 +37,7 @@ export function renderMenu(app) {
   box.append(el('button.btn.big', { onclick: () => renderSetup(app) }, 'Nyt spil'));
   box.append(el('button.btn.big', { onclick: () => showHelp() }, 'Sådan spiller du'));
   box.append(el('button.btn.big', { onclick: () => app.openStudio('menu') }, 'Grafikværksted'));
-  box.append(el('div.version', `Version ${APP_VERSION} · Skovelvere & Orker`));
+  box.append(el('div.version', { title: 'Tryk for at søge efter opdatering', style: { cursor: 'pointer' }, onclick: () => app.checkUpdate() }, `Version ${APP_VERSION} · Skovelvere & Orker · Søg efter opdatering`));
   root.append(box);
 }
 

@@ -10,6 +10,7 @@ import { openTownScreen } from './ui/townScreen.js';
 import { openHeroScreen } from './ui/heroScreen.js';
 import { dialog, toast, confirm } from './ui/dialogs.js';
 import { cycleAnimSpeed, animLabel } from './game/settings.js';
+import { APP_VERSION } from './version.js';
 import { heroesOf } from './game/state.js';
 import { loadAssets } from './render/assets.js';
 import { openAssetStudio } from './ui/assetStudio.js';
@@ -70,10 +71,21 @@ const app = {
   openStudio(from) { this.studioReturn = from; return openAssetStudio(this); },
   renderMenu() { renderMenu(this); },
   openHero(hero) { return openHeroScreen(this, hero); },
+  /** Manual update check from the menus. */
+  async checkUpdate() {
+    const reg = this.swReg;
+    if (!reg) { toast('Opdatering kræver, at spillet kører fra nettet (ikke en fil).', 2500); return; }
+    toast('Søger efter ny version…', 1500);
+    try { await reg.update(); } catch { toast('Kunne ikke nå serveren. Prøv igen om lidt.', 2500); return; }
+    await wait(2500);
+    if (reg.installing || reg.waiting) { toast('Ny version findes – henter og genstarter…', 3000, 'good'); if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING'); }
+    else toast(`Du har den nyeste version (${APP_VERSION}).`, 3000, 'good');
+  },
   async openMenu() {
     const v = await dialog({ title: 'Menu', body: 'Spillet gemmes automatisk ved hver afsluttet tur.', buttons: [
-      { label: 'Gem nu', value: 'save' }, { label: `Animationer: ${animLabel()}`, value: 'anim' }, { label: 'Hjælp', value: 'help' }, { label: 'Grafikværksted', value: 'studio' }, { label: 'Til hovedmenu', value: 'quit', danger: true }, { label: 'Tilbage', value: null, primary: true }] });
+      { label: 'Gem nu', value: 'save' }, { label: `Animationer: ${animLabel()}`, value: 'anim' }, { label: `Søg efter opdatering (${APP_VERSION})`, value: 'update' }, { label: 'Hjælp', value: 'help' }, { label: 'Grafikværksted', value: 'studio' }, { label: 'Til hovedmenu', value: 'quit', danger: true }, { label: 'Tilbage', value: null, primary: true }] });
     if (v === 'save') { saveGame(); toast('Spillet er gemt'); }
+    if (v === 'update') { this.checkUpdate(); return; }
     if (v === 'anim') { cycleAnimSpeed(); toast(`Animationer: ${animLabel()}`, 1500); return this.openMenu(); }
     if (v === 'help') showHelp();
     if (v === 'studio') { await this.openStudio('adventure'); this.hud.refresh(); }
@@ -113,6 +125,7 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   window.addEventListener('load', async () => {
     let reg = null;
     try { reg = await navigator.serviceWorker.register('./sw.js'); } catch { return; }
+    app.swReg = reg;
     // check for a new version whenever the app is opened or brought back to the front
     const check = () => reg.update().catch(() => {});
     document.addEventListener('visibilitychange', () => { if (!document.hidden) check(); });

@@ -1,5 +1,5 @@
 // Service worker: cache-first for app files so the game works offline once installed.
-const VERSION = 'tsj-v1.6.4';
+const VERSION = 'tsj-v1.6.5';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/style.css', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
   './js/main.js',
@@ -13,7 +13,8 @@ const FILES = [
   './js/ui/dialogs.js', './js/ui/common.js', './js/ui/battleScreen.js', './js/ui/heroScreen.js', './js/ui/townScreen.js', './js/ui/hud.js', './js/ui/io.js', './js/ui/menu.js',
 ];
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
+  // cache files one by one: a single missing file must never block an update
+  e.waitUntil(caches.open(VERSION).then((c) => Promise.all(FILES.map((f) => c.add(f).catch(() => null)))).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
