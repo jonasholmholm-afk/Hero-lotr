@@ -185,27 +185,25 @@ export async function exportZip() {
 
 // ---------------- Sheet import (several subjects in one image) ----------------
 /** Splits an image with `n` subjects in a row into n cropped canvases (after chroma keying). */
-export function splitSheet(img, n) {
-  const keyed = chromaKey(img);
-  const w = keyed.width, h = keyed.height;
-  const d = keyed.getContext('2d').getImageData(0, 0, w, h).data;
-  // coarse occupancy grid (about 500 cells wide), dilated by one cell so a hand still connects to the bow it holds
-  const cs = Math.max(1, Math.round(w / 500));
+/** Occupancy grid + connected components for a keyed image. `dil` = dilation radius in cells. */
+function sheetComponents(d, w, h, cs, dil) {
   const gw = Math.ceil(w / cs), gh = Math.ceil(h / cs);
   const occ = new Uint8Array(gw * gh);
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) occ[((y / cs) | 0) * gw + ((x / cs) | 0)] = 1;
-  const dil = new Uint8Array(gw * gh);
-  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) {
-    if (!occ[gy * gw + gx]) continue;
-    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-      const xx = gx + dx, yy = gy + dy; if (xx >= 0 && yy >= 0 && xx < gw && yy < gh) dil[yy * gw + xx] = 1;
+  let grid = occ;
+  if (dil > 0) {
+    grid = new Uint8Array(gw * gh);
+    for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) {
+      if (!occ[gy * gw + gx]) continue;
+      for (let dy = -dil; dy <= dil; dy++) for (let dx = -dil; dx <= dil; dx++) {
+        const xx = gx + dx, yy = gy + dy; if (xx >= 0 && yy >= 0 && xx < gw && yy < gh) grid[yy * gw + xx] = 1;
+      }
     }
   }
-  // connected components (8-connected) on the dilated grid
   const label = new Int32Array(gw * gh).fill(-1);
   const comps = [];
   for (let p0 = 0; p0 < gw * gh; p0++) {
-    if (!dil[p0] || label[p0] >= 0) continue;
+    if (!grid[p0] || label[p0] >= 0) continue;
     const id = comps.length; const comp = { id, x0: gw, x1: 0, y0: gh, y1: 0, area: 0 };
     const stack = [p0]; label[p0] = id;
     while (stack.length) {
@@ -213,20 +211,37 @@ export function splitSheet(img, n) {
       comp.area += occ[p]; if (x < comp.x0) comp.x0 = x; if (x > comp.x1) comp.x1 = x; if (y < comp.y0) comp.y0 = y; if (y > comp.y1) comp.y1 = y;
       for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
         const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= gw || yy >= gh) continue;
-        const q = yy * gw + xx; if (dil[q] && label[q] < 0) { label[q] = id; stack.push(q); }
+        const q = yy * gw + xx; if (grid[q] && label[q] < 0) { label[q] = id; stack.push(q); }
       }
     }
     comps.push(comp);
   }
-  const bySize = comps.filter((c) => c.area > gw * gh * 0.0004).sort((a, b) => b.area - a.area);
-  if (!bySize.length) {
+  const colOcc = new Uint32Array(gw);
+  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) colOcc[gx] += occ[gy * gw + gx];
+  return { gw, gh, cs, occ, label, comps, colOcc };
+}
+/** Splits a row of `n` figures. Figures are found as connected blobs; loose connectivity first (a hand keeps
+ *  its bow), tighter if fewer than n figures are found (a club almost touching the next figure). */
+export function splitSheet(img, n) {
+  const keyed = chromaKey(img);
+  const w = keyed.width, h = keyed.height;
+  const d = keyed.getContext('2d').getImageData(0, 0, w, h).data;
+  const c500 = Math.max(1, Math.round(w / 500)), c1000 = Math.max(1, Math.round(w / 1000));
+  const ladder = [[c500, 1], [c500, 0], [c1000, 0]];
+  let g = null, anchors = null;
+  for (const [cs, dil] of ladder) {
+    g = sheetComponents(d, w, h, cs, dil);
+    const bySize = g.comps.filter((c) => c.area > g.gw * g.gh * 0.0004).sort((a, b) => b.area - a.area);
+    if (!bySize.length) continue;
+    anchors = bySize.filter((c) => c.area >= bySize[0].area * 0.08).slice(0, n).map((c) => ({ ...c, members: [c.id] }));
+    if (anchors.length >= n) break;
+  }
+  if (!anchors || !anchors.length) {
     const step = w / n;
     return Array.from({ length: n }, (_, i) => { const c = mk(Math.round(step), h); c.getContext('2d').drawImage(keyed, -Math.round(i * step), 0); return c; });
   }
-  // anchors: the n biggest figures; split the widest one at its thinnest column if two figures touch
-  let anchors = bySize.filter((c) => c.area >= bySize[0].area * 0.08).slice(0, n).map((c) => ({ ...c, members: [c.id] }));
-  const colOcc = new Uint32Array(gw);
-  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) colOcc[gx] += occ[gy * gw + gx];
+  const { gw, cs, label, colOcc } = g;
+  // still too few (two figures really touch): split the widest one at its thinnest column
   while (anchors.length < n) {
     anchors.sort((a, b) => (b.x1 - b.x0) - (a.x1 - a.x0));
     const a = anchors[0]; const span = a.x1 - a.x0; if (span < 6) break;
@@ -237,7 +252,7 @@ export function splitSheet(img, n) {
   anchors.sort((a, b) => (a.x0 + a.x1) - (b.x0 + b.x1));
   // every other component joins the horizontally nearest anchor
   const used = new Set(anchors.flatMap((a) => a.members));
-  for (const c of comps) {
+  for (const c of g.comps) {
     if (used.has(c.id)) continue;
     let bi = 0, bd = Infinity;
     anchors.forEach((a, i) => { const gap = Math.max(0, a.x0 - c.x1, c.x0 - a.x1); const vg = Math.max(0, a.y0 - c.y1, c.y0 - a.y1); const dd = gap * 2 + vg; if (dd < bd) { bd = dd; bi = i; } });

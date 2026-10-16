@@ -1,14 +1,19 @@
 {
   "files": [
+    "units/black_orc.png",
     "units/dryad.png",
     "units/eternal_guard.png",
+    "units/giant.png",
     "units/glade_guard.png",
     "units/goblin.png",
     "units/great_eagle.png",
     "units/orc_archer.png",
     "units/orc_boy.png",
+    "units/skeleton.png",
     "units/treeman.png",
+    "units/troll.png",
     "units/wardancer.png",
+    "units/warg_rider.png",
     "units/wild_rider.png"
   ]
 }
