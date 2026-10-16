@@ -2,6 +2,8 @@
   "files": [
     "units/beastman.png",
     "units/black_orc.png",
+    "units/cave_troll.png",
+    "units/dragon.png",
     "units/dryad.png",
     "units/dunlending.png",
     "units/eternal_guard.png",
@@ -9,6 +11,7 @@
     "units/glade_guard.png",
     "units/goblin.png",
     "units/great_eagle.png",
+    "units/minotaur.png",
     "units/orc_archer.png",
     "units/orc_boy.png",
     "units/skeleton.png",
