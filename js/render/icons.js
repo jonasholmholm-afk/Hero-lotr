@@ -74,6 +74,27 @@ export function skillIcon(id, S = 40) {
   cache.set(key, c);
   return c;
 }
+export function buildingIcon(id, faction, S = 44) {
+  const key = `b:${id}:${faction}:${S}`;
+  if (cache.has(key)) return cache.get(key);
+  const elf = faction === 'elves';
+  const c = mk(S, S); const ctx = c.getContext('2d');
+  const u = S / 32;
+  const stone = elf ? '#e8e0c8' : '#5a5048', roof = elf ? '#d9a93a' : '#3a2a20', dark = elf ? '#a89f86' : '#2a2420';
+  rrect(ctx, 1, 1, S - 2, S - 2, S * 0.15, rgrad(ctx, S / 2, S / 2, 2, S * 0.7, [[0, elf ? '#2e4a34' : '#3a2420'], [1, '#0b0e14']]), 'rgba(227,197,106,0.55)', 1.5);
+  const house = (x, w, h, spire) => { rrect(ctx, x, 26 * u - h, w, h, 1.5 * u, lgrad(ctx, x, 0, x + w, 0, [[0, lighten(stone, 0.15)], [1, shade(stone, 0.6)]])); poly(ctx, [[x - 2 * u, 26 * u - h], [x + w / 2, 26 * u - h - (spire ? 11 : 6) * u], [x + w + 2 * u, 26 * u - h]], roof); rrect(ctx, x + w / 2 - 1.5 * u, 26 * u - 4 * u, 3 * u, 4 * u, u, '#ffd27a'); };
+  switch (true) {
+    case id.startsWith('hall'): { const lvl = +id[4]; house(8 * u, 16 * u, (8 + lvl * 2.5) * u, lvl >= 3); if (lvl >= 2) { line(ctx, 16 * u, 26 * u - (8 + lvl * 2.5) * u - 6 * u, 16 * u, 6 * u, '#3a2a1a', u); poly(ctx, [[16 * u, 6 * u], [22 * u, 8 * u], [16 * u, 10 * u]], elf ? '#4fbf6a' : '#d9452f'); } break; }
+    case id === 'fort' || id === 'citadel' || id === 'castle': { const h = id === 'fort' ? 9 : id === 'citadel' ? 12 : 15; rrect(ctx, 5 * u, 26 * u - h * u, 22 * u, h * u, u, lgrad(ctx, 0, 0, 32 * u, 0, [[0, lighten(stone, 0.1)], [1, shade(stone, 0.55)]])); for (let i = 0; i < 4; i++) rrect(ctx, (6 + i * 5.5) * u, 26 * u - h * u - 3 * u, 3 * u, 3.5 * u, 0.5 * u, stone); if (id !== 'fort') { rrect(ctx, 3 * u, 26 * u - (h + 5) * u, 6 * u, (h + 5) * u, u, dark); rrect(ctx, 23 * u, 26 * u - (h + 5) * u, 6 * u, (h + 5) * u, u, dark); } rrect(ctx, 13 * u, 18 * u, 6 * u, 8 * u, 2 * u, '#1a1410'); break; }
+    case id === 'tavern': { house(7 * u, 18 * u, 11 * u, false); rrect(ctx, 20 * u, 8 * u, 7 * u, 8 * u, u, '#d9a93a'); rrect(ctx, 21 * u, 7 * u, 5 * u, 2 * u, u, '#fff6d0'); break; }
+    case id === 'market': { poly(ctx, [[4 * u, 14 * u], [16 * u, 6 * u], [28 * u, 14 * u]], lgrad(ctx, 0, 6 * u, 0, 14 * u, [[0, '#e86a4a'], [1, '#a83a2a']])); for (let i = 0; i < 4; i++) line(ctx, (7 + i * 6) * u, 14 * u, (7 + i * 6) * u, 8 * u, 'rgba(255,255,255,0.3)', u); rrect(ctx, 6 * u, 14 * u, 20 * u, 10 * u, u, '#8a5a2a'); circle(ctx, 11 * u, 19 * u, 2.2 * u, '#f1c75b'); circle(ctx, 17 * u, 19 * u, 2.2 * u, '#8a8f98'); circle(ctx, 22 * u, 19 * u, 2.2 * u, '#d94fd1'); break; }
+    case id === 'silo': { rrect(ctx, 9 * u, 9 * u, 14 * u, 17 * u, 3 * u, lgrad(ctx, 9 * u, 0, 23 * u, 0, [[0, '#9a7a4a'], [1, '#4a3220']])); ellipse(ctx, 16 * u, 9 * u, 7 * u, 2.5 * u, '#b08a5a'); for (let i = 0; i < 3; i++) line(ctx, 9 * u, (13 + i * 5) * u, 23 * u, (13 + i * 5) * u, '#2a1a10', u); break; }
+    case id.startsWith('mage'): { const lvl = +id[4]; rrect(ctx, 11 * u, 26 * u - (12 + lvl * 2) * u, 10 * u, (12 + lvl * 2) * u, u, lgrad(ctx, 11 * u, 0, 21 * u, 0, [[0, elf ? '#dfe6ff' : '#7a5a8a'], [1, elf ? '#8a96c0' : '#3a2a4a']])); poly(ctx, [[9 * u, 26 * u - (12 + lvl * 2) * u], [16 * u, 26 * u - (12 + lvl * 2) * u - 8 * u], [23 * u, 26 * u - (12 + lvl * 2) * u]], elf ? '#6a8ad0' : '#2a1a3a'); ctx.shadowColor = '#9fe0ff'; ctx.shadowBlur = 6 * u; circle(ctx, 16 * u, 26 * u - (12 + lvl * 2) * u - 10 * u, 2 * u, '#dff6ff'); ctx.shadowBlur = 0; for (let i = 0; i < lvl; i++) rrect(ctx, 14.5 * u, (23 - i * 3.2) * u, 3 * u, 2 * u, 0.5 * u, '#ffe28a'); break; }
+    case id === 'special': { if (elf) { line(ctx, 16 * u, 26 * u, 16 * u, 12 * u, '#6b4a2a', 3 * u); for (const [x, y, r] of [[16, 10, 7], [9, 13, 5], [23, 13, 5]]) circle(ctx, x * u, y * u, r * u, rgrad(ctx, x * u - 2 * u, y * u - 2 * u, 1, r * u, [[0, '#fff0b0'], [1, '#d9922a']])); } else { ellipse(ctx, 16 * u, 18 * u, 10 * u, 5 * u, '#8a5a2a'); rrect(ctx, 6 * u, 18 * u, 20 * u, 8 * u, u, '#5a3a22'); ellipse(ctx, 16 * u, 18 * u, 9 * u, 4 * u, '#d8c0a0'); line(ctx, 10 * u, 8 * u, 15 * u, 16 * u, '#e8e0c8', 1.5 * u); line(ctx, 23 * u, 7 * u, 18 * u, 16 * u, '#e8e0c8', 1.5 * u); } break; }
+  }
+  cache.set(key, c);
+  return c;
+}
 export function statIcon(stat, S = 24) {
   const key = `st:${stat}:${S}`;
   if (cache.has(key)) return cache.get(key);

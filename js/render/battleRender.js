@@ -254,8 +254,15 @@ export class BattleRenderer {
     }
     this.anims = this.anims.filter((a) => !a.done);
     this.drawFx(now, 'above');
+    // ambient drift (leaves / embers / snow)
+    if (this.particles.filter((q) => q.ambient).length < 14 && Math.random() < 0.3) {
+      const t = this.b.terrain;
+      const kind = t === T.ASH || t === T.ROUGH ? 'ember' : t === T.SNOW ? 'snow' : 'leaf';
+      this.particles.push({ ambient: true, kind, x: Math.random() * this.w, y: kind === 'ember' ? this.h + 5 : -5, vx: 10 + Math.random() * 15, vy: kind === 'ember' ? -18 - Math.random() * 12 : 14 + Math.random() * 12, life: 9, col: kind === 'ember' ? '#ff9a3a' : kind === 'snow' ? '#ffffff' : '#ffd36a', r: kind === 'snow' ? 1.6 : 2.2, grav: 0, glow: kind === 'ember' });
+    }
     // particles
     for (const p of this.particles) {
+      if (p.ambient) { p.x += Math.sin(now / 700 + p.y * 0.01) * 20 * dt; }
       p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.grav === undefined ? 120 : p.grav) * dt; p.life -= dt;
       const a = clamp(p.life * 2, 0, 1);
       if (p.glow) glow(ctx, p.x, p.y, p.r * 3, p.col, a * 0.6);
@@ -375,7 +382,8 @@ export class BattleRenderer {
     const { ctx, b } = this;
     const p = this.pos(st);
     const [cx, cy0] = this.center(p[0], p[1]);
-    const lift = (p[2] || 0) * this.size;
+    const idle = this.stackPos.has(st.id) || st.dead ? 0 : Math.sin(now / 420 + st.id * 1.7) * this.size * 0.02;
+    const lift = (p[2] || 0) * this.size + idle;
     const S = this.size * 2.9 * (0.72 + st.unit.tier * 0.06);
     const flip = st.side === 1;
     const f = figure(st.unit, 96, flip);

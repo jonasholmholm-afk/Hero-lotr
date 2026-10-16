@@ -94,7 +94,7 @@ export class Hud {
       const i = y * m.w + x;
       if (!p.fog[i]) { ctx.fillStyle = '#07090d'; ctx.fillRect(x * scale, y * scale, scale, scale); continue; }
       ctx.fillStyle = cols[m.terrain[i]] || '#444'; ctx.fillRect(x * scale, y * scale, scale, scale);
-      if (m.decor[i] && m.decor[i] !== 7 && m.decor[i] !== 8 && m.decor[i] !== 10 && m.decor[i] !== 11) { ctx.fillStyle = m.decor[i] === 5 ? '#8a847c' : 'rgba(20,60,20,0.55)'; ctx.fillRect(x * scale, y * scale, scale, scale); }
+      if (m.decor[i] && ![7, 8, 10, 11, 13, 14].includes(m.decor[i])) { ctx.fillStyle = m.decor[i] === 5 ? '#8a847c' : 'rgba(20,60,20,0.55)'; ctx.fillRect(x * scale, y * scale, scale, scale); }
       if (m.road[i]) { ctx.fillStyle = 'rgba(150,120,80,0.8)'; ctx.fillRect(x * scale, y * scale, scale, scale); }
     }
     for (const o of Object.values(m.objects)) {

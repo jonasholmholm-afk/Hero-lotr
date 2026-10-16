@@ -34,6 +34,13 @@ Al grafik er procedurel Canvas-tegning i høj opløsning (2× sprites, skarpt p�
 - Slagmark med malet jord, slag-/skud-/besværgelseseffekter (ildkugle, lyn, kædelyn, heling, buffs), partikler og kamerarystelse, samt turrækkefølge-strimmel.
 - Malet hovedmenu-scene, panoramabanner i byskærmen, minimap (🗺) og et gennemført UI-tema med guldrammer.
 
+## Egne billeder / realistisk grafik
+
+Al grafik er procedurel, og der er en naturlig grænse for hvor "realistisk" kodetegnet grafik kan blive.
+Spillet understøtter derfor **billed-assets**: Læg PNG-filer i `assets/` og list dem i `assets/manifest.json`, så bruges de
+automatisk i stedet for den tegnede grafik (enheder, helte, portrætter, byer, objekter, træer, terræn). Se `assets/README.md`
+for filnavne og størrelser. Mangler et billede, falder spillet tilbage til den procedurelle tegning.
+
 ## Spillets indhold (1.0)
 
 - **Procedurelt genererede kort** (lille/mellem/stor) med græsland, jord, sump, sne, askeland, søer, bjerge og skove.

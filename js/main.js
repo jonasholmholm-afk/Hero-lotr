@@ -10,6 +10,7 @@ import { openTownScreen } from './ui/townScreen.js';
 import { openHeroScreen } from './ui/heroScreen.js';
 import { dialog, toast, confirm } from './ui/dialogs.js';
 import { heroesOf } from './game/state.js';
+import { loadAssets } from './render/assets.js';
 
 const app = {
   screens: ['menu', 'adventure', 'town', 'hero', 'battle'],
@@ -102,5 +103,5 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
 function checkOrientation() { document.body.classList.toggle('portrait', window.innerHeight > window.innerWidth && window.innerWidth < 700); }
 window.addEventListener('resize', checkOrientation); checkOrientation();
 
-renderMenu(app);
+loadAssets().finally(() => renderMenu(app));
 window.__app = app; window.__G = G;

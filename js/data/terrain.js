@@ -15,7 +15,7 @@ export const NATIVE = { elves: [1], orcs: [3, 6] };
 
 export const D = {
   NONE: 0, PINE: 1, LEAFY: 2, GOLDEN: 3, DEAD: 4, MOUNTAIN: 5, ROCK: 6,
-  FLOWERS: 7, MUSHROOM: 8, BLOCK: 9, STUMP: 10, REEDS: 11, SNOWPINE: 12,
+  FLOWERS: 7, MUSHROOM: 8, BLOCK: 9, STUMP: 10, REEDS: 11, SNOWPINE: 12, BUSH: 13, PEBBLES: 14,
 };
 export const DECOR_BLOCKS = new Set([D.PINE, D.LEAFY, D.GOLDEN, D.DEAD, D.MOUNTAIN, D.ROCK, D.BLOCK, D.SNOWPINE]);
 export const ROAD_COST = 65;

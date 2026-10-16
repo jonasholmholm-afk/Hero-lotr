@@ -124,17 +124,20 @@ export function generateMap({ seed, size, factions }) {
         case T.GRASS: {
           const p = zf === 'elves' ? 0.1 + 0.42 * tn : 0.06 + 0.3 * tn;
           if (r < p) decor[i] = zf === 'elves' ? rng.weighted([D.GOLDEN, D.LEAFY, D.PINE], (d) => (d === D.GOLDEN ? 4 : d === D.LEAFY ? 4 : 2)) : rng.pick([D.LEAFY, D.LEAFY, D.PINE]);
-          else if (r < p + 0.06) decor[i] = D.FLOWERS;
+          else if (r < p + 0.05) decor[i] = D.FLOWERS;
+          else if (r < p + 0.11) decor[i] = D.BUSH;
           break;
         }
         case T.DIRT:
           if (r < 0.06 + 0.12 * tn) decor[i] = rng.pick([D.DEAD, D.LEAFY, D.PINE]);
           else if (r < 0.1 + 0.12 * tn) decor[i] = D.ROCK;
           else if (r < 0.13 + 0.12 * tn) decor[i] = D.STUMP;
+          else if (r < 0.19 + 0.12 * tn) decor[i] = D.PEBBLES;
           break;
         case T.ROUGH:
           if (r < 0.1 + 0.15 * nRock.noise(x / 4, y / 4)) decor[i] = D.ROCK;
           else if (r < 0.16 + 0.1 * tn) decor[i] = D.DEAD;
+          else if (r < 0.24 + 0.1 * tn) decor[i] = D.PEBBLES;
           break;
         case T.ASH:
           if (r < 0.08 + 0.12 * tn) decor[i] = D.DEAD;

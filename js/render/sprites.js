@@ -5,6 +5,7 @@ import { mk, mkS, poly, circle, ellipse, rrect, line, lgrad, rgrad, shade, light
 import { T, D, TERRAIN_INFO } from '../data/terrain.js';
 import { RES_INFO } from '../data/resources.js';
 import { Noise } from '../core/noise.js';
+import { assetCanvas, assetImage } from './assets.js';
 
 export const TILE = 64;
 const cache = new Map();
@@ -32,8 +33,11 @@ function tileable(nz, u, v, P, f, oct, off = 0) {
   const a = s(u, v), b = s(u - P, v), c = s(u, v - P), d = s(u - P, v - P);
   return (a * (P - u) * (P - v) + b * u * (P - v) + c * (P - u) * v + d * u * v) / (P * P);
 }
+const TERRAIN_KEYS = ['water', 'grass', 'dirt', 'rough', 'swamp', 'snow', 'ash'];
 export function tileTexture(t, px = 96) {
   return cached(`tile:${t}:${px}`, () => {
+    const aimg = assetImage(`terrain/${TERRAIN_KEYS[t]}`);
+    if (aimg) { const c = mk(px, px); c.getContext('2d').drawImage(aimg, 0, 0, px, px); return c; }
     const c = mk(px, px);
     const ctx = c.getContext('2d');
     const pal = PALETTE[t];
@@ -112,8 +116,12 @@ function lerp3(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1])
 function clamp8(v) { return v < 0 ? 0 : v > 255 ? 255 : v; }
 
 // ---------------- Decor sprites ----------------
+const DECOR_KEYS = { 1: 'pine', 2: 'leafy', 3: 'golden', 4: 'dead', 5: 'mountain', 6: 'rock', 7: 'flowers', 8: 'mushroom', 10: 'stump', 11: 'reeds', 12: 'snowpine', 13: 'bush', 14: 'pebbles' };
+const DECOR_SIZES = { pine: [60, 92], leafy: [68, 90], golden: [68, 90], dead: [60, 86], mountain: [110, 110], rock: [52, 44], flowers: [44, 26], mushroom: [44, 30], stump: [34, 30], reeds: [44, 40], snowpine: [60, 92], bush: [46, 36], pebbles: [40, 22] };
 export function decorSprite(kind, variant = 0) {
   return cached(`decor:${kind}:${variant}`, () => {
+    const dk = DECOR_KEYS[kind];
+    if (dk) { const a = assetCanvas(`decor/${dk}_${variant}`, ...DECOR_SIZES[dk]) || assetCanvas(`decor/${dk}`, ...DECOR_SIZES[dk]); if (a) return a; }
     const r = art_rng(kind * 101 + variant * 13 + 5);
     switch (kind) {
       case D.PINE: return pine(r, '#163f22', '#2d7a3c', '#6fbf63', '#4b3320');
@@ -127,6 +135,8 @@ export function decorSprite(kind, variant = 0) {
       case D.MUSHROOM: return mushrooms(r);
       case D.STUMP: return stump(r);
       case D.REEDS: return reeds(r);
+      case D.BUSH: return bush(r);
+      case D.PEBBLES: return pebbles(r);
       default: return mkS(1, 1);
     }
   });
@@ -280,6 +290,21 @@ function stump(r) {
   ellipse(ctx, 16.5, 10, 7.5, 3.8, '#c9a46e'); ellipse(ctx, 16.5, 10, 5, 2.4, null, 0, '#8a6a3a', 0.8); ellipse(ctx, 16.5, 10, 2.5, 1.2, null, 0, '#8a6a3a', 0.8);
   return finish(c, { shade: false });
 }
+function bush(r) {
+  const W = 46, H = 36; const c = mkS(W, H); const ctx = c.getContext('2d');
+  const gy = H - 6;
+  softShadow(ctx, 23, gy, 16, 4, 0.3);
+  const blobs = [[23, gy - 12, 11], [12, gy - 8, 8], [34, gy - 9, 8], [18, gy - 16, 7], [29, gy - 17, 7]];
+  for (const [x, y, rr] of blobs) circle(ctx, x + 1, y + 2, rr, '#1f4a22');
+  for (const [x, y, rr] of blobs) circle(ctx, x, y, rr, rgrad(ctx, x - rr * 0.3, y - rr * 0.4, 1, rr, [[0, '#9ad56a'], [0.6, '#4f9a3f'], [1, '#2a6a2a']]));
+  for (let i = 0; i < 5; i++) circle(ctx, 10 + r() * 26, gy - 8 - r() * 12, 1.4, r() > 0.5 ? '#e86a8a' : '#f2c94c');
+  return finish(c, { shade: false });
+}
+function pebbles(r) {
+  const W = 40, H = 22; const c = mkS(W, H); const ctx = c.getContext('2d');
+  for (let i = 0; i < 6; i++) { const x = 5 + r() * 30, y = 8 + r() * 10, rr = 1.5 + r() * 2.2; ellipse(ctx, x + 0.6, y + 0.8, rr, rr * 0.7, 'rgba(0,0,0,0.3)'); ellipse(ctx, x, y, rr, rr * 0.7, lgrad(ctx, x - rr, y - rr, x + rr, y + rr, [[0, '#b3aca2'], [1, '#5e5852']])); }
+  return c;
+}
 function reeds(r) {
   const W = 44, H = 40; const c = mkS(W, H); const ctx = c.getContext('2d');
   for (let i = 0; i < 9; i++) {
@@ -342,6 +367,9 @@ function smoke(ctx, x, y, n = 4) {
 export function objectSprite(o, ownerColor) {
   const key = `obj:${o.type}:${o.res || o.unit || o.artifact || ''}:${o.faction || ''}:${ownerColor || ''}`;
   return cached(key, () => {
+    const ak = o.type === 'mine' ? `objects/mine_${o.res}` : o.type === 'dwelling' ? `objects/dwelling_${o.unit}` : o.type === 'resource' ? `objects/resource_${o.res}` : `objects/${o.type}`;
+    const asset = assetCanvas(ak, 80, 84);
+    if (asset) { if (ownerColor && (o.type === 'mine' || o.type === 'dwelling')) { const x = asset.getContext('2d'); x.setTransform(2, 0, 0, 2, 0, 0); flagPole(x, 6, asset.lh - 10, ownerColor, 32); } return asset; }
     switch (o.type) {
       case 'mine': return mineSprite(o.res, ownerColor);
       case 'dwelling': return dwellingSprite(o.unit, ownerColor);
@@ -623,6 +651,8 @@ function ruinSprite() {
 // ---------------- Towns ----------------
 export function townSprite(faction, fortLevel, ownerColor) {
   return cached(`town:${faction}:${fortLevel}:${ownerColor || ''}`, () => {
+    const asset = assetCanvas(`towns/${faction}_${fortLevel}`, 200, 160) || assetCanvas(`towns/${faction}`, 200, 160);
+    if (asset) { if (ownerColor) { const x = asset.getContext('2d'); x.setTransform(2, 0, 0, 2, 0, 0); flagPole(x, 100, 30, ownerColor, 26); } return asset; }
     const W = 200, H = 160; const c = mkS(W, H); const ctx = c.getContext('2d');
     const gy = H - 8;
     softShadow(ctx, 100, gy, 86, 14, 0.4);
@@ -687,6 +717,8 @@ export function townSprite(faction, fortLevel, ownerColor) {
 // ---------------- Heroes ----------------
 export function heroSprite(faction, color, flip = false, frame = 0) {
   return cached(`hero:${faction}:${color}:${flip ? 1 : 0}:${frame}`, () => {
+    const asset = assetCanvas(`heroes/${faction}`, 80, 90, flip);
+    if (asset) { const x = asset.getContext('2d'); x.setTransform(flip ? -2 : 2, 0, 0, 2, flip ? asset.width : 0, 0); flagPole(x, 27, 46, color, 28); return asset; }
     const W = 80, H = 90; const c = mkS(W, H); const ctx = c.getContext('2d');
     ctx.save();
     if (flip) { ctx.translate(W, 0); ctx.scale(-1, 1); }

@@ -13,7 +13,8 @@ import { createHero, maxMovement } from '../game/hero.js';
 import { costRow, unitCard, resIcon, portraitImg, unitStatsHtml } from './common.js';
 import { dialog, toast, numberPicker, confirm } from './dialogs.js';
 import { ArmyEditor } from './heroScreen.js';
-import { spellIcon } from '../render/icons.js';
+import { spellIcon, buildingIcon } from '../render/icons.js';
+import { figure } from '../render/figures.js';
 import { mk, poly, circle, ellipse, rrect, line, lgrad, rgrad, shade, lighten } from '../render/draw.js';
 import { townSprite } from '../render/sprites.js';
 import { drawTownBanner } from '../render/scenes.js';
@@ -62,7 +63,8 @@ export function openTownScreen(app, town) {
         const chk = canBuild(town, id, p.resources);
         // hide far-future buildings whose requirements are not met except next tier
         const card = el('div.card' + (built ? '.built' : chk.ok ? '.ok' : '.locked'));
-        card.append(el('div.card-title', bname(town, id) + (built ? ' ✓' : '')));
+        const iconSrc = id.startsWith('dw') ? figure(UNITS[dwellingUnit(town, id)], 72).toDataURL() : buildingIcon(id, town.faction, 88).toDataURL();
+        card.append(el('div.card-head', el('img.card-icon', { src: iconSrc, width: 44, height: 44 }), el('div.card-title', bname(town, id) + (built ? ' ✓' : ''))));
         card.append(el('div.card-desc', bdesc(town, id)));
         if (!built) {
           card.append(costRow(buildingCost(town, id), p.resources));

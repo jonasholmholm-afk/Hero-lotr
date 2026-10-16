@@ -13,9 +13,19 @@ import { Noise } from '../core/noise.js';
 const CHUNK = 10; // tiles per chunk side
 const MARGIN = 2; // extra tiles rendered around each chunk (cropped away when drawn)
 const PRIORITY = [T.SNOW, T.SWAMP, T.ROUGH, T.ASH, T.DIRT, T.GRASS];
-const PASSABLE_DECOR = new Set([D.FLOWERS, D.MUSHROOM, D.STUMP, D.REEDS]);
+const PASSABLE_DECOR = new Set([D.FLOWERS, D.MUSHROOM, D.STUMP, D.REEDS, D.BUSH, D.PEBBLES]);
 const worldNoise = new Noise(4242);
 const MAX_CHUNKS = 24;
+const silCache = new WeakMap();
+function silhouette(sp) {
+  let c = silCache.get(sp);
+  if (c) return c;
+  c = mk(sp.width, sp.height); c.lw = sp.lw; c.lh = sp.lh;
+  const x = c.getContext('2d');
+  x.drawImage(sp, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#000'; x.fillRect(0, 0, c.width, c.height);
+  silCache.set(sp, c);
+  return c;
+}
 
 export class AdventureRenderer {
   constructor(canvas, state) {
@@ -276,6 +286,59 @@ export class AdventureRenderer {
     ctx.restore();
   }
 
+  /** Directional cast shadow (sun top-left) for a sprite whose base is at (bx, by). */
+  castShadow(sp, bx, by, alpha = 0.3, len = 0.42) {
+    const { ctx } = this;
+    const sil = silhouette(sp);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.transform(1, 0, -0.75, -len, bx, by);
+    ctx.drawImage(sil, -sp.lw / 2, -(sp.lh - 8), sp.lw, sp.lh);
+    ctx.restore();
+  }
+  drawCloudShadows() {
+    const { ctx, cam } = this; const m = this.s.map;
+    const W = m.w * TILE, H = m.h * TILE; const t = this.time;
+    ctx.save(); ctx.globalCompositeOperation = 'multiply';
+    for (let k = 0; k < 5; k++) {
+      const sp = 9 + k * 2.3;
+      const x = ((k * 1370 + t * sp) % (W + 1200)) - 600;
+      const y = ((k * 890 + t * sp * 0.35) % (H + 800)) - 400;
+      const rx = 260 + k * 70, ry = 150 + k * 40;
+      if (x + rx < cam.x || x - rx > cam.x + this.w / cam.zoom || y + ry < cam.y || y - ry > cam.y + this.h / cam.zoom) continue;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, rx);
+      g.addColorStop(0, 'rgba(150,158,175,1)'); g.addColorStop(0.55, 'rgba(190,196,208,1)'); g.addColorStop(1, 'rgba(255,255,255,1)');
+      ctx.fillStyle = g;
+      ctx.save(); ctx.translate(x, y); ctx.scale(1, ry / rx); ctx.beginPath(); ctx.arc(0, 0, rx, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+    }
+    ctx.restore();
+  }
+  updateBirds(dt) {
+    const { cam } = this;
+    if (!this.flock && Math.random() < dt / 18) {
+      const dir = Math.random() < 0.5 ? 1 : -1;
+      const y0 = cam.y + 40 + Math.random() * (this.h / cam.zoom * 0.6);
+      this.flock = { x: dir > 0 ? cam.x - 200 : cam.x + this.w / cam.zoom + 200, y: y0, dir, n: 5 + Math.floor(Math.random() * 5), t: 0, speed: 90 + Math.random() * 40 };
+    }
+    if (this.flock) {
+      const f = this.flock; f.t += dt; f.x += f.dir * f.speed * dt; f.y += Math.sin(f.t * 0.7) * 6 * dt;
+      if (f.t > 40 || f.x < cam.x - 600 || f.x > cam.x + this.w / cam.zoom + 600) this.flock = null;
+    }
+  }
+  drawBirds() {
+    const f = this.flock; if (!f) return;
+    const { ctx } = this;
+    ctx.strokeStyle = 'rgba(20,18,16,0.85)'; ctx.lineWidth = 1.6; ctx.lineCap = 'round';
+    for (let i = 0; i < f.n; i++) {
+      const k = i - (f.n - 1) / 2;
+      const bx = f.x - f.dir * Math.abs(k) * 16, by = f.y + Math.abs(k) * 9 + Math.sin(f.t * 3 + i) * 2;
+      const flap = Math.sin(f.t * 9 + i * 1.3) * 3;
+      ctx.beginPath(); ctx.moveTo(bx - 6, by - flap); ctx.quadraticCurveTo(bx - 2, by + 1, bx, by); ctx.quadraticCurveTo(bx + 2, by + 1, bx + 6, by - flap); ctx.stroke();
+      // ground shadow of the bird far below
+      ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.beginPath(); ctx.ellipse(bx + 40, by + 90, 5, 2, 0, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
   // ---------- Hero animation ----------
   animateHero(hero, fx, fy, tx, ty, dur) {
     this.heroAnim.set(hero.id, { fx, fy, tx, ty, t0: performance.now(), dur });
@@ -345,6 +408,24 @@ export class AdventureRenderer {
     }
     this.drawWater(vx0, vy0, vx1, vy1);
     if (this.path) this.drawPath();
+    // cast shadows pass (under all sprites)
+    for (let y = Math.max(0, vy0); y <= Math.min(m.h - 1, vy1); y++) {
+      for (let x = Math.max(0, vx0); x <= Math.min(m.w - 1, vx1); x++) {
+        const i = y * m.w + x;
+        const d = m.decor[i];
+        if (d && DECOR_BLOCKS.has(d) && d !== D.BLOCK) {
+          const sp = decorSprite(d, (x * 3 + y * 5) & 3);
+          const off = (((x * 7 + y * 3) & 3) - 1.5) * 3;
+          this.castShadow(sp, x * TILE + TILE / 2 + off, y * TILE + TILE - 2, d === D.MOUNTAIN ? 0.22 : 0.3, d === D.MOUNTAIN ? 0.3 : 0.42);
+        }
+        const oid = m.objAt[i];
+        if (oid) {
+          const o = m.objects[oid];
+          if (o.type === OBJ.TOWN) { const sp = townSprite(o.faction, fortLevel(o), null); this.castShadow(sp, x * TILE + TILE / 2, y * TILE + TILE, 0.25, 0.3); }
+          else if (o.type !== OBJ.MONSTER) { const sp = objectSprite(o, null); this.castShadow(sp, x * TILE + TILE / 2, y * TILE + TILE, 0.28, 0.38); }
+        }
+      }
+    }
     // sprites sorted by row
     const heroes = Object.values(s.heroes).filter((h) => !h.inTavern);
     const heroByRow = new Map();
@@ -364,6 +445,8 @@ export class AdventureRenderer {
       const hs = heroByRow.get(y);
       if (hs) for (const h of hs) this.drawHero(h, viewer);
     }
+    this.drawCloudShadows();
+    this.updateBirds(dt); this.drawBirds();
     this.updateParticles(dt, viewer);
     this.drawParticles();
     ctx.restore();
