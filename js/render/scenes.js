@@ -1,7 +1,7 @@
 // Painted backdrop scenes: main menu and town banner.
 import { mk, circle, ellipse, rrect, line, lgrad, rgrad, rgba, shade, lighten, glow, poly } from './draw.js';
-import { townSprite, decorSprite } from './sprites.js';
-import { D } from '../data/terrain.js';
+import { townSprite, decorSprite, terrainSheet, tileTexture } from './sprites.js';
+import { D, T } from '../data/terrain.js';
 import { Noise } from '../core/noise.js';
 import { UNITS } from '../data/units.js';
 import { roman } from '../core/utils.js';
@@ -89,68 +89,63 @@ export class MenuScene {
   }
 }
 
-export function drawTownBanner(canvas, town, fortLevel, mageLevel, dwellingUnit) {
-  const w = canvas.clientWidth || 600, h = 160;
+export function drawTownBanner(canvas, town, fortLevel, mageLevel) {
+  const w = canvas.clientWidth || 600, h = 190;
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   canvas.width = w * dpr; canvas.height = h * dpr;
   const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
   const elf = town.faction === 'elves';
-  ctx.fillStyle = lgrad(ctx, 0, 0, 0, h, elf ? [[0, '#14262a'], [0.45, '#4f7a62'], [0.8, '#d9c27a'], [1, '#e8d79a']] : [[0, '#0e0808'], [0.45, '#5a2418'], [0.8, '#c8612a'], [1, '#e08a3a']]);
-  ctx.fillRect(0, 0, w, h);
-  // sun with rays
-  const sx = w * 0.78, sy = h * 0.34;
+  const horizon = h * 0.56;
+  // sky
+  ctx.fillStyle = lgrad(ctx, 0, 0, 0, horizon + 10, elf ? [[0, '#0f1c2b'], [0.55, '#4a7a86'], [0.85, '#e9cf94'], [1, '#f6e6b4']] : [[0, '#06050a'], [0.5, '#3a1410'], [0.85, '#c4541f'], [1, '#f0a04a']]);
+  ctx.fillRect(0, 0, w, horizon + 10);
+  // sun / forge glow with rays
+  const sx = w * 0.74, sy = h * 0.3;
   ctx.save(); ctx.translate(sx, sy);
-  for (let i = 0; i < 12; i++) { ctx.rotate(Math.PI / 6); poly(ctx, [[0, 0], [-6, -h * 0.9], [6, -h * 0.9]], elf ? 'rgba(255,240,190,0.08)' : 'rgba(255,160,90,0.08)'); }
+  for (let i = 0; i < 14; i++) { ctx.rotate(Math.PI / 7); poly(ctx, [[0, 0], [-7, -h], [7, -h]], elf ? 'rgba(255,240,190,0.07)' : 'rgba(255,150,80,0.07)'); }
   ctx.restore();
-  glow(ctx, sx, sy, 60, elf ? '#fff1c0' : '#ffb080', 0.6);
-  circle(ctx, sx, sy, 20, rgrad(ctx, sx, sy, 2, 22, elf ? [[0, '#fffbe6'], [1, '#ffe08a']] : [[0, '#ffd9a0'], [1, '#ff8a40']]));
-  // clouds
-  for (let i = 0; i < 5; i++) { const x = (i * 137 + 40) % w, y = 20 + (i * 23) % 40; for (let k = 0; k < 4; k++) ellipse(ctx, x + k * 16, y + Math.sin(k) * 3, 18 - Math.abs(k - 1.5) * 4, 7, elf ? 'rgba(255,255,255,0.14)' : 'rgba(80,50,40,0.35)'); }
-  // far mountains & hills
-  mountains(ctx, w, h * 0.66, h * 0.28, elf ? '#3a5a62' : '#2a1a1a', elf ? '#d6e6ee' : null, town.x * 0.01 + 1);
-  hills(ctx, w, h, h * 0.68, 12, elf ? '#2e5a3a' : '#2c2220', town.y * 0.02 + 2);
-  hills(ctx, w, h, h * 0.78, 10, elf ? '#3f7a46' : '#3a2e28', town.y * 0.02 + 4);
-  hills(ctx, w, h, h * 0.88, 8, elf ? '#4f8a3a' : '#4a4544', town.y * 0.02 + 6);
-  // trees scattered
-  const kinds = elf ? [D.GOLDEN, D.LEAFY, D.PINE] : [D.DEAD, D.ROCK, D.DEAD];
-  for (let i = 0; i < 14; i++) { const sp = decorSprite(kinds[i % 3], i & 3); const sc = 0.45 + ((i * 7) % 4) * 0.12; const x = ((i * 97 + 20) % w); if (Math.abs(x - w / 2) < 110) continue; const y = h * (0.74 + ((i * 11) % 5) * 0.035); ctx.drawImage(sp, x - sp.lw * sc / 2, y - sp.lh * sc, sp.lw * sc, sp.lh * sc); }
-  // town
-  const sp = townSprite(town.faction, fortLevel, null);
-  const sc = 0.82;
-  ctx.drawImage(sp, w / 2 - sp.lw * sc / 2, h - sp.lh * sc + 6, sp.lw * sc, sp.lh * sc);
-  // buildings as little houses along the foreground
-  const b = town.buildings;
-  let x = 34;
-  const house = (label, hgt, col, spire = false) => {
-    rrect(ctx, x + 2, h - 16 - hgt + 3, 34, hgt, 3, 'rgba(0,0,0,0.3)');
-    rrect(ctx, x, h - 18 - hgt, 34, hgt, 3, lgrad(ctx, x, 0, x + 34, 0, [[0, lighten(col, 0.2)], [1, shade(col, 0.6)]]), 'rgba(0,0,0,0.5)', 1);
-    if (spire) poly(ctx, [[x - 2, h - 18 - hgt], [x + 17, h - 18 - hgt - 26], [x + 36, h - 18 - hgt]], shade(col, 0.55), 'rgba(0,0,0,0.5)', 1);
-    else poly(ctx, [[x - 4, h - 18 - hgt], [x + 17, h - 18 - hgt - 14], [x + 38, h - 18 - hgt]], shade(col, 0.6), 'rgba(0,0,0,0.5)', 1);
-    glow(ctx, x + 17, h - 28, 10, '#ffd27a', 0.5); rrect(ctx, x + 13, h - 32, 8, 10, 2, '#ffe28a');
-    ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.font = '9px Cinzel, serif'; ctx.textAlign = 'center'; ctx.shadowColor = '#000'; ctx.shadowBlur = 3; ctx.fillText(label, x + 17, h - 6); ctx.shadowBlur = 0;
-    x += 48;
-  };
-  const col = elf ? '#e8e0c8' : '#5a4a3a';
-  if (b.tavern) house('Taverne', 26, col);
-  if (b.market) house('Marked', 22, col);
-  if (mageLevel) house(`Magi ${roman(mageLevel)}`, 30 + mageLevel * 8, elf ? '#cfd8ff' : '#6a4a6a', true);
-  if (b.silo) house('Lager', 24, col);
-  if (b.special) house('Special', 28, elf ? '#9ad56a' : '#8a2a2a');
-  x = w - 50;
-  for (let i = 6; i >= 0; i--) {
-    const dw = 'dw' + (i + 1); if (!b[dw]) continue;
-    const hgt = 16 + i * 3;
-    rrect(ctx, x + 2, h - 16 - hgt + 3, 28, hgt, 3, 'rgba(0,0,0,0.3)');
-    rrect(ctx, x, h - 18 - hgt, 28, hgt, 3, lgrad(ctx, x, 0, x + 28, 0, [[0, elf ? '#b8d8a0' : '#4a4a4a'], [1, elf ? '#7a9a60' : '#2a2a2a']]), 'rgba(0,0,0,0.5)', 1);
-    poly(ctx, [[x - 3, h - 18 - hgt], [x + 14, h - 18 - hgt - 10], [x + 31, h - 18 - hgt]], elf ? '#6a8a50' : '#1a1a1a', 'rgba(0,0,0,0.5)', 1);
-    glow(ctx, x + 14, h - 26, 8, '#ffd27a', 0.4); rrect(ctx, x + 11, h - 29, 6, 7, 2, '#ffe28a');
-    ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.font = '9px Cinzel, serif'; ctx.textAlign = 'center'; ctx.shadowColor = '#000'; ctx.shadowBlur = 3; ctx.fillText(roman(i + 1), x + 14, h - 6); ctx.shadowBlur = 0;
-    x -= 36;
+  glow(ctx, sx, sy, 90, elf ? '#fff1c0' : '#ff9a50', 0.55);
+  circle(ctx, sx, sy, 18, rgrad(ctx, sx, sy, 2, 20, elf ? [[0, '#fffbe6'], [1, '#ffe08a']] : [[0, '#ffd9a0'], [1, '#ff7a30']]));
+  // clouds / smoke
+  for (let i = 0; i < 7; i++) { const x = (i * 151 + 30) % w, y = 14 + (i * 29) % 46; for (let k = 0; k < 5; k++) ellipse(ctx, x + k * 18, y + Math.sin(k * 1.7) * 4, 22 - Math.abs(k - 2) * 5, 8, elf ? 'rgba(255,255,255,0.13)' : 'rgba(60,30,25,0.4)'); }
+  // distant painted mountains, hazed
+  const mtn = decorSprite(D.MOUNTAIN, 0);
+  const nm = Math.max(4, Math.round(w / 230));
+  for (let i = 0; i < nm; i++) {
+    const sc = 0.42 + ((i * 5 + town.x) % 3) * 0.12; const x = (i + 0.5) * (w / nm) + (((i * 37 + town.x * 11) % 60) - 30); const y = horizon + 6 + ((i * 3) % 3) * 3;
+    if (Math.abs(x - w / 2) < 90) continue;
+    ctx.globalAlpha = 0.75; ctx.drawImage(mtn, x - mtn.lw * sc / 2, y - mtn.lh * sc, mtn.lw * sc, mtn.lh * sc); ctx.globalAlpha = 1;
   }
-  // foreground path
-  ctx.strokeStyle = 'rgba(120,95,60,0.55)'; ctx.lineWidth = 10; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(w / 2, h - 6); ctx.quadraticCurveTo(w / 2 + 30, h + 10, w / 2 + 120, h + 6); ctx.stroke();
-  // vignette
-  const g = ctx.createRadialGradient(w / 2, h / 2, h * 0.3, w / 2, h / 2, w * 0.7); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.45)');
-  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = lgrad(ctx, 0, horizon - 70, 0, horizon + 8, [[0, elf ? 'rgba(190,215,230,0)' : 'rgba(120,60,40,0)'], [1, elf ? 'rgba(190,215,230,0.7)' : 'rgba(120,60,40,0.7)']]);
+  ctx.fillRect(0, horizon - 70, w, 78);
+  // ground from the painted terrain texture, flattened for perspective
+  const gt = elf ? T.GRASS : T.ASH;
+  const sheet = terrainSheet(gt, 48) || tileTexture(gt, 96);
+  ctx.save(); ctx.translate(0, horizon); ctx.scale(1, 0.62);
+  ctx.fillStyle = ctx.createPattern(sheet, 'repeat'); ctx.fillRect(0, 0, w, (h - horizon) / 0.62 + 4);
+  ctx.restore();
+  ctx.fillStyle = lgrad(ctx, 0, horizon, 0, h, [[0, elf ? 'rgba(220,230,200,0.45)' : 'rgba(90,40,30,0.5)'], [0.35, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0.35)']]);
+  ctx.fillRect(0, horizon, w, h - horizon);
+  // painted trees in three rows, keeping the middle free for the town
+  const kinds = elf ? [D.GOLDEN, D.LEAFY, D.PINE, D.LEAFY] : [D.DEAD, D.ROCK, D.DEAD, D.ROCK];
+  const rows = [[0.64, 0.42, 7, 29], [0.8, 0.62, 5, 61], [1.04, 1.0, 4, 97]];
+  rows.forEach(([ry, sc0, step, seed], ri) => {
+    const n = Math.ceil(w / (step * 16)) + 2;
+    for (let i = 0; i < n; i++) {
+      const x = ((i * step * 16 + seed * (ri + 1) + town.y * 7) % (w + 120)) - 60;
+      if (Math.abs(x - w / 2) < 135 + ri * 50) continue;
+      const sp = decorSprite(kinds[(i + ri) % 4], (i + seed) & 3); const sc = sc0 + ((i * 7 + seed) % 3) * 0.08;
+      const y = h * ry + ((i * 13) % 5) * 2;
+      ctx.drawImage(sp, x - sp.lw * sc / 2, y - sp.lh * sc, sp.lw * sc, sp.lh * sc);
+    }
+  });
+  // the town itself
+  const sp = townSprite(town.faction, fortLevel, null);
+  const sc = Math.min(1.05, (h * 0.9) / sp.lh);
+  ellipse(ctx, w / 2, h - 9, sp.lw * sc * 0.42, 9, 'rgba(0,0,0,0.35)');
+  ctx.drawImage(sp, w / 2 - sp.lw * sc / 2, h - sp.lh * sc - 3, sp.lw * sc, sp.lh * sc);
+  // floating motes and vignette
+  for (let i = 0; i < 26; i++) { const x = (i * 97 + 13) % w, y = (i * 53 + 7) % h; glow(ctx, x, y, 3 + (i % 3), elf ? '#ffe9a0' : '#ff9a50', 0.25); }
+  ctx.fillStyle = rgrad(ctx, w / 2, h * 0.45, h * 0.3, w * 0.7, [[0, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,0.45)']]);
+  ctx.fillRect(0, 0, w, h);
 }

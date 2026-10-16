@@ -96,10 +96,10 @@ function hashSeed(str) { let h = 2166136261; for (let i = 0; i < str.length; i++
 export function showHelp() {
   const body = el('div.help', { html: `
 <p><b>Målet</b> er at erobre modstanderens by og besejre alle fjendens helte. Du taber, hvis du mister alle byer og helte – eller står uden by i 7 dage.</p>
-<p><b>Eventyrkortet:</b> Tryk på en helt for at vælge den. Tryk på et felt for at planlægge en rute (prikker viser vejen, et tal viser antal dage). Tryk igen for at gå. Træk for at panorere, knib for at zoome.</p>
+<p><b>Eventyrkortet:</b> Tryk på en helt for at vælge den. Tryk på et felt for at planlægge en rute: guld viser dagens vej, sølv de følgende dage, og mærket ved målet viser prisen i skridt. Nederst ser du heltens skridt tilbage (👣), og hvor mange der er brugt, når ruten udføres. Tryk igen for at gå. Træk for at panorere, knib for at zoome.</p>
 <p><b>Byer:</b> Byg én bygning om dagen. Nye enheder vokser hver uge (dag 1). Hyr dem i Hvervning – de går til den besøgende helt eller garnisonen.</p>
 <p><b>Ressourcer:</b> Guld, Tømmer og Malm til basale bygninger. Mithril, Warpsten og Ædelsten til magi og de stærkeste væsner. Erobr miner ved at besøge dem.</p>
-<p><b>Kamp:</b> Foregår på et hexkort. Enheder handler efter hastighed. Tryk på et felt for at flytte, på en fjende for at angribe eller skyde. Helte kan kaste én besværgelse pr. runde. Vent, Forsvar og Auto-kamp findes i bunden.</p>
+<p><b>Kamp:</b> Foregår på et hexkort. Enheder handler efter hastighed. Tryk på et felt for at flytte, på en fjende for at angribe eller skyde. Helte kan kaste én besværgelse pr. runde. Vent, Forsvar og Auto-kamp findes i bunden. Knib eller tryk på 🔍 for at zoome ind på slagmarken, træk for at flytte udsynet.</p>
 <p><b>Helte:</b> Får erfaring af kampe og stiger i niveau: +1 egenskab og en valgfri færdighed. Artefakter giver bonusser. Hastigheden af den langsomste enhed bestemmer bevægelsen pr. dag.</p>
 <p><b>Monstre</b> bevogter felterne omkring sig – man kan ikke snige sig forbi. Lyt til tallene: "Flok (10-19)" fortæller cirka hvor mange de er.</p>
 <p><b>Tip:</b> Installer spillet på hjemmeskærmen via Chrome-menuen "Føj til startskærm" – så kører det i fuld skærm og offline.</p>` });

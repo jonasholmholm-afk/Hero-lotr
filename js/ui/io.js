@@ -126,14 +126,14 @@ export class GameIO {
     const r = this.app.renderer;
     if (this.isHuman(hero)) {
       r.invalidateFog();
-      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, 170);
+      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, 320);
       const [sx, sy] = r.worldToScreen((hero.x + 0.5) * 64, (hero.y + 0.5) * 64);
       if (sx < 80 || sy < 80 || sx > r.w - 80 || sy > r.h - 140) r.centerOn(hero.x, hero.y);
       return;
     }
     if (this.visible(st.x, st.y) || this.visible(prev.x, prev.y)) {
       r.centerOn(hero.x, hero.y);
-      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, 120);
+      await r.animateHero(hero, prev.x, prev.y, st.x, st.y, 230);
     }
   }
   async aiTurnStart(p) {

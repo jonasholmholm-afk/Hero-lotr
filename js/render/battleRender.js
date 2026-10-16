@@ -36,8 +36,15 @@ export class BattleRenderer {
     this.flash = new Map();
     this.shake = 0;
     this.bg = null;
+    this.view = { zoom: 1, x: 0, y: 0 }; this.minZoom = 1; this.maxZoom = 2.4;
     this.resize();
   }
+  // -------- camera (zoom & pan inside the battlefield) --------
+  toWorld(sx, sy) { return [sx / this.view.zoom + this.view.x, sy / this.view.zoom + this.view.y]; }
+  clampView() { const z = this.view.zoom; this.view.x = clamp(this.view.x, 0, Math.max(0, this.w - this.w / z)); this.view.y = clamp(this.view.y, 0, Math.max(0, this.h - this.h / z)); }
+  zoomAt(sx, sy, factor) { const [wx, wy] = this.toWorld(sx, sy); this.view.zoom = clamp(this.view.zoom * factor, this.minZoom, this.maxZoom); this.view.x = wx - sx / this.view.zoom; this.view.y = wy - sy / this.view.zoom; this.clampView(); }
+  setZoom(z, wx, wy) { this.view.zoom = clamp(z, this.minZoom, this.maxZoom); this.view.x = wx - this.w / 2 / this.view.zoom; this.view.y = wy - this.h / 2 / this.view.zoom; this.clampView(); }
+  panBy(dx, dy) { this.view.x -= dx / this.view.zoom; this.view.y -= dy / this.view.zoom; this.clampView(); }
   resize() {
     const r = this.canvas.getBoundingClientRect();
     this.w = Math.max(1, Math.round(r.width)); this.h = Math.max(1, Math.round(r.height));
@@ -49,9 +56,10 @@ export class BattleRenderer {
     const fieldH = this.size * (1.5 * (BF_H - 1) + 2);
     this.ox = (this.w - fieldW) / 2; this.oy = (this.h - fieldH) / 2 + 6;
     this.bg = null;
+    if (this.view) this.clampView();
   }
   center(x, y) { return hexCenter(x, y, this.size, this.ox, this.oy); }
-  hexAt(sx, sy) { return pixelToHex(sx, sy, this.size, this.ox, this.oy); }
+  hexAt(sx, sy) { const [wx, wy] = this.toWorld(sx, sy); return pixelToHex(wx, wy, this.size, this.ox, this.oy); }
 
   background() {
     if (this.bg) return this.bg;
@@ -118,12 +126,12 @@ export class BattleRenderer {
     let from = this.pos(st);
     if (flying && path.length > 1) {
       const to = path[path.length - 1];
-      await this.tween(st.id, from, to, Math.max(260, path.length * 70), true);
+      await this.tween(st.id, from, to, Math.max(520, path.length * 140), true);
       this.stackPos.delete(st.id);
       return;
     }
     for (const to of path) {
-      await this.tween(st.id, from, to, 140, false);
+      await this.tween(st.id, from, to, 270, false);
       this.dust(to);
       from = to;
     }
@@ -139,17 +147,17 @@ export class BattleRenderer {
   async animateAttack(att, def) {
     const a = this.pos(att), d = this.pos(def);
     const mid = [a[0] + (d[0] - a[0]) * 0.35, a[1] + (d[1] - a[1]) * 0.35];
-    await this.tween(att.id, a, mid, 110, false);
+    await this.tween(att.id, a, mid, 210, false);
     this.flash.set(def.id, performance.now());
     this.spawnHit(def);
     this.fx.push({ type: 'slash', id: def.id, t0: performance.now(), dir: Math.atan2(d[1] - a[1], (d[0] - a[0]) * 1.2) });
-    await this.tween(att.id, mid, a, 140, false);
+    await this.tween(att.id, mid, a, 260, false);
     this.stackPos.delete(att.id);
   }
   async animateShot(att, def) {
     const [ax, ay] = this.center(...this.pos(att));
     const [dx, dy] = this.center(...this.pos(def));
-    await new Promise((resolve) => this.anims.push({ proj: true, from: [ax, ay - this.size * 0.7], to: [dx, dy - this.size * 0.5], t0: performance.now(), dur: 340, resolve, trail: [] }));
+    await new Promise((resolve) => this.anims.push({ proj: true, from: [ax, ay - this.size * 0.7], to: [dx, dy - this.size * 0.5], t0: performance.now(), dur: 560, resolve, trail: [] }));
     this.flash.set(def.id, performance.now());
     this.spawnHit(def);
   }
@@ -182,7 +190,7 @@ export class BattleRenderer {
     }
     for (const id of targets) this.flash.set(id, now + (g === 'fire' ? 380 : 120));
     this.spellFlash = { t0: now, col };
-    await new Promise((r) => setTimeout(r, g === 'fire' ? 800 : 520));
+    await new Promise((r) => setTimeout(r, g === 'fire' ? 1100 : 800));
   }
   floater(st, text, col = '#fff') {
     const [cx, cy] = this.center(...this.pos(st));
@@ -201,7 +209,7 @@ export class BattleRenderer {
     this.dying.set(st.id, performance.now());
     const [cx, cy] = this.center(...this.pos(st));
     for (let i = 0; i < 10; i++) this.particles.push({ x: cx + (Math.random() - 0.5) * this.size, y: cy, vx: (Math.random() - 0.5) * 20, vy: -20 - Math.random() * 20, life: 0.8, col: '#777', r: 3 + Math.random() * 3, grav: -10 });
-    await new Promise((r) => setTimeout(r, 380));
+    await new Promise((r) => setTimeout(r, 700));
   }
 
   // -------- draw --------
@@ -211,7 +219,8 @@ export class BattleRenderer {
     const sh = this.shake > 0.3 ? this.shake : 0;
     const shx = sh ? (Math.random() - 0.5) * sh : 0, shy = sh ? (Math.random() - 0.5) * sh : 0;
     this.shake *= Math.pow(0.02, dt);
-    ctx.setTransform(this.dpr, 0, 0, this.dpr, shx * this.dpr, shy * this.dpr);
+    const z = this.view.zoom;
+    ctx.setTransform(this.dpr * z, 0, 0, this.dpr * z, (shx - this.view.x * z) * this.dpr, (shy - this.view.y * z) * this.dpr);
     ctx.drawImage(this.background(), 0, 0, this.w, this.h);
     for (const a of this.anims) {
       if (a.proj) continue;
@@ -236,7 +245,7 @@ export class BattleRenderer {
     }
     // ground fx (rings, mist) below units
     this.drawFx(now, 'below');
-    const stacks = b.stacks.filter((s) => !s.dead || (this.dying && this.dying.has(s.id) && now - this.dying.get(s.id) < 420)).sort((p, q) => this.pos(p)[1] - this.pos(q)[1] || p.x - q.x);
+    const stacks = b.stacks.filter((s) => !s.dead || (this.dying && this.dying.has(s.id) && now - this.dying.get(s.id) < 720)).sort((p, q) => this.pos(p)[1] - this.pos(q)[1] || p.x - q.x);
     for (const st of stacks) this.drawStack(st, now);
     // projectiles
     for (const a of this.anims) {
@@ -272,7 +281,7 @@ export class BattleRenderer {
     // floaters
     ctx.font = `bold ${Math.round(this.size * 0.62)}px Cinzel, Georgia, serif`; ctx.textAlign = 'center';
     for (const f of this.floaters) {
-      const t = (now - f.t0) / 1200;
+      const t = (now - f.t0) / 1500;
       if (t >= 1) { f.done = true; continue; }
       const y = f.y - (1 - Math.pow(1 - t, 2)) * 36;
       ctx.globalAlpha = 1 - t * t;
@@ -382,7 +391,7 @@ export class BattleRenderer {
     const { ctx, b } = this;
     const p = this.pos(st);
     const [cx, cy0] = this.center(p[0], p[1]);
-    const idle = this.stackPos.has(st.id) || st.dead ? 0 : Math.sin(now / 420 + st.id * 1.7) * this.size * 0.02;
+    const idle = this.stackPos.has(st.id) || st.dead ? 0 : Math.sin(now / 720 + st.id * 1.7) * this.size * 0.02;
     const lift = (p[2] || 0) * this.size + idle;
     const S = this.size * 2.9 * (0.72 + st.unit.tier * 0.06);
     const flip = st.side === 1;

@@ -8,6 +8,7 @@ import { figure } from '../render/figures.js';
 import { portrait } from '../render/portraits.js';
 import { decorSprite, objectSprite, townSprite, heroSprite, tileTexture } from '../render/sprites.js';
 import { UNITS } from '../data/units.js';
+import { buildingIcon, spellIcon } from '../render/icons.js';
 import { D } from '../data/terrain.js';
 import { dialog, toast, confirm } from './dialogs.js';
 
@@ -29,6 +30,8 @@ function previewCanvas(slot) {
       }
       case 'decor': return decorSprite(DECOR_IDS[id], 0);
       case 'terrain': return tileTexture(TERRAIN_IDS[id], 96);
+      case 'buildings': { const fac = id.split('_')[0]; const bid = id.slice(fac.length + 1); return buildingIcon(bid === 'mage' ? 'mage1' : bid, fac, 88); }
+      case 'spells': return spellIcon(id, 64);
     }
   } catch (e) { console.warn(e); }
   return null;

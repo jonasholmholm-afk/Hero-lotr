@@ -67,8 +67,59 @@ export class BattleScreen {
     };
     bar.append(this.btns.spell, this.btns.wait, this.btns.defend, this.btns.auto, this.btns.flee);
     this.info = this.root.querySelector('.battle-info');
-    this.canvas.onpointerdown = (e) => this.onTap(e);
-    this.canvas.onpointermove = (e) => { const hx = this.r.hexAt(...this.evPos(e)); this.r.hover = hx; };
+    this.bindInput();
+    let zb = this.root.querySelector('.battle-zoom');
+    if (!zb) { zb = el('button.btn.small.battle-zoom', { title: 'Zoom' }); this.root.append(zb); }
+    zb.textContent = '🔍'; zb.onclick = () => this.cycleZoom();
+  }
+  // Pinch to zoom, drag to pan, mouse wheel on desktop; a plain tap still acts.
+  bindInput() {
+    const c = this.canvas;
+    this.pointers = new Map(); this.drag = null; this.pinch = null;
+    c.onpointerdown = (e) => {
+      c.setPointerCapture(e.pointerId);
+      this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (this.pointers.size === 1) this.drag = { x: e.clientX, y: e.clientY, moved: false };
+      else if (this.pointers.size === 2) { const [a, b] = [...this.pointers.values()]; this.pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 }; this.drag = null; }
+    };
+    c.onpointermove = (e) => {
+      if (!this.pointers.has(e.pointerId)) { this.r.hover = this.r.hexAt(...this.evPos(e)); return; }
+      const prev = this.pointers.get(e.pointerId);
+      this.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (this.pointers.size === 2 && this.pinch) {
+        const [a, b] = [...this.pointers.values()];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        const rect = c.getBoundingClientRect();
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+        this.r.zoomAt(mx - rect.left, my - rect.top, d / Math.max(1, this.pinch.d));
+        this.r.panBy(mx - this.pinch.mx, my - this.pinch.my);
+        this.pinch = { d, mx, my };
+        return;
+      }
+      if (this.drag) {
+        const dx = e.clientX - this.drag.x, dy = e.clientY - this.drag.y;
+        if (!this.drag.moved && Math.hypot(dx, dy) > 10) this.drag.moved = true;
+        if (this.drag.moved) this.r.panBy(e.clientX - prev.x, e.clientY - prev.y);
+        this.r.hover = this.r.hexAt(...this.evPos(e));
+      }
+    };
+    const up = (e) => {
+      const wasTap = this.drag && !this.drag.moved && this.pointers.size === 1;
+      this.pointers.delete(e.pointerId);
+      if (this.pointers.size < 2) this.pinch = null;
+      if (this.pointers.size === 0) this.drag = null;
+      if (wasTap) this.onTap(e);
+    };
+    c.onpointerup = up; c.onpointercancel = up;
+    c.onwheel = (e) => { e.preventDefault(); const [x, y] = this.evPos(e); this.r.zoomAt(x, y, e.deltaY < 0 ? 1.15 : 1 / 1.15); };
+  }
+  cycleZoom() {
+    const levels = [1, 1.6, 2.2];
+    const cur = this.r.view.zoom;
+    const next = levels.find((z) => z > cur + 0.05) || 1;
+    const st = this.pending ? this.pending.st : this.b.current;
+    const [cx, cy] = st && !st.dead ? this.r.center(...this.r.pos(st)) : [this.r.w / 2, this.r.h / 2];
+    this.r.setZoom(next, cx, cy);
   }
   evPos(e) { const r = this.canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
   updateOrder() {
@@ -103,7 +154,7 @@ export class BattleScreen {
           await r.animateAttack(a, d);
           r.floater(d, `-${ev.dmg}` + (ev.luck === true ? ' ✦' : ''), ev.luck === true ? '#ffe066' : '#ff8a6a');
           if (ev.kills) r.floater(d, `${ev.kills} faldt`, '#ff5a46');
-          await wait(220 / this.speed);
+          await wait(450 / this.speed);
           break;
         }
         case 'shoot': {
@@ -111,7 +162,7 @@ export class BattleScreen {
           await r.animateShot(a, d);
           r.floater(d, `-${ev.dmg}` + (ev.luck === true ? ' ✦' : ''), ev.luck === true ? '#ffe066' : '#ff8a6a');
           if (ev.kills) r.floater(d, `${ev.kills} faldt`, '#ff5a46');
-          await wait(220 / this.speed);
+          await wait(450 / this.speed);
           break;
         }
         case 'death': { await r.animateDeath(b.getStack(ev.id)); break; }
@@ -127,11 +178,11 @@ export class BattleScreen {
             if (t.resurrected) r.floater(st, `+${t.resurrected} genoplivet`, '#8fe0a0');
           }
           this.updateTop();
-          await wait(300 / this.speed);
+          await wait(500 / this.speed);
           break;
         }
-        case 'morale': { const st = b.getStack(ev.id); r.floater(st, ev.good ? 'Høj moral!' : 'Lav moral…', ev.good ? '#ffe066' : '#9aa0a6'); await wait(400 / this.speed); break; }
-        case 'wait': case 'defend': { const st = b.getStack(ev.id); r.floater(st, ev.type === 'wait' ? 'venter' : 'forsvarer', '#cfd8e3'); await wait(150); break; }
+        case 'morale': { const st = b.getStack(ev.id); r.floater(st, ev.good ? 'Høj moral!' : 'Lav moral…', ev.good ? '#ffe066' : '#9aa0a6'); await wait(600 / this.speed); break; }
+        case 'wait': case 'defend': { const st = b.getStack(ev.id); r.floater(st, ev.type === 'wait' ? 'venter' : 'forsvarer', '#cfd8e3'); await wait(320); break; }
         case 'regen': { const st = b.getStack(ev.id); r.floater(st, `+${ev.amount}`, '#8fe0a0'); break; }
         case 'flee': toast('Helten flygter fra slagmarken!', 1500); break;
         case 'end': break;
@@ -194,7 +245,7 @@ export class BattleScreen {
       const pos = b.attackPositions(st, target, this.reach);
       if (!pos.length) { this.showStackInfo(target); return; }
       // choose the attack position closest to the tap point among the nearest by path
-      const [px, py] = this.evPos(e);
+      const [px, py] = this.r.toWorld(...this.evPos(e));
       const minDist = pos[0].dist;
       const cands = pos.filter((p) => p.dist <= minDist + 1);
       cands.sort((a, c) => { const [ax, ay] = this.r.center(a.x, a.y); const [cx, cy] = this.r.center(c.x, c.y); return Math.hypot(ax - px, ay - py) - Math.hypot(cx - px, cy - py); });

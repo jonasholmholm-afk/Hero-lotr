@@ -1,5 +1,5 @@
 // Adventure screen controller: map input, HUD panels, hero selection and movement.
-import { el, ordinalDay, wait } from '../core/utils.js';
+import { el, ordinalDay, wait, fmtMove } from '../core/utils.js';
 import { G, human, heroAt, objAt, heroesOf, townsOf } from '../game/state.js';
 import { RES, RES_INFO } from '../data/resources.js';
 import { OBJ } from '../data/objects.js';
@@ -17,6 +17,13 @@ import { townSprite } from '../render/sprites.js';
 import { fortLevel } from '../game/town.js';
 import { T } from '../data/terrain.js';
 import { dialog as dlg } from './dialogs.js';
+
+function moveBar(cur, max, planned) {
+  const pct = (v) => Math.max(0, Math.min(100, (v / max) * 100));
+  const bar = el('div.bar.move', el('div.bar-fill', { style: { width: pct(cur) + '%' } }));
+  if (planned > 0) bar.append(el('div.bar-plan', { style: { left: pct(cur - planned) + '%', width: pct(planned) + '%' } }));
+  return bar;
+}
 
 export class Hud {
   constructor(app) {
@@ -71,7 +78,12 @@ export class Hud {
     bottom.innerHTML = '';
     const h = this.selected ? s.heroes[this.selected] : null;
     if (h) {
-      const left = el('div.sel-hero', { onclick: () => this.app.openHero(h).then(() => this.refresh()) }, portraitImg(h.defId, 44), el('div.sel-text', el('div.name', `${h.name} (${h.level})`), statBar(h.movement, Math.max(1, h.maxMovement || maxMovement(h)), 'move'), el('div.sub', `Mana ${h.mana} · ⚔${h.attack} 🛡${h.defense}`)));
+      const max = Math.max(1, h.maxMovement || maxMovement(h));
+      let planned = 0;
+      if (this.path && this.path.length) for (const st of this.path) if (st.day === 0) planned = st.g;
+      const moveTxt = planned > 0 ? `${fmtMove(h.movement)} → ${fmtMove(h.movement - planned)}` : `${fmtMove(h.movement)} / ${fmtMove(max)}`;
+      const moveRow = el('div.move-row', { title: 'Skridt tilbage i dag' }, el('span.move-ico', '👣'), moveBar(h.movement, max, planned), el('span.move-txt', moveTxt));
+      const left = el('div.sel-hero', { onclick: () => this.app.openHero(h).then(() => this.refresh()) }, portraitImg(h.defId, 44), el('div.sel-text', el('div.name', `${h.name} (${h.level})`), moveRow, el('div.sub', `Mana ${h.mana} · ⚔${h.attack} 🛡${h.defense}`)));
       bottom.append(left);
       const slots = el('div.army-slots.mini');
       for (let i = 0; i < 7; i++) slots.append(h.army[i] ? unitCard(h.army[i].unit, h.army[i].count, { cls: 'mini' }) : emptySlot({ cls: 'mini' }));
@@ -222,7 +234,9 @@ export class Hud {
     if (o && o.type === OBJ.MONSTER) name += ' – angrib';
     const g = !o && !hAt ? guardAt(tx, ty) : null;
     if (g) name = `Bevogtet af ${UNITS[g.unit].plural}!`;
-    toast((name ? name + ' · ' : '') + (days[days.length - 1] === 0 ? 'Tryk igen for at gå' : `${days[days.length - 1] + 1} dage · tryk igen`), 2500);
+    const lastDay = days[days.length - 1];
+    toast((name ? name + ' · ' : '') + (lastDay === 0 ? `${fmtMove(cost)} skridt, ${fmtMove(h.movement - cost)} tilbage · tryk igen for at gå` : `${lastDay + 1} dage · ${fmtMove(cost)} skridt · tryk igen`), 3000);
+    this.refresh();
   }
 
   describe(o, hAt) {

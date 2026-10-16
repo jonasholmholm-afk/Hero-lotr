@@ -82,7 +82,7 @@ input.seed { background: #0d1118; border: 1px solid #4a3a22; color: var(--text);
 .sel-hero { display: flex; align-items: center; gap: 10px; cursor: pointer; min-width: 190px; padding: 4px 8px 4px 4px; border-radius: 10px; background: linear-gradient(180deg, rgba(30,34,44,0.7), rgba(12,15,22,0.7)); box-shadow: var(--frame-sm); }
 .sel-text .name { font-family: var(--font-head); font-size: 0.92rem; color: var(--gold); text-shadow: 0 1px 2px #000; }
 .sel-text .sub { font-size: 0.8rem; color: var(--muted); }
-.bar { height: 7px; background: #171a20; border-radius: 4px; overflow: hidden; margin: 3px 0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8), 0 0 0 1px #3a3326; }
+.bar { position: relative; height: 7px; background: #171a20; border-radius: 4px; overflow: hidden; margin: 3px 0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8), 0 0 0 1px #3a3326; }
 .bar-fill { height: 100%; background: linear-gradient(90deg, #3f9a52, #9ff0b0); box-shadow: 0 0 6px rgba(143,224,160,0.6); }
 .bar.mana .bar-fill { background: linear-gradient(90deg, #2d6fb3, #9fe0ff); box-shadow: 0 0 6px rgba(143,211,255,0.6); }
 .bar.exp .bar-fill { background: linear-gradient(90deg, #8a6b1f, #ffe28a); box-shadow: 0 0 6px rgba(255,226,138,0.6); }
@@ -255,3 +255,13 @@ canvas.minimap { border-radius: 6px; box-shadow: var(--frame-sm); image-renderin
 
 .sheet-box { margin: 8px 0; }
 .sheet-select { max-width: 100%; background: #0d1118; color: var(--text); border: 1px solid #4a3a22; border-radius: 8px; padding: 8px; font-family: var(--font-body); font-size: 0.9rem; }
+
+/* movement row in the HUD */
+.move-row { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+.move-row .bar { flex: 1; margin: 0; min-width: 64px; height: 8px; }
+.move-ico { font-size: 0.8rem; line-height: 1; }
+.move-txt { font-family: var(--font-head); font-size: 0.78rem; color: #ffe9b0; white-space: nowrap; text-shadow: 0 1px 2px #000; }
+.bar-plan { position: absolute; top: 0; height: 100%; background: repeating-linear-gradient(135deg, #ffd872 0 3px, #8a6b1f 3px 6px); box-shadow: 0 0 6px rgba(255,216,114,0.8); }
+/* battle zoom button */
+.battle-zoom { position: absolute; right: calc(8px + var(--sar)); top: calc(62px + var(--sat)); z-index: 3; opacity: 0.85; }
+.town-banner { height: 190px; }

@@ -57,6 +57,8 @@ export function sum(arr, fn = (x) => x) {
 }
 
 export const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+/** Movement points (100 per plain tile) shown as steps, e.g. 1450 -> '14,5'. */
+export function fmtMove(v) { const t = Math.round(v / 10) / 10; return Number.isInteger(t) ? String(t) : t.toFixed(1).replace('.', ','); }
 
 export function ordinalDay(day) {
   const d = ((day - 1) % 7) + 1;

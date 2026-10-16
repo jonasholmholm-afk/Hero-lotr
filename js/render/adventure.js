@@ -7,7 +7,7 @@ import { T, D, DECOR_BLOCKS, TERRAIN_INFO } from '../data/terrain.js';
 import { UNITS } from '../data/units.js';
 import { OBJ } from '../data/objects.js';
 import { fortLevel } from '../game/town.js';
-import { clamp } from '../core/utils.js';
+import { clamp, fmtMove } from '../core/utils.js';
 import { Noise } from '../core/noise.js';
 
 const CHUNK = 10; // tiles per chunk side
@@ -466,6 +466,8 @@ export class AdventureRenderer {
     const g = ctx.createRadialGradient(this.w / 2, this.h / 2, Math.min(this.w, this.h) * 0.4, this.w / 2, this.h / 2, Math.max(this.w, this.h) * 0.8);
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.5)');
     ctx.fillStyle = g; ctx.fillRect(0, 0, this.w, this.h);
+    // route labels on top of fog and vignette
+    if (this.path) { ctx.save(); ctx.scale(cam.zoom, cam.zoom); ctx.translate(-cam.x, -cam.y); this.drawPathLabels(); ctx.restore(); }
   }
 
   drawWater(vx0, vy0, vx1, vy1) {
@@ -522,28 +524,86 @@ export class AdventureRenderer {
       ctx.strokeStyle = `rgba(255,230,120,${0.6 + pulse * 0.35})`; ctx.lineWidth = 2.5;
       ctx.beginPath(); ctx.ellipse(px, py - 5, 27 + pulse * 2, 9 + pulse, 0, 0, Math.PI * 2); ctx.stroke();
     }
-    const frame = Math.floor(this.time * 5) & 3;
+    const frame = Math.floor(this.time * 3.5) & 3;
     const sp = heroSprite(h.faction, p.color, flip, frame);
     const bob = this.heroAnim.has(h.id) ? Math.sin(this.time * 18) * 2 : 0;
     blit(ctx, sp, px - sp.lw / 2, py - sp.lh + 8 + bob);
   }
 
+  // ---------- Planned route ----------
+  pathPoints() {
+    const path = this.path; if (!path || !path.length) return null;
+    const h = this.selected ? this.s.heroes[this.selected] : null;
+    const pts = [];
+    if (h) { const [hx, hy] = this.heroPos(h); pts.push({ x: hx * TILE + TILE / 2, y: hy * TILE + TILE / 2 + 6, day: 0, g: 0 }); }
+    for (const st of path) pts.push({ x: st.x * TILE + TILE / 2, y: st.y * TILE + TILE / 2 + 6, day: st.day, g: st.g });
+    return pts;
+  }
   drawPath() {
     const { ctx } = this;
-    for (let i = 0; i < this.path.length; i++) {
-      const st = this.path[i];
-      const px = st.x * TILE + TILE / 2, py = st.y * TILE + TILE / 2;
-      const last = i === this.path.length - 1;
-      const col = st.day === 0 ? '#ffe28a' : '#b8c0c8';
-      if (last) {
-        glow(ctx, px, py, 22, col, 0.35);
-        ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(px, py, 13, 0, Math.PI * 2); ctx.stroke();
-        ctx.strokeStyle = 'rgba(0,0,0,0.5)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(px, py, 15, 0, Math.PI * 2); ctx.stroke();
-        if (st.day > 0) { ctx.fillStyle = '#fff'; ctx.font = 'bold 14px Cinzel, serif'; ctx.textAlign = 'center'; ctx.fillText(String(st.day + 1), px, py + 5); }
-      } else {
-        const pulse = 0.5 + 0.5 * Math.sin(this.time * 6 - i * 0.6);
-        circle(ctx, px, py, 4 + pulse * 1.5, col, 'rgba(0,0,0,0.55)', 1.2);
-      }
+    const pts = this.pathPoints(); if (!pts || pts.length < 2) return;
+    const t = this.time;
+    const GOLD = '#ffd872', GOLD_D = '#6e4f12', SILV = '#bfcbd8', SILV_D = '#3a4654';
+    ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const trace = () => { ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y); };
+    // soft dark ribbon under the route
+    trace(); ctx.strokeStyle = 'rgba(0,0,0,0.38)'; ctx.lineWidth = 11; ctx.stroke();
+    // coloured segments: gold for today, silver for later days
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i]; const today = b.day === 0;
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+      ctx.strokeStyle = today ? GOLD_D : SILV_D; ctx.lineWidth = 6.5; ctx.stroke();
+      ctx.globalAlpha = today ? 0.95 : 0.75; ctx.strokeStyle = today ? GOLD : SILV; ctx.lineWidth = 3.4; ctx.stroke(); ctx.globalAlpha = 1;
     }
+    // flowing light along the route
+    trace(); ctx.setLineDash([5, 19]); ctx.lineDashOffset = -t * 36; ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+    // chevrons on every step, pointing onwards
+    for (let i = 1; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const ang = Math.atan2(b.y - a.y, b.x - a.x);
+      const wave = 0.65 + 0.35 * Math.sin(t * 5 - i * 0.9);
+      ctx.save(); ctx.translate(a.x, a.y); ctx.rotate(ang); ctx.globalAlpha = wave;
+      ctx.beginPath(); ctx.moveTo(-4.5, -6.5); ctx.lineTo(3.5, 0); ctx.lineTo(-4.5, 6.5);
+      ctx.strokeStyle = 'rgba(0,0,0,0.75)'; ctx.lineWidth = 5; ctx.stroke();
+      ctx.strokeStyle = a.day === 0 ? '#fff4c8' : '#eef2f7'; ctx.lineWidth = 2.2; ctx.stroke();
+      ctx.restore();
+    }
+    // destination: ring + cross
+    const L = pts[pts.length - 1]; const today = L.day === 0; const col = today ? GOLD : SILV;
+    const pulse = 0.5 + 0.5 * Math.sin(t * 4);
+    glow(ctx, L.x, L.y, 26 + pulse * 5, col, 0.32);
+    ctx.strokeStyle = 'rgba(0,0,0,0.6)'; ctx.lineWidth = 6.5; ctx.beginPath(); ctx.arc(L.x, L.y, 13.5, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = 3; ctx.stroke();
+    const r = 6;
+    ctx.beginPath(); ctx.moveTo(L.x - r, L.y - r); ctx.lineTo(L.x + r, L.y + r); ctx.moveTo(L.x + r, L.y - r); ctx.lineTo(L.x - r, L.y + r);
+    ctx.strokeStyle = 'rgba(0,0,0,0.65)'; ctx.lineWidth = 5.5; ctx.stroke();
+    ctx.strokeStyle = today ? '#fff4c8' : '#eef2f7'; ctx.lineWidth = 2.6; ctx.stroke();
+    ctx.restore();
+  }
+  /** Labels drawn above sprites: step cost at the destination and day markers along the way. */
+  drawPathLabels() {
+    const { ctx } = this;
+    const pts = this.pathPoints(); if (!pts || pts.length < 2) return;
+    for (let i = 1; i < pts.length - 1; i++) if (pts[i].day !== pts[i - 1].day) this.dayBadge(pts[i].x, pts[i].y, pts[i].day + 1);
+    const L = pts[pts.length - 1]; const today = L.day === 0;
+    const label = today ? `${fmtMove(L.g)} skridt` : `${L.day + 1}. dag · ${fmtMove(L.g)} skridt`;
+    // keep the label inside the visible map
+    const halfW = 70 / this.cam.zoom, left = this.cam.x + halfW + 4, right = this.cam.x + this.w / this.cam.zoom - halfW - 4;
+    this.badge(clamp(L.x, left, right), Math.max(this.cam.y + 16 / this.cam.zoom, L.y - 31), label, today ? '#ffd872' : '#bfcbd8');
+  }
+  badge(x, y, text, col) {
+    const { ctx } = this;
+    ctx.font = 'bold 12px Cinzel, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const w = ctx.measureText(text).width + 18, h = 21;
+    rrect(ctx, x - w / 2 + 1, y - h / 2 + 2, w, h, 7, 'rgba(0,0,0,0.45)');
+    rrect(ctx, x - w / 2, y - h / 2, w, h, 7, 'rgba(12,14,20,0.9)', col, 1.2);
+    ctx.fillStyle = col; ctx.fillText(text, x, y + 1);
+    ctx.textBaseline = 'alphabetic';
+  }
+  dayBadge(x, y, n) {
+    const { ctx } = this;
+    circle(ctx, x, y - 17, 9.5, 'rgba(12,14,20,0.92)', '#bfcbd8', 1.3);
+    ctx.font = 'bold 11px Cinzel, Georgia, serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#eef2f7'; ctx.fillText(String(n), x, y - 16);
+    ctx.textBaseline = 'alphabetic';
   }
 }

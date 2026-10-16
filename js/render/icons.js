@@ -2,6 +2,11 @@
 import { mk, poly, circle, ellipse, rrect, line, lgrad, rgrad, shade, lighten, rgba } from './draw.js';
 import { SPELLS } from '../data/spells.js';
 import { ARTIFACTS } from '../data/artifacts.js';
+import { assetCanvas } from './assets.js';
+import { roman } from '../core/utils.js';
+
+/** Mage guild levels share one painted icon; the level is stamped on. */
+export const buildingIconKey = (id) => (id.startsWith('mage') ? 'mage' : id);
 
 const cache = new Map();
 export function clearIconCache() { cache.clear(); }
@@ -45,6 +50,8 @@ export function spellIcon(id, S = 40) {
   const key = `sp:${id}:${S}`;
   if (cache.has(key)) return cache.get(key);
   const sp = SPELLS[id];
+  const ak = assetCanvas(`spells/${id}`, S, S);
+  if (ak) { cache.set(key, ak); return ak; }
   const c = mk(S, S); const ctx = c.getContext('2d');
   rrect(ctx, 1, 1, S - 2, S - 2, S * 0.18, rgrad(ctx, S / 2, S / 2, 2, S * 0.7, [[0, shade(sp.icon.c, 0.45)], [1, '#0b0e14']]), rgba(sp.icon.c, 0.7), 1.5);
   ctx.shadowColor = sp.icon.c; ctx.shadowBlur = S * 0.15;
@@ -79,6 +86,11 @@ export function buildingIcon(id, faction, S = 44) {
   const key = `b:${id}:${faction}:${S}`;
   if (cache.has(key)) return cache.get(key);
   const elf = faction === 'elves';
+  const ak = assetCanvas(`buildings/${faction}_${buildingIconKey(id)}`, S, S, false, 0.96, 0.96);
+  if (ak) {
+    if (id.startsWith('mage')) { const x = ak.getContext('2d'); x.setTransform(2, 0, 0, 2, 0, 0); x.font = `bold ${Math.round(S * 0.3)}px Cinzel, Georgia, serif`; x.textAlign = 'right'; x.lineWidth = 3; x.strokeStyle = 'rgba(0,0,0,0.85)'; x.fillStyle = '#ffe9a0'; x.strokeText(roman(+id.slice(4)), S - 3, S - 4); x.fillText(roman(+id.slice(4)), S - 3, S - 4); }
+    cache.set(key, ak); return ak;
+  }
   const c = mk(S, S); const ctx = c.getContext('2d');
   const u = S / 32;
   const stone = elf ? '#e8e0c8' : '#5a5048', roof = elf ? '#d9a93a' : '#3a2a20', dark = elf ? '#a89f86' : '#2a2420';

@@ -2,7 +2,7 @@
 
 ## Ark-prompts (5 motiver pr. billede)
 
-20 prompts dækker alle 88 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
+29 prompts dækker alle 130 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
 
 **Negativ prompt (hvis værktøjet understøtter det):** text, watermark, signature, frame, border, blurry, low detail, cropped, multiple subjects, photo, 3d render, overlapping figures, collage frame, grid lines
 
@@ -137,6 +137,69 @@ Indhold fra venstre mod højre: 1. Sne, 2. Aske
 
 ```
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Two separate square seamless top-down ground texture swatches in one horizontal row, left to right, same size, even lighting, no objects, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) fresh white snow; 2) dark volcanic ash ground with glowing cracks. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `bygninger-1` – Bygninger (5 motiver)
+Indhold fra venstre mod højre: 1. Tingsted (Skovelvere), 2. Rådshal (Skovelvere), 3. Kongehal (Skovelvere), 4. Tornhegn (Skovelvere), 5. Vogtertårne (Skovelvere)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a wood elf town hall: an elegant open-air council ring of white stone and living wood under golden leaves; 2) a grand wood elf council hall of white stone and silver-barked wood with tall arched windows and a golden roof; 3) a majestic elven king's hall grown into a giant golden mallorn tree, white spires, green banners; 4) a wall of living thorn hedge and wooden palisade with elven watch platforms; 5) tall slender elven watchtowers of white stone joined by living-wood walls. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `bygninger-2` – Bygninger (5 motiver)
+Indhold fra venstre mod højre: 1. Ældgamle Mure (Skovelvere), 2. Mjødhallen (Skovelvere), 3. Byttemarked (Skovelvere), 4. Mithril-lager (Skovelvere), 5. Sangtårn (Skovelvere)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) ancient massive elven walls of pale stone overgrown with golden ivy, with a great carved gate; 2) a cosy elven mead hall of carved wood with lanterns, barrels and a warm glowing doorway; 3) a wood elf market with stalls of silk, baskets of fruit and hanging lanterns under a tree; 4) an elven storehouse of white stone with glowing silver-blue mithril ingots stacked inside; 5) a tall elven song tower of white stone spiralling around a tree, glowing blue runes and floating lights. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `bygninger-3` – Bygninger (5 motiver)
+Indhold fra venstre mod højre: 1. Verdensrødderne (Skovelvere), 2. Bossens Hytte (Orker), 3. Warbossens Hal (Orker), 4. Krigsherrens Trone (Orker), 5. Pæleværket (Orker)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) the world roots: giant glowing tree roots rising from the ground around a mossy altar; 2) an orc boss hut of hides, bones and scrap iron with a crude throne and skull trophies; 3) a big orc warboss hall of black timber and iron plates with giant tusks at the entrance; 4) an orc warlord's iron throne on a mound of skulls under black spiked banners and fire; 5) a crude orc palisade of sharpened stakes, hides and skulls. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `bygninger-4` – Bygninger (5 motiver)
+Indhold fra venstre mod højre: 1. Jernporten (Orker), 2. Den Sorte Fæstning (Orker), 3. Grog-hytten (Orker), 4. Plyndrermarked (Orker), 5. Warpstens-lager (Orker)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a heavy iron gate in a black stone wall with spiked towers and torches; 2) a huge black iron fortress wall with chains, spikes, glowing furnaces and skull banners; 3) an orc grog hut of timber and hides with big barrels, a fire pit and gnawed bones; 4) an orc plunder market with piles of looted goods, cages, crates and a crude tent; 5) an iron-bound orc storehouse with glowing green warpstone shards in cages. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `bygninger-5` – Bygninger (2 motiver)
+Indhold fra venstre mod højre: 1. Shamanhulen (Orker), 2. Krigstrommerne (Orker)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Two separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) an orc shaman cave with a bone totem, glowing green runes, skulls and green magical smoke; 2) giant orc war drums made of hide and bone with glowing runes and red banners. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `besvaergelser-1` – Besværgelser (5 motiver)
+Indhold fra venstre mod højre: 1. Magisk Pil, 2. Hast, 3. Langsom, 4. Velsignelse, 5. Forbandelse
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square spell icons in one horizontal row, left to right, same size, each icon a single glowing magical symbol painted on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a glowing blue magical arrow of light shooting forward; 2) a winged boot surrounded by golden speed lines; 3) an hourglass dripping with heavy grey mud and chains; 4) a radiant golden sun with gentle rays over a small sprig of leaves; 5) a cracked black skull with purple smoke. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `besvaergelser-2` – Besværgelser (5 motiver)
+Indhold fra venstre mod højre: 1. Stenhud, 2. Helbred, 3. Ildkugle, 4. Svaghed, 5. Blodtørst
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square spell icons in one horizontal row, left to right, same size, each icon a single glowing magical symbol painted on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a stone fist covered in grey rock plates; 2) a glowing green leaf with a drop of healing light; 3) a roaring ball of fire with a smoking trail; 4) a broken rusty sword in grey sickly mist; 5) a red snarling face with glowing red eyes. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `besvaergelser-3` – Besværgelser (5 motiver)
+Indhold fra venstre mod højre: 1. Skjold, 2. Luftskjold, 3. Lynslag, 4. Mudderets Greb, 5. Vindens Vinger
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square spell icons in one horizontal row, left to right, same size, each icon a single glowing magical symbol painted on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) a round elven shield of gold and green glowing with protection; 2) a swirling dome of wind deflecting arrows; 3) a bright white lightning bolt striking down from dark clouds; 4) many grey hands of mud reaching up from a swamp; 5) a swirl of golden wind with many flying leaves. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `besvaergelser-4` – Besværgelser (5 motiver)
+Indhold fra venstre mod højre: 1. Kædelyn, 2. Genopstandelse, 3. Lorens Velsignelse, 4. Gorks Fod, 5. Morks Forbandelse
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate square spell icons in one horizontal row, left to right, same size, each icon a single glowing magical symbol painted on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin. From left to right: 1) branching chains of lightning jumping between three points; 2) a pale ghostly figure rising in a column of golden light; 3) a golden tree of life radiating light in all directions; 4) a giant green orc foot stamping down from the sky with fire and cracks; 5) a sinister green orc god face with glowing eyes and black smoke. No text, numbers, labels, frames or watermarks.
 ```
 
 ### Ark `byer-1` – Byer (4 motiver)
@@ -700,5 +763,263 @@ Hand-painted fantasy game art in the style of Heroes of Might and Magic III and 
 
 ```
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Seamless tileable top-down ground texture: dark volcanic ash ground with glowing cracks. Even lighting, no objects, no shadows, repeating pattern that tiles perfectly.
+```
+
+
+### Bygninger
+
+**Tingsted (Skovelvere)** – `assets/buildings/elves_hall2.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a wood elf town hall: an elegant open-air council ring of white stone and living wood under golden leaves. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Rådshal (Skovelvere)** – `assets/buildings/elves_hall3.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a grand wood elf council hall of white stone and silver-barked wood with tall arched windows and a golden roof. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Kongehal (Skovelvere)** – `assets/buildings/elves_hall4.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a majestic elven king's hall grown into a giant golden mallorn tree, white spires, green banners. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Tornhegn (Skovelvere)** – `assets/buildings/elves_fort.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a wall of living thorn hedge and wooden palisade with elven watch platforms. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Vogtertårne (Skovelvere)** – `assets/buildings/elves_citadel.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: tall slender elven watchtowers of white stone joined by living-wood walls. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Ældgamle Mure (Skovelvere)** – `assets/buildings/elves_castle.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: ancient massive elven walls of pale stone overgrown with golden ivy, with a great carved gate. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Mjødhallen (Skovelvere)** – `assets/buildings/elves_tavern.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a cosy elven mead hall of carved wood with lanterns, barrels and a warm glowing doorway. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Byttemarked (Skovelvere)** – `assets/buildings/elves_market.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a wood elf market with stalls of silk, baskets of fruit and hanging lanterns under a tree. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Mithril-lager (Skovelvere)** – `assets/buildings/elves_silo.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: an elven storehouse of white stone with glowing silver-blue mithril ingots stacked inside. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Sangtårn (Skovelvere)** – `assets/buildings/elves_mage.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a tall elven song tower of white stone spiralling around a tree, glowing blue runes and floating lights. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Verdensrødderne (Skovelvere)** – `assets/buildings/elves_special.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: the world roots: giant glowing tree roots rising from the ground around a mossy altar. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Bossens Hytte (Orker)** – `assets/buildings/orcs_hall2.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: an orc boss hut of hides, bones and scrap iron with a crude throne and skull trophies. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Warbossens Hal (Orker)** – `assets/buildings/orcs_hall3.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a big orc warboss hall of black timber and iron plates with giant tusks at the entrance. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Krigsherrens Trone (Orker)** – `assets/buildings/orcs_hall4.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: an orc warlord's iron throne on a mound of skulls under black spiked banners and fire. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Pæleværket (Orker)** – `assets/buildings/orcs_fort.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a crude orc palisade of sharpened stakes, hides and skulls. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Jernporten (Orker)** – `assets/buildings/orcs_citadel.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a heavy iron gate in a black stone wall with spiked towers and torches. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Den Sorte Fæstning (Orker)** – `assets/buildings/orcs_castle.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: a huge black iron fortress wall with chains, spikes, glowing furnaces and skull banners. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Grog-hytten (Orker)** – `assets/buildings/orcs_tavern.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: an orc grog hut of timber and hides with big barrels, a fire pit and gnawed bones. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Plyndrermarked (Orker)** – `assets/buildings/orcs_market.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: an orc plunder market with piles of looted goods, cages, crates and a crude tent. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Warpstens-lager (Orker)** – `assets/buildings/orcs_silo.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: an iron-bound orc storehouse with glowing green warpstone shards in cages. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Shamanhulen (Orker)** – `assets/buildings/orcs_mage.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: an orc shaman cave with a bone totem, glowing green runes, skulls and green magical smoke. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Krigstrommerne (Orker)** – `assets/buildings/orcs_special.png` (mindst 128×128 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Building icon for a strategy game town screen: giant orc war drums made of hide and bone with glowing runes and red banners. Front view from slightly above, whole building visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+
+### Besværgelser
+
+**Magisk Pil** – `assets/spells/magic_arrow.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a glowing blue magical arrow of light shooting forward, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Hast** – `assets/spells/haste.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a winged boot surrounded by golden speed lines, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Langsom** – `assets/spells/slow.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: an hourglass dripping with heavy grey mud and chains, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Velsignelse** – `assets/spells/bless.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a radiant golden sun with gentle rays over a small sprig of leaves, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Forbandelse** – `assets/spells/curse.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a cracked black skull with purple smoke, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Stenhud** – `assets/spells/stone_skin.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a stone fist covered in grey rock plates, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Helbred** – `assets/spells/cure.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a glowing green leaf with a drop of healing light, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Ildkugle** – `assets/spells/fireball.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a roaring ball of fire with a smoking trail, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Svaghed** – `assets/spells/weakness.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a broken rusty sword in grey sickly mist, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Blodtørst** – `assets/spells/bloodlust.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a red snarling face with glowing red eyes, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Skjold** – `assets/spells/shield.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a round elven shield of gold and green glowing with protection, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Luftskjold** – `assets/spells/air_shield.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a swirling dome of wind deflecting arrows, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Lynslag** – `assets/spells/lightning.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a bright white lightning bolt striking down from dark clouds, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Mudderets Greb** – `assets/spells/mass_slow.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: many grey hands of mud reaching up from a swamp, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Vindens Vinger** – `assets/spells/mass_haste.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a swirl of golden wind with many flying leaves, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Kædelyn** – `assets/spells/chain_lightning.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: branching chains of lightning jumping between three points, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Genopstandelse** – `assets/spells/resurrect.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a pale ghostly figure rising in a column of golden light, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Lorens Velsignelse** – `assets/spells/mass_bless.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a golden tree of life radiating light in all directions, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Gorks Fod** – `assets/spells/meteor.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a giant green orc foot stamping down from the sky with fire and cracks, painted on a dark background with a soft glow, centred, filling the square.
+```
+
+**Morks Forbandelse** – `assets/spells/mass_curse.png` (mindst 96×96 px)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Square spell icon: a sinister green orc god face with glowing eyes and black smoke, painted on a dark background with a soft glow, centred, filling the square.
 ```
 

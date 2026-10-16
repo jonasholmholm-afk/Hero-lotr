@@ -6,6 +6,8 @@ import { HEROES, HERO_IDS } from './heroes.js';
 import { FACTIONS } from './factions.js';
 import { RES_INFO, MINE_NAMES } from './resources.js';
 import { OBJ_INFO } from './objects.js';
+import { BUILDING_NAMES } from './buildings.js';
+import { SPELLS } from './spells.js';
 
 export const STYLE = 'Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes.';
 export const ISOLATED = 'Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.';
@@ -92,6 +94,57 @@ const DECOR_PROMPT = {
 const DECOR_SIZES = { pine: [60, 92], leafy: [68, 90], golden: [68, 90], dead: [60, 86], mountain: [110, 110], rock: [52, 44], flowers: [44, 26], mushroom: [44, 30], stump: [34, 30], reeds: [44, 40], snowpine: [60, 92], bush: [46, 36], pebbles: [40, 22] };
 const TERRAIN_PROMPT = { water: 'deep blue lake water with gentle ripples', grass: 'lush green grass meadow', dirt: 'brown earth path with pebbles', rough: 'rough dry stony ground', swamp: 'murky swamp ground with puddles and moss', snow: 'fresh white snow', ash: 'dark volcanic ash ground with glowing cracks' };
 
+const BUILDING_PROMPT = {
+  elves: {
+    hall2: 'a wood elf town hall: an elegant open-air council ring of white stone and living wood under golden leaves',
+    hall3: 'a grand wood elf council hall of white stone and silver-barked wood with tall arched windows and a golden roof',
+    hall4: "a majestic elven king's hall grown into a giant golden mallorn tree, white spires, green banners",
+    fort: 'a wall of living thorn hedge and wooden palisade with elven watch platforms',
+    citadel: 'tall slender elven watchtowers of white stone joined by living-wood walls',
+    castle: 'ancient massive elven walls of pale stone overgrown with golden ivy, with a great carved gate',
+    tavern: 'a cosy elven mead hall of carved wood with lanterns, barrels and a warm glowing doorway',
+    market: 'a wood elf market with stalls of silk, baskets of fruit and hanging lanterns under a tree',
+    silo: 'an elven storehouse of white stone with glowing silver-blue mithril ingots stacked inside',
+    mage: 'a tall elven song tower of white stone spiralling around a tree, glowing blue runes and floating lights',
+    special: 'the world roots: giant glowing tree roots rising from the ground around a mossy altar',
+  },
+  orcs: {
+    hall2: 'an orc boss hut of hides, bones and scrap iron with a crude throne and skull trophies',
+    hall3: 'a big orc warboss hall of black timber and iron plates with giant tusks at the entrance',
+    hall4: "an orc warlord's iron throne on a mound of skulls under black spiked banners and fire",
+    fort: 'a crude orc palisade of sharpened stakes, hides and skulls',
+    citadel: 'a heavy iron gate in a black stone wall with spiked towers and torches',
+    castle: 'a huge black iron fortress wall with chains, spikes, glowing furnaces and skull banners',
+    tavern: 'an orc grog hut of timber and hides with big barrels, a fire pit and gnawed bones',
+    market: 'an orc plunder market with piles of looted goods, cages, crates and a crude tent',
+    silo: 'an iron-bound orc storehouse with glowing green warpstone shards in cages',
+    mage: 'an orc shaman cave with a bone totem, glowing green runes, skulls and green magical smoke',
+    special: 'giant orc war drums made of hide and bone with glowing runes and red banners',
+  },
+};
+const SPELL_PROMPT = {
+  magic_arrow: 'a glowing blue magical arrow of light shooting forward',
+  haste: 'a winged boot surrounded by golden speed lines',
+  slow: 'an hourglass dripping with heavy grey mud and chains',
+  bless: 'a radiant golden sun with gentle rays over a small sprig of leaves',
+  curse: 'a cracked black skull with purple smoke',
+  stone_skin: 'a stone fist covered in grey rock plates',
+  cure: 'a glowing green leaf with a drop of healing light',
+  fireball: 'a roaring ball of fire with a smoking trail',
+  weakness: 'a broken rusty sword in grey sickly mist',
+  bloodlust: 'a red snarling face with glowing red eyes',
+  shield: 'a round elven shield of gold and green glowing with protection',
+  air_shield: 'a swirling dome of wind deflecting arrows',
+  lightning: 'a bright white lightning bolt striking down from dark clouds',
+  mass_slow: 'many grey hands of mud reaching up from a swamp',
+  mass_haste: 'a swirl of golden wind with many flying leaves',
+  chain_lightning: 'branching chains of lightning jumping between three points',
+  resurrect: 'a pale ghostly figure rising in a column of golden light',
+  mass_bless: 'a golden tree of life radiating light in all directions',
+  meteor: 'a giant green orc foot stamping down from the sky with fire and cracks',
+  mass_curse: 'a sinister green orc god face with glowing eyes and black smoke',
+};
+
 const slot = (key, category, label, size, prompt, opts = {}) => ({ key, category, label, size, prompt, baseline: 0.92, keying: true, subject: '', ...opts });
 
 export function buildCatalog() {
@@ -119,9 +172,16 @@ export function buildCatalog() {
   for (const [k, p] of Object.entries(TERRAIN_PROMPT)) {
     out.push(slot(`terrain/${k}`, 'Terræn', TERRAIN_LABEL[k], [192, 192], `${STYLE} Seamless tileable top-down ground texture: ${p}. Even lighting, no objects, no shadows, repeating pattern that tiles perfectly.`, { keying: false, baseline: 1, subject: p }));
   }
+  for (const fac of ['elves', 'orcs']) for (const [k, p] of Object.entries(BUILDING_PROMPT[fac])) {
+    const nm = BUILDING_NAMES[fac][k === 'mage' ? 'mage1' : k].replace(/ I$/, '');
+    out.push(slot(`buildings/${fac}_${k}`, 'Bygninger', `${nm} (${FACTIONS[fac].name})`, [128, 128], `${STYLE} Building icon for a strategy game town screen: ${p}. Front view from slightly above, whole building visible, base at the bottom. ${ISOLATED}`, { baseline: 0.95, subject: p }));
+  }
+  for (const [k, p] of Object.entries(SPELL_PROMPT)) {
+    out.push(slot(`spells/${k}`, 'Besværgelser', SPELLS[k].name, [96, 96], `${STYLE} Square spell icon: ${p}, painted on a dark background with a soft glow, centred, filling the square.`, { keying: false, baseline: 1, subject: p }));
+  }
   return out;
 }
-export const CATEGORIES = ['Enheder', 'Portrætter', 'Helte på kortet', 'Byer', 'Objekter', 'Natur', 'Terræn'];
+export const CATEGORIES = ['Enheder', 'Portrætter', 'Helte på kortet', 'Byer', 'Objekter', 'Natur', 'Terræn', 'Bygninger', 'Besværgelser'];
 
 /** Groups the slots into sheets of up to 5 subjects, each with one prompt. */
 export function buildSheets() {
@@ -131,9 +191,10 @@ export function buildSheets() {
   const layoutFor = (category, n) => {
     const N = WORDS[n] || n;
     if (category === 'Portrætter') return `${N} separate square head-and-shoulders portraits in one horizontal row, left to right, same size, each portrait with its own painted background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
+    if (category === 'Besværgelser') return `${N} separate square spell icons in one horizontal row, left to right, same size, each icon a single glowing magical symbol painted on its own dark background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
     if (category === 'Terræn') return `${N} separate square seamless top-down ground texture swatches in one horizontal row, left to right, same size, even lighting, no objects, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
     if (category === 'Byer') return `${N} separate subjects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
-    if (category === 'Objekter' || category === 'Natur') return `${N} separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
+    if (category === 'Objekter' || category === 'Natur' || category === 'Bygninger') return `${N} separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
     return `${N} separate creatures standing in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible from head to feet, side view facing right, same scale, feet on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
   };
   const groups = [];
@@ -146,7 +207,7 @@ export function buildSheets() {
   let counters = {};
   for (const g of groups) {
     counters[g.category] = (counters[g.category] || 0) + 1;
-    const SLUG = { 'Enheder': 'enheder', 'Portrætter': 'portraetter', 'Objekter': 'objekter', 'Natur': 'natur', 'Terræn': 'terraen', 'Byer': 'byer' };
+    const SLUG = { 'Enheder': 'enheder', 'Portrætter': 'portraetter', 'Objekter': 'objekter', 'Natur': 'natur', 'Terræn': 'terraen', 'Byer': 'byer', 'Bygninger': 'bygninger', 'Besværgelser': 'besvaergelser' };
     const id = `${SLUG[g.category]}-${counters[g.category]}`;
     const n = g.slots.length;
     const subjects = g.slots.map((s, i) => `${i + 1}) ${s.subject}`).join('; ');
