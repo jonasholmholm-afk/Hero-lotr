@@ -369,7 +369,8 @@ export function objectSprite(o, ownerColor) {
   const key = `obj:${o.type}:${o.res || o.unit || o.artifact || ''}:${o.faction || ''}:${ownerColor || ''}`;
   return cached(key, () => {
     const ak = o.type === 'mine' ? `objects/mine_${o.res}` : o.type === 'dwelling' ? `objects/dwelling_${o.unit}` : o.type === 'resource' ? `objects/resource_${o.res}` : `objects/${o.type}`;
-    const asset = assetCanvas(ak, 80, 84);
+    const OBJ_SCALE = { resource: 0.5, chest: 0.55, artifact: 0.6, well: 0.85, runestone: 0.85, fountain: 0.8, camp: 0.85 };
+    const asset = assetCanvas(ak, 80, 84, false, OBJ_SCALE[o.type] || 1, 0.905);
     if (asset) { if (ownerColor && (o.type === 'mine' || o.type === 'dwelling')) { const x = asset.getContext('2d'); x.setTransform(2, 0, 0, 2, 0, 0); flagPole(x, 6, asset.lh - 10, ownerColor, 32); } return asset; }
     switch (o.type) {
       case 'mine': return mineSprite(o.res, ownerColor);
