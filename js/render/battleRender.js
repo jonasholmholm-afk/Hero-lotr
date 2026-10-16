@@ -25,10 +25,10 @@ export function formation(count, tier) {
   const n = tier >= 7 ? 1 : tier >= 6 ? (count >= 2 ? 2 : 1) : count >= 25 ? 5 : count >= 10 ? 4 : count >= 5 ? 3 : count >= 2 ? 2 : 1;
   switch (n) {
     case 1: return [[0, 0, 1]];
-    case 2: return tier >= 6 ? [[-0.22, -0.14, 0.86], [0.2, 0.06, 0.9]] : [[-0.26, -0.16, 0.78], [0.22, 0.08, 0.8]];
-    case 3: return [[-0.3, -0.2, 0.7], [0.3, -0.16, 0.7], [0, 0.1, 0.74]];
-    case 4: return [[-0.34, -0.24, 0.66], [0.3, -0.22, 0.66], [-0.08, -0.02, 0.68], [0.36, 0.14, 0.68], [-0.42, 0.1, 0.66]].slice(0, 4);
-    default: return [[-0.36, -0.26, 0.62], [0.08, -0.3, 0.62], [0.42, -0.14, 0.62], [-0.32, 0.02, 0.64], [0.12, 0.08, 0.66]];
+    case 2: return tier >= 6 ? [[-0.24, -0.14, 0.92], [0.22, 0.06, 0.96]] : [[-0.28, -0.16, 0.86], [0.24, 0.08, 0.9]];
+    case 3: return [[-0.34, -0.22, 0.8], [0.34, -0.18, 0.8], [0, 0.1, 0.86]];
+    case 4: return [[-0.38, -0.26, 0.76], [0.34, -0.24, 0.76], [-0.1, -0.02, 0.8], [0.4, 0.14, 0.78]];
+    default: return [[-0.4, -0.28, 0.72], [0.08, -0.32, 0.72], [0.46, -0.16, 0.72], [-0.36, 0.02, 0.76], [0.14, 0.08, 0.78]];
   }
 }
 
@@ -135,6 +135,15 @@ export class BattleRenderer {
     return c;
   }
 
+  /** A stack killed by an action stays on the field until its death animation has played. */
+  stacksToDraw(now) {
+    this.lastCount = this.lastCount || new Map();
+    return this.b.stacks.filter((s) => {
+      if (!s.dead) { this.lastCount.set(s.id, s.count); return true; }
+      if (!this.dying || !this.dying.has(s.id)) return true; // death not shown yet
+      return now - this.dying.get(s.id) < this.d(720);
+    });
+  }
   // -------- animation API --------
   pos(st) { return this.stackPos.get(st.id) || [st.x, st.y]; }
   /** Scales a duration by the animation-speed setting. */
@@ -317,7 +326,7 @@ export class BattleRenderer {
     }
     // ground fx (rings, mist) below units
     this.drawFx(now, 'below');
-    const stacks = b.stacks.filter((s) => !s.dead || (this.dying && this.dying.has(s.id) && now - this.dying.get(s.id) < this.d(720))).sort((p, q) => this.pos(p)[1] - this.pos(q)[1] || p.x - q.x);
+    const stacks = this.stacksToDraw(now).sort((p, q) => this.pos(p)[1] - this.pos(q)[1] || p.x - q.x);
     for (const st of stacks) this.drawStack(st, now);
     // projectiles
     for (const a of this.anims) {
@@ -477,7 +486,7 @@ export class BattleRenderer {
     const [cx, cy0] = this.center(p[0], p[1]);
     const idle = this.stackPos.has(st.id) || st.dead ? 0 : Math.sin(now / 720 + st.id * 1.7) * this.size * 0.02;
     const lift = (p[2] || 0) * this.size + idle;
-    const S = this.size * 2.9 * (0.72 + st.unit.tier * 0.06);
+    const S = this.size * 3.3 * (0.72 + st.unit.tier * 0.06);
     const flip = st.side === 1;
     const f = figure(st.unit, 96, flip);
     const dying = this.dying && this.dying.get(st.id);
@@ -496,15 +505,15 @@ export class BattleRenderer {
     const pz = this.poseOf(st.id, now);
     const footX = cx + pz.dx * this.size, footY = cy0 + this.size * 0.55 - lift + pz.dy * this.size;
     ctx.save(); ctx.translate(footX, footY); ctx.rotate(pz.rot); ctx.scale(pz.sx, pz.sy);
-    for (const [ox, oy, sc] of formation(st.count, st.unit.tier)) {
+    for (const [ox, oy, sc] of formation(st.dead ? (this.lastCount && this.lastCount.get(st.id)) || 1 : st.count, st.unit.tier)) {
       const s2 = S * sc, px = ox * this.size, py = oy * this.size;
       blit(ctx, f, px - s2 / 2, py - s2 * 0.92, s2, s2);
       if (flashing) { ctx.save(); ctx.globalAlpha = 0.6; blit(ctx, whiteSilhouette(f), px - s2 / 2, py - s2 * 0.92, s2, s2); ctx.restore(); }
     }
     ctx.restore();
-    if (!st.dead) {
+    if (!st.dead || !(this.dying && this.dying.has(st.id))) {
       const col = st.side === 0 ? '#2d6fb3' : '#b33a2d';
-      const txt = String(st.count);
+      const txt = String(st.dead ? (this.lastCount && this.lastCount.get(st.id)) || st.count : st.count);
       ctx.font = `bold ${Math.round(this.size * 0.42)}px Cinzel, serif`;
       const bw = Math.max(this.size * 0.8, ctx.measureText(txt).width + 10), bh = this.size * 0.48;
       const bx = cx + this.size * (flip ? -0.95 : 0.15), by = cy0 + this.size * 0.36;
