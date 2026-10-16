@@ -7,7 +7,7 @@ import { FACTIONS } from './factions.js';
 import { RES_INFO, MINE_NAMES } from './resources.js';
 import { OBJ_INFO } from './objects.js';
 
-export const STYLE = 'Hand-painted fantasy game art in the style of Heroes of Might and Magic III and classic Warhammer Fantasy illustrations. Detailed, semi-realistic, painterly, rich colours, dramatic soft light from the upper left, crisp silhouette, high detail. No text, no watermark, no frame.';
+export const STYLE = 'Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes.';
 export const ISOLATED = 'Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.';
 export const NEGATIVE = 'text, watermark, signature, frame, border, blurry, low detail, cropped, multiple subjects, photo, 3d render';
 
@@ -81,6 +81,8 @@ const OBJ_PROMPT = {
   windmill: 'a wooden windmill with cloth sails',
   ruin: 'ruined ancient stone columns overgrown with ivy',
 };
+const DECOR_LABEL = { pine: 'Gran', leafy: 'Løvtræ', golden: 'Gyldent træ', dead: 'Dødt træ', mountain: 'Bjerg', rock: 'Klipper', flowers: 'Blomster', mushroom: 'Svampe', stump: 'Træstub', reeds: 'Siv', snowpine: 'Snegran', bush: 'Busk', pebbles: 'Småsten' };
+const TERRAIN_LABEL = { water: 'Vand', grass: 'Græs', dirt: 'Jord', rough: 'Ujævnt', swamp: 'Sump', snow: 'Sne', ash: 'Aske' };
 const DECOR_PROMPT = {
   pine: 'a tall dark green pine tree', leafy: 'a round leafy green oak tree', golden: 'a mallorn tree with golden autumn leaves and a silver trunk',
   dead: 'a dead leafless twisted tree', mountain: 'a rocky grey mountain with a snow cap', rock: 'a cluster of grey boulders',
@@ -107,15 +109,15 @@ export function buildCatalog() {
   out.push(slot('towns/elves', 'Byer', 'Elverby', [400, 320], `${STYLE} A wood elf city built around a giant golden mallorn tree with white elegant halls, lanterns, a gate arch at the bottom centre, front view, whole town visible. ${ISOLATED}`, { baseline: 0.95, subject: 'a wood elf city built around a giant golden mallorn tree with white elegant halls, lanterns and a gate arch at the bottom centre' }));
   out.push(slot('towns/orcs', 'Byer', 'Orkfæstning', [400, 320], `${STYLE} A brutal orc fortress of black iron and spiked timber with a glowing forge, skull banners, smoke, a heavy gate at the bottom centre, front view, whole fortress visible. ${ISOLATED}`, { baseline: 0.95, subject: 'a brutal orc fortress of black iron and spiked timber with a glowing forge, skull banners, smoke and a heavy gate at the bottom centre' }));
   for (const [k, p] of Object.entries(OBJ_PROMPT)) {
-    const label = k.startsWith('mine_') ? MINE_NAMES[k.slice(5)] : k.startsWith('resource_') ? RES_INFO[k.slice(9)].name : (OBJ_INFO[k] ? OBJ_INFO[k].name : k);
+    const label = k.startsWith('mine_') ? MINE_NAMES[k.slice(5)] : k.startsWith('resource_') ? RES_INFO[k.slice(9)].name : k === 'artifact' ? 'Artefakt' : (OBJ_INFO[k] ? OBJ_INFO[k].name : k);
     out.push(slot(`objects/${k}`, 'Objekter', label, [160, 168], `${STYLE} Small map object for a strategy game: ${p}. Front-side view from slightly above, whole object visible, base at the bottom. ${ISOLATED}`, { baseline: 0.905, subject: p }));
   }
   for (const [k, p] of Object.entries(DECOR_PROMPT)) {
     const sz = DECOR_SIZES[k];
-    out.push(slot(`decor/${k}`, 'Natur', k, [sz[0] * 2, sz[1] * 2], `${STYLE} Map decoration for a strategy game: ${p}. Front-side view from slightly above, base at the bottom. ${ISOLATED}`, { baseline: (sz[1] - 8) / sz[1], subject: p }));
+    out.push(slot(`decor/${k}`, 'Natur', DECOR_LABEL[k], [sz[0] * 2, sz[1] * 2], `${STYLE} Map decoration for a strategy game: ${p}. Front-side view from slightly above, base at the bottom. ${ISOLATED}`, { baseline: (sz[1] - 8) / sz[1], subject: p }));
   }
   for (const [k, p] of Object.entries(TERRAIN_PROMPT)) {
-    out.push(slot(`terrain/${k}`, 'Terræn', k, [192, 192], `${STYLE} Seamless tileable top-down ground texture: ${p}. Even lighting, no objects, no shadows, repeating pattern that tiles perfectly.`, { keying: false, baseline: 1, subject: p }));
+    out.push(slot(`terrain/${k}`, 'Terræn', TERRAIN_LABEL[k], [192, 192], `${STYLE} Seamless tileable top-down ground texture: ${p}. Even lighting, no objects, no shadows, repeating pattern that tiles perfectly.`, { keying: false, baseline: 1, subject: p }));
   }
   return out;
 }
@@ -125,11 +127,14 @@ export const CATEGORIES = ['Enheder', 'Portrætter', 'Helte på kortet', 'Byer',
 export function buildSheets() {
   const cat = buildCatalog();
   const sheets = [];
-  const layoutFor = (category) => {
-    if (category === 'Portrætter') return 'Five separate square head-and-shoulders portraits arranged in one horizontal row, left to right, same size, each portrait has its own painted background inside its square, with a clear flat magenta (#FF00FF) gap between the squares and a magenta margin around the whole image.';
-    if (category === 'Terræn') return 'Five separate square seamless top-down ground texture swatches arranged in one horizontal row, left to right, same size, even lighting, no objects, with a clear flat magenta (#FF00FF) gap between the squares and a magenta margin around the whole image.';
-    if (category === 'Byer' || category === 'Helte på kortet') return 'Separate subjects arranged in one horizontal row, left to right, evenly spaced, NOT overlapping, each fully visible, front view, bases aligned at the same ground line, on a flat solid magenta (#FF00FF) background with no ground and no shadows on the background.';
-    return 'Separate figures standing in one horizontal row, left to right, evenly spaced, NOT overlapping, each fully visible from head to feet, side view facing right, same scale, feet aligned at the same ground line, on a flat solid magenta (#FF00FF) background with no ground and no shadows on the background.';
+  const WORDS = ['', 'One', 'Two', 'Three', 'Four', 'Five'];
+  const layoutFor = (category, n) => {
+    const N = WORDS[n] || n;
+    if (category === 'Portrætter') return `${N} separate square head-and-shoulders portraits in one horizontal row, left to right, same size, each portrait with its own painted background inside its square, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
+    if (category === 'Terræn') return `${N} separate square seamless top-down ground texture swatches in one horizontal row, left to right, same size, even lighting, no objects, separated by clear flat magenta (#FF00FF) gaps and surrounded by a magenta margin.`;
+    if (category === 'Byer') return `${N} separate subjects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
+    if (category === 'Objekter' || category === 'Natur') return `${N} separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
+    return `${N} separate creatures standing in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible from head to feet, side view facing right, same scale, feet on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows.`;
   };
   const groups = [];
   for (const c of CATEGORIES) {
@@ -145,7 +150,7 @@ export function buildSheets() {
     const id = `${SLUG[g.category]}-${counters[g.category]}`;
     const n = g.slots.length;
     const subjects = g.slots.map((s, i) => `${i + 1}) ${s.subject}`).join('; ');
-    const prompt = `${STYLE} One wide image (aspect ratio about 5:2) containing exactly ${n} subjects. ${layoutFor(g.category)} From left to right: ${subjects}. No text, no numbers, no labels.`;
+    const prompt = `${STYLE} One wide image (about 5:2). ${layoutFor(g.category, n)} From left to right: ${subjects}. No text, numbers, labels, frames or watermarks.`;
     sheets.push({ id, category: g.category, slots: g.slots, prompt, n });
   }
   return sheets;
