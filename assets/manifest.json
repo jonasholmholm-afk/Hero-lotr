@@ -1,1 +1,9 @@
-{ "files": [] }
+{
+  "files": [
+    "units/dryad.png",
+    "units/eternal_guard.png",
+    "units/glade_guard.png",
+    "units/wardancer.png",
+    "units/wild_rider.png"
+  ]
+}

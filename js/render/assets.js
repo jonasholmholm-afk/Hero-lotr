@@ -94,6 +94,9 @@ export function chromaKey(src) {
   const stack = [];
   for (let x = 0; x < w; x++) { stack.push(x, (h - 1) * w + x); }
   for (let y = 0; y < h; y++) { stack.push(y * w, y * w + w - 1); }
+  // enclosed pockets of pure key colour (between a bow and its string, under a mount) are seeded too
+  const T0 = T1 * 0.6;
+  for (let p = 0; p < w * h; p++) if (dist(p * 4) <= T0) stack.push(p);
   while (stack.length) {
     const p = stack.pop();
     if (bg[p]) continue;
@@ -184,40 +187,78 @@ export function splitSheet(img, n) {
   const keyed = chromaKey(img);
   const w = keyed.width, h = keyed.height;
   const d = keyed.getContext('2d').getImageData(0, 0, w, h).data;
-  const col = new Uint32Array(w);
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) col[x]++;
-  const thr = Math.max(2, h * 0.01);
-  // runs of occupied columns
-  let runs = [], start = -1;
-  for (let x = 0; x <= w; x++) {
-    const occ = x < w && col[x] > thr;
-    if (occ && start < 0) start = x;
-    if (!occ && start >= 0) { runs.push([start, x - 1]); start = -1; }
+  // coarse occupancy grid (about 500 cells wide), dilated by one cell so a hand still connects to the bow it holds
+  const cs = Math.max(1, Math.round(w / 500));
+  const gw = Math.ceil(w / cs), gh = Math.ceil(h / cs);
+  const occ = new Uint8Array(gw * gh);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) occ[((y / cs) | 0) * gw + ((x / cs) | 0)] = 1;
+  const dil = new Uint8Array(gw * gh);
+  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) {
+    if (!occ[gy * gw + gx]) continue;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const xx = gx + dx, yy = gy + dy; if (xx >= 0 && yy >= 0 && xx < gw && yy < gh) dil[yy * gw + xx] = 1;
+    }
   }
-  // drop specks, merge runs separated by tiny gaps
-  const minW = w * 0.02;
-  runs = runs.filter((r) => r[1] - r[0] >= minW);
-  const merged = [];
-  for (const r of runs) { if (merged.length && r[0] - merged[merged.length - 1][1] < w * 0.012) merged[merged.length - 1][1] = r[1]; else merged.push([...r]); }
-  runs = merged;
-  while (runs.length > n) { // merge the pair with the smallest gap
-    let bi = 0, bg = Infinity;
-    for (let i = 0; i + 1 < runs.length; i++) { const gap = runs[i + 1][0] - runs[i][1]; if (gap < bg) { bg = gap; bi = i; } }
-    runs[bi][1] = runs[bi + 1][1]; runs.splice(bi + 1, 1);
+  // connected components (8-connected) on the dilated grid
+  const label = new Int32Array(gw * gh).fill(-1);
+  const comps = [];
+  for (let p0 = 0; p0 < gw * gh; p0++) {
+    if (!dil[p0] || label[p0] >= 0) continue;
+    const id = comps.length; const comp = { id, x0: gw, x1: 0, y0: gh, y1: 0, area: 0 };
+    const stack = [p0]; label[p0] = id;
+    while (stack.length) {
+      const p = stack.pop(); const x = p % gw, y = (p / gw) | 0;
+      comp.area += occ[p]; if (x < comp.x0) comp.x0 = x; if (x > comp.x1) comp.x1 = x; if (y < comp.y0) comp.y0 = y; if (y > comp.y1) comp.y1 = y;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= gw || yy >= gh) continue;
+        const q = yy * gw + xx; if (dil[q] && label[q] < 0) { label[q] = id; stack.push(q); }
+      }
+    }
+    comps.push(comp);
   }
-  while (runs.length < n && runs.length > 0) { // split the widest run evenly
-    let wi = 0; for (let i = 0; i < runs.length; i++) if (runs[i][1] - runs[i][0] > runs[wi][1] - runs[wi][0]) wi = i;
-    const [a, b] = runs[wi]; const mid = Math.round((a + b) / 2);
-    runs.splice(wi, 1, [a, mid], [mid + 1, b]);
+  const bySize = comps.filter((c) => c.area > gw * gh * 0.0004).sort((a, b) => b.area - a.area);
+  if (!bySize.length) {
+    const step = w / n;
+    return Array.from({ length: n }, (_, i) => { const c = mk(Math.round(step), h); c.getContext('2d').drawImage(keyed, -Math.round(i * step), 0); return c; });
   }
-  if (!runs.length) { const step = w / n; for (let i = 0; i < n; i++) runs.push([Math.round(i * step), Math.round((i + 1) * step) - 1]); }
-  return runs.map(([x0, x1]) => {
-    let y0 = h, y1 = 0;
-    for (let y = 0; y < h; y++) for (let x = x0; x <= x1; x++) if (d[(y * w + x) * 4 + 3] > 40) { if (y < y0) y0 = y; if (y > y1) y1 = y; break; }
-    if (y1 < y0) { y0 = 0; y1 = h - 1; }
+  // anchors: the n biggest figures; split the widest one at its thinnest column if two figures touch
+  let anchors = bySize.filter((c) => c.area >= bySize[0].area * 0.08).slice(0, n).map((c) => ({ ...c, members: [c.id] }));
+  const colOcc = new Uint32Array(gw);
+  for (let gy = 0; gy < gh; gy++) for (let gx = 0; gx < gw; gx++) colOcc[gx] += occ[gy * gw + gx];
+  while (anchors.length < n) {
+    anchors.sort((a, b) => (b.x1 - b.x0) - (a.x1 - a.x0));
+    const a = anchors[0]; const span = a.x1 - a.x0; if (span < 6) break;
+    let best = -1, bv = Infinity;
+    for (let x = a.x0 + Math.round(span * 0.3); x <= a.x1 - Math.round(span * 0.3); x++) if (colOcc[x] < bv) { bv = colOcc[x]; best = x; }
+    anchors.splice(0, 1, { ...a, x1: best, members: a.members, split: true }, { ...a, x0: best + 1, members: a.members, split: true });
+  }
+  anchors.sort((a, b) => (a.x0 + a.x1) - (b.x0 + b.x1));
+  // every other component joins the horizontally nearest anchor
+  const used = new Set(anchors.flatMap((a) => a.members));
+  for (const c of comps) {
+    if (used.has(c.id)) continue;
+    let bi = 0, bd = Infinity;
+    anchors.forEach((a, i) => { const gap = Math.max(0, a.x0 - c.x1, c.x0 - a.x1); const vg = Math.max(0, a.y0 - c.y1, c.y0 - a.y1); const dd = gap * 2 + vg; if (dd < bd) { bd = dd; bi = i; } });
+    const a = anchors[bi]; a.members.push(c.id);
+    a.x0 = Math.min(a.x0, c.x0); a.x1 = Math.max(a.x1, c.x1); a.y0 = Math.min(a.y0, c.y0); a.y1 = Math.max(a.y1, c.y1);
+  }
+  return anchors.map((a) => {
     const pad = 2;
-    const cw = x1 - x0 + 1 + pad * 2, ch = y1 - y0 + 1 + pad * 2;
-    const c = mk(cw, ch); c.getContext('2d').drawImage(keyed, x0 - pad, y0 - pad, cw, ch, 0, 0, cw, ch);
+    const px0 = Math.max(0, a.x0 * cs - pad), px1 = Math.min(w - 1, (a.x1 + 1) * cs - 1 + pad);
+    const py0 = Math.max(0, a.y0 * cs - pad), py1 = Math.min(h - 1, (a.y1 + 1) * cs - 1 + pad);
+    const cw = px1 - px0 + 1, ch = py1 - py0 + 1;
+    const c = mk(cw, ch); const cctx = c.getContext('2d');
+    cctx.drawImage(keyed, px0, py0, cw, ch, 0, 0, cw, ch);
+    // mask out pixels that belong to a neighbouring figure
+    const mine = new Set(a.members);
+    const im = cctx.getImageData(0, 0, cw, ch); const md = im.data;
+    for (let y = 0; y < ch; y++) for (let x = 0; x < cw; x++) {
+      const gx = ((px0 + x) / cs) | 0, gy = ((py0 + y) / cs) | 0;
+      const l = label[gy * gw + gx];
+      const outside = l < 0 || !mine.has(l) || (a.split && (gx < a.x0 || gx > a.x1));
+      if (outside) md[(y * cw + x) * 4 + 3] = 0;
+    }
+    cctx.putImageData(im, 0, 0);
     return c;
   });
 }
