@@ -3,7 +3,7 @@
 import { BF_W, BF_H, hexCenter, hexPolygon, hexKey, pixelToHex } from '../combat/hex.js';
 import { figure } from './figures.js';
 import { mk, poly, circle, ellipse, rrect, line, lgrad, rgrad, rgba, shade, lighten, blit, glow, softShadow } from './draw.js';
-import { tileTexture, drawTileDetails, decorSprite } from './sprites.js';
+import { tileTexture, terrainSheet, drawTileDetails, decorSprite } from './sprites.js';
 import { T, D } from '../data/terrain.js';
 import { SPELLS } from '../data/spells.js';
 import { clamp } from '../core/utils.js';
@@ -58,12 +58,12 @@ export class BattleRenderer {
     const c = mk(Math.round(this.w * this.dpr), Math.round(this.h * this.dpr)); const ctx = c.getContext('2d');
     ctx.scale(this.dpr, this.dpr);
     const t = this.b.terrain === T.WATER ? T.GRASS : this.b.terrain;
-    const tex = tileTexture(t, 96);
-    const pat = ctx.createPattern(tex, 'repeat');
+    const sheet = terrainSheet(t, 110);
+    const pat = ctx.createPattern(sheet || tileTexture(t, 96), 'repeat');
     ctx.fillStyle = pat; ctx.fillRect(0, 0, this.w, this.h);
-    // hand-drawn details across the field
+    // hand-drawn details across the field (painted textures bring their own)
     const cell = 110;
-    for (let y = -1; y < this.h / cell + 1; y++) for (let x = -1; x < this.w / cell + 1; x++) drawTileDetails(ctx, t, x * cell, y * cell, cell, (x * 7919 + y * 104729 + 17) >>> 0);
+    if (!sheet) for (let y = -1; y < this.h / cell + 1; y++) for (let x = -1; x < this.w / cell + 1; x++) drawTileDetails(ctx, t, x * cell, y * cell, cell, (x * 7919 + y * 104729 + 17) >>> 0);
     // large-scale light & shade
     const g = ctx.createRadialGradient(this.w / 2, this.h * 0.45, this.h * 0.15, this.w / 2, this.h / 2, this.w * 0.75);
     g.addColorStop(0, 'rgba(255,240,200,0.14)'); g.addColorStop(0.6, 'rgba(0,0,0,0.12)'); g.addColorStop(1, 'rgba(0,0,0,0.6)');

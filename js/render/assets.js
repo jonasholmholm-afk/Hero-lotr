@@ -285,10 +285,18 @@ export function processSheet(img, sheet) {
   return sheet.slots.map((slot, i) => {
     const part = parts[i];
     let src = part;
-    if (!slot.keying) { // portraits / terrain: fill transparent edge pixels with their own content (opaque crop)
-      const c = mk(part.width, part.height); const x = c.getContext('2d');
-      x.fillStyle = '#1a1a1a'; x.fillRect(0, 0, c.width, c.height); x.drawImage(part, 0, 0);
-      src = c;
+    if (!slot.keying) { // portraits / terrain: crop to the fully opaque panel, inset a little so no sheet edge remains
+      const pw = part.width, ph = part.height; const d = part.getContext('2d').getImageData(0, 0, pw, ph).data;
+      let x0 = pw, y0 = ph, x1 = -1, y1 = -1;
+      for (let y = 0; y < ph; y++) for (let x = 0; x < pw; x++) if (d[(y * pw + x) * 4 + 3] > 250) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+      if (x1 > x0 && y1 > y0) {
+        const inset = Math.max(2, Math.round(Math.min(x1 - x0, y1 - y0) * 0.015));
+        x0 += inset; y0 += inset; x1 -= inset; y1 -= inset;
+        const c = mk(x1 - x0 + 1, y1 - y0 + 1); const x = c.getContext('2d');
+        x.fillStyle = '#1a1a1a'; x.fillRect(0, 0, c.width, c.height);
+        x.drawImage(part, x0, y0, c.width, c.height, 0, 0, c.width, c.height);
+        src = c;
+      }
     }
     return { key: slot.key, canvas: fitToSlot(src, slot.size[0], slot.size[1], slot.baseline, slot.keying) };
   });

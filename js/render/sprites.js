@@ -35,6 +35,40 @@ function tileable(nz, u, v, P, f, oct, off = 0) {
   return (a * (P - u) * (P - v) + b * u * (P - v) + c * (P - u) * v + d * u * v) / (P * P);
 }
 const TERRAIN_KEYS = ['water', 'grass', 'dirt', 'rough', 'swamp', 'snow', 'ash'];
+/** Makes a texture tileable: cross-fades it with a half-offset copy horizontally, then vertically. */
+function makeSeamless(img, P) {
+  const a = mk(P, P); const actx = a.getContext('2d'); actx.drawImage(img, 0, 0, P, P);
+  const src = actx.getImageData(0, 0, P, P).data;
+  const c = P / 2;
+  const g = (i) => { const r = Math.abs(i - c) / c; const t = Math.min(1, Math.max(0, (r - 0.45) / 0.55)); return 1 - t * t * (3 - 2 * t); };
+  const pass = (inp, horizontal) => {
+    const out = new Uint8ClampedArray(inp.length);
+    for (let y = 0; y < P; y++) for (let x = 0; x < P; x++) {
+      const w = g(horizontal ? x : y);
+      const sx = horizontal ? (x + c) % P : x, sy = horizontal ? y : (y + c) % P;
+      const o = (y * P + x) * 4, q = (sy * P + sx) * 4;
+      for (let k = 0; k < 3; k++) out[o + k] = inp[o + k] * w + inp[q + k] * (1 - w);
+      out[o + 3] = 255;
+    }
+    return out;
+  };
+  const res = pass(pass(src, true), false);
+  const id = actx.createImageData(P, P); id.data.set(res); actx.putImageData(id, 0, 0);
+  return a;
+}
+/** Imported ground textures: a 4x4-tile sheet where the (seamless) texture spans 2x2 tiles.
+ *  Returns null when the terrain is procedural. */
+export function terrainSheet(t, px = 96) {
+  const aimg = assetImage(`terrain/${TERRAIN_KEYS[t]}`);
+  if (!aimg) return null;
+  return cached(`tsheet:${t}:${px}`, () => {
+    const P = px * 2;
+    const tex = makeSeamless(aimg, P);
+    const sh = mk(P * 2, P * 2); const ctx = sh.getContext('2d');
+    for (let j = 0; j < 2; j++) for (let i = 0; i < 2; i++) ctx.drawImage(tex, i * P, j * P);
+    return sh;
+  });
+}
 export function tileTexture(t, px = 96) {
   return cached(`tile:${t}:${px}`, () => {
     const aimg = assetImage(`terrain/${TERRAIN_KEYS[t]}`);

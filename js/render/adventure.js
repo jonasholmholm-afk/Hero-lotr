@@ -1,6 +1,6 @@
 // Adventure map renderer: chunk-cached terrain, y-sorted sprites, cloudy fog of
 // war, ambient particles and simple animations.
-import { TILE, tileTexture, drawTileDetails, decorSprite, objectSprite, townSprite, heroSprite } from './sprites.js';
+import { TILE, tileTexture, terrainSheet, drawTileDetails, decorSprite, objectSprite, townSprite, heroSprite } from './sprites.js';
 import { figure } from './figures.js';
 import { mk, circle, line, rrect, ellipse, rgba, blit, glow } from './draw.js';
 import { T, D, DECOR_BLOCKS, TERRAIN_INFO } from '../data/terrain.js';
@@ -101,12 +101,23 @@ export class AdventureRenderer {
     const tAt = (x, y) => (x < 0 || y < 0 || x >= m.w || y >= m.h ? -1 : m.terrain[y * m.w + x]);
     const hash = (x, y) => ((x * 73856093) ^ (y * 19349663)) >>> 0;
     const patterns = {};
-    const pattern = (t) => patterns[t] || (patterns[t] = ctx.createPattern(tileTexture(t, texPx), 'repeat'));
+    const sheets = {};
+    const sheet = (t) => (t in sheets ? sheets[t] : (sheets[t] = terrainSheet(t, texPx)));
+    const pattern = (t) => {
+      if (patterns[t]) return patterns[t];
+      const sh = sheet(t);
+      const p = ctx.createPattern(sh || tileTexture(t, texPx), 'repeat');
+      // align the 4x4-tile sheet with world tile coordinates
+      if (sh && p.setTransform) p.setTransform(new DOMMatrix().translate(-(x0 & 3) * TS, -(y0 & 3) * TS).scale(TS / texPx));
+      return (patterns[t] = p);
+    };
     // base squares
     for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
-      const t = tAt(x0 + i, y0 + j);
+      const x = x0 + i, y = y0 + j; const t = tAt(x, y);
       if (t < 0) { ctx.fillStyle = '#07090d'; ctx.fillRect(i * TS, j * TS, TS + 1, TS + 1); continue; }
-      ctx.drawImage(tileTexture(t, texPx), i * TS, j * TS, TS + 0.5, TS + 0.5);
+      const sh = sheet(t);
+      if (sh) ctx.drawImage(sh, (x & 3) * texPx, (y & 3) * texPx, texPx, texPx, i * TS, j * TS, TS + 0.5, TS + 0.5);
+      else ctx.drawImage(tileTexture(t, texPx), i * TS, j * TS, TS + 0.5, TS + 0.5);
     }
     const blobPath = (i, j, h, r1, r2) => {
       const cxp = i * TS + TS / 2, cyp = j * TS + TS / 2;
@@ -160,7 +171,7 @@ export class AdventureRenderer {
     for (let j = 0; j < n; j++) for (let i = 0; i < n; i++) {
       const x = x0 + i, y = y0 + j; const t = tAt(x, y);
       if (t < 0) continue;
-      drawTileDetails(ctx, t, i * TS, j * TS, TS, hash(x, y));
+      if (!sheet(t)) drawTileDetails(ctx, t, i * TS, j * TS, TS, hash(x, y));
     }
     // roads
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
