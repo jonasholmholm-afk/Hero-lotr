@@ -36,7 +36,7 @@ export function renderMenu(app) {
   box.append(el('button.btn.big', { onclick: () => renderSetup(app) }, 'Nyt spil'));
   box.append(el('button.btn.big', { onclick: () => showHelp() }, 'Sådan spiller du'));
   box.append(el('button.btn.big', { onclick: () => app.openStudio('menu') }, 'Grafikværksted'));
-  box.append(el('div.version', 'Version 1.1 · Skovelvere & Orker'));
+  box.append(el('div.version', 'Version 1.6 · Skovelvere & Orker'));
   root.append(box);
 }
 
@@ -101,7 +101,10 @@ export function showHelp() {
 <p><b>Ressourcer:</b> Guld, Tømmer og Malm til basale bygninger. Mithril, Warpsten og Ædelsten til magi og de stærkeste væsner. Erobr miner ved at besøge dem.</p>
 <p><b>Kamp:</b> Foregår på et hexkort. Enheder handler efter hastighed. Tryk på et felt for at flytte, på en fjende for at angribe eller skyde. Helte kan kaste én besværgelse pr. runde. Vent, Forsvar og Auto-kamp findes i bunden. Knib eller tryk på 🔍 for at zoome ind på slagmarken, træk for at flytte udsynet.</p>
 <p><b>Helte:</b> Får erfaring af kampe og stiger i niveau: +1 egenskab og en valgfri færdighed. Artefakter giver bonusser. Hastigheden af den langsomste enhed bestemmer bevægelsen pr. dag.</p>
-<p><b>Monstre</b> bevogter felterne omkring sig – man kan ikke snige sig forbi. Lyt til tallene: "Flok (10-19)" fortæller cirka hvor mange de er.</p>
+<p><b>Monstre</b> bevogter felterne omkring sig – man kan ikke snige sig forbi. Lyt til tallene: "Flok (10-19)" fortæller cirka hvor mange de er. Står du med en langt stærkere hær, kan flokken flygte eller tilbyde at slutte sig til dig, især væsner af din egen slags. Lederskab øger chancen.</p>
+<p><b>Steder på kortet:</b> Elverporte fører lynhurtigt til hinanden. Handelspladsen bytter ressourcer, Smedjen sælger ét artefakt, det Hellige Vandfald fylder mana og giver held og moral, Vejviseren afslører egnen, Sandsigerskens Bål lærer en færdighed, og Glemte Skatkamre gemmer store skatte bag stærke vagter. Opslagstavler og tavernen giver rygter om fjenden.</p>
+<p><b>Uger:</b> Hver ny uge bringer en begivenhed: en væsenuge med dobbelt vækst, pest, rig høst eller karavaner. Tryk på 👑 for Rigeoversigten med helte, byer, indtægt og din krønike.</p>
+<p><b>Artefaktsæt:</b> Visse artefakter hører sammen (f.eks. Erebors Arv). Bær alle dele, og helten får en ekstra bonus. Se dem på helteskærmen.</p>
 <p><b>Tip:</b> Installer spillet på hjemmeskærmen via Chrome-menuen "Føj til startskærm" – så kører det i fuld skærm og offline.</p>` });
   return dialog({ title: 'Sådan spiller du', body, cls: 'help-dialog' });
 }

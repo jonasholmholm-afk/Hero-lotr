@@ -12,6 +12,8 @@ import { heroStepCost, guardAt, terrainCost, tileIndex } from './movement.js';
 import { townDefenseBonus, fortLevel, hasGarrison, mageLevel } from './town.js';
 import { runBattle } from '../combat/runner.js';
 import { DIRS8 } from '../core/utils.js';
+import { skillVal, SKILLS, SKILL_IDS } from '../data/skills.js';
+import { rumours, dirName } from './rumours.js';
 
 export function monsterCountText(n) {
   if (n < 5) return 'Få (1-4)';
@@ -67,6 +69,8 @@ export async function moveHeroAlong(hero, path, io) {
     if (isDest && target && target.type === OBJ.MONSTER) {
       hero.movement = Math.max(0, Math.round(hero.movement - cost));
       hero.path = null;
+      const d = await monsterDiplomacy(hero, target, io);
+      if (d !== 'fight') return 'arrived';
       const r = await fightMonster(hero, target, io);
       return r;
     }
@@ -133,6 +137,7 @@ export async function interact(hero, o, io) {
       const art = ARTIFACTS[o.artifact];
       giveArtifact(hero, o.artifact);
       removeObj(o);
+      if (hero.owner === 0) s.stats.artifacts = (s.stats.artifacts || 0) + 1;
       await io.msg(hero, art.name, `${art.lore}\n\n${hero.name} tager ${art.name}.`, { artifact: o.artifact });
       return;
     }
@@ -242,7 +247,123 @@ export async function interact(hero, o, io) {
       } else await io.msg(hero, OBJ_INFO.ruin.name, 'Ruinen er allerede plyndret.');
       return;
     }
+    case OBJ.PORTAL: {
+      const exit = s.map.objects[o.pair];
+      if (!exit) { await io.msg(hero, OBJ_INFO.portal.name, 'Porten er død. Dens magi er for længst svundet bort.'); return; }
+      if (heroAt(exit.x, exit.y)) { await io.msg(hero, OBJ_INFO.portal.name, 'Udgangen er blokeret af en anden helt.'); return; }
+      hero.x = exit.x; hero.y = exit.y;
+      revealAround(s, p, hero.x, hero.y, sightRadius(hero));
+      if (io.teleport) await io.teleport(hero);
+      await io.msg(hero, OBJ_INFO.portal.name, `Et blåt lys omslutter ${hero.name}, og et øjeblik efter står hæren ved den anden port.`);
+      return;
+    }
+    case OBJ.MARKET: { if (io.trade) await io.trade(hero, o); return; }
+    case OBJ.SMITHY: {
+      if (!o.artifact) { await io.msg(hero, OBJ_INFO.smithy.name, 'Smeden har solgt sit mesterværk og hamrer nu på hestesko.'); return; }
+      const art = ARTIFACTS[o.artifact];
+      const price = 1500 + art.rarity * 1000;
+      const c = await io.choice(hero, OBJ_INFO.smithy.name, `Smeden viser stolt sit mesterværk frem: ${art.name} (${bonusText(art)}).
+
+"${art.lore}"
+
+Pris: ${price} guld.`, [`Køb for ${price} guld`, 'Nej tak'], () => (res.gold >= price + 3000 ? 0 : 1));
+      if (c !== 0) return;
+      if (res.gold < price) { await io.msg(hero, OBJ_INFO.smithy.name, 'Ikke nok guld.'); return; }
+      res.gold -= price; giveArtifact(hero, o.artifact); o.artifact = null;
+      if (hero.owner === 0) s.stats.artifacts = (s.stats.artifacts || 0) + 1;
+      await io.msg(hero, art.name, `${hero.name} køber ${art.name}.`, { artifact: ARTIFACTS[art.id] ? art.id : null });
+      return;
+    }
+    case OBJ.WATERFALL: {
+      const wk = weekOf(s.day);
+      if (hero.flags.waterfallWeek === wk) { await io.msg(hero, OBJ_INFO.waterfall.name, 'Vandet er køligt og klart, men dets velsignelse er allerede givet denne uge.'); return; }
+      hero.flags.waterfallWeek = wk;
+      hero.mana = maxMana(hero); hero.flags.luck = 1; hero.flags.morale = 1;
+      await io.msg(hero, OBJ_INFO.waterfall.name, `${hero.name} og hæren bader i det hellige vand. Al mana er genvundet, og alle føler sig heldige og modige: +1 held og +1 moral i næste kamp.`);
+      return;
+    }
+    case OBJ.SIGNPOST: {
+      revealAround(s, p, o.x, o.y, 10);
+      const enemyTown = Object.values(s.map.objects).filter((t) => t.type === OBJ.TOWN && t.owner >= 0 && t.owner !== hero.owner).sort((a, b) => Math.hypot(a.x - o.x, a.y - o.y) - Math.hypot(b.x - o.x, b.y - o.y))[0];
+      const where = enemyTown ? `Et af skiltene peger mod ${dirName(enemyTown.x - o.x, enemyTown.y - o.y)}: "${enemyTown.name}, ${Math.round(Math.hypot(enemyTown.x - o.x, enemyTown.y - o.y))} dagsrejser".` : 'Skiltene er for slidte til at læse.';
+      await io.msg(hero, OBJ_INFO.signpost.name, `Egnen omkring vejviseren bliver kendt. ${where}`);
+      return;
+    }
+    case OBJ.WITCH: {
+      const sk = SKILLS[o.skill];
+      if (o.visited[hero.id]) { await io.msg(hero, OBJ_INFO.witch_hut.name, 'Sandsigersken stirrer i kedlen og ryster på hovedet. Hun har intet mere at lære denne helt.'); return; }
+      if ((hero.skills[o.skill] || 0) >= 3) { await io.msg(hero, OBJ_INFO.witch_hut.name, `Sandsigersken taler om ${sk.name}, men ${hero.name} mestrer allerede den kunst.`); return; }
+      o.visited[hero.id] = 1;
+      applySkill(hero, o.skill); hero.maxMovement = maxMovement(hero);
+      await io.msg(hero, OBJ_INFO.witch_hut.name, `Dampen fra kedlen viser syner. ${hero.name} lærer ${sk.name}${hero.skills[o.skill] > 1 ? ' på et højere niveau' : ''}.`, { skill: o.skill });
+      return;
+    }
+    case OBJ.GATE: {
+      if (o.looted) { await io.msg(hero, OBJ_INFO.gate.name, 'Skatkammeret bag porten er tomt.'); return; }
+      o.looted = 1;
+      res.gold += o.gold;
+      let txt = `Bag den tunge port finder ${hero.name} ${o.gold} guld`;
+      if (o.artifact) { giveArtifact(hero, o.artifact); txt += ` og ${ARTIFACTS[o.artifact].name}`; if (hero.owner === 0) s.stats.artifacts = (s.stats.artifacts || 0) + 1; }
+      await io.msg(hero, OBJ_INFO.gate.name, txt + '.', { artifact: o.artifact });
+      return;
+    }
+    case OBJ.BOARD: {
+      await io.msg(hero, OBJ_INFO.board.name, 'Opslagene siger:\n\n• ' + rumours(p, 3).join('\n• '));
+      return;
+    }
   }
+}
+function bonusText(art) { return Object.entries(art.bonus).map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${k === 'attack' ? 'angreb' : k === 'defense' ? 'forsvar' : k === 'power' ? 'magt' : k === 'knowledge' ? 'viden' : k === 'morale' ? 'moral' : k === 'luck' ? 'held' : k === 'movement' ? 'bevægelse' : k}`).join(', '); }
+
+/** Neutral stacks may flee from, or offer to join, a much stronger hero. Returns 'fight', 'joined', 'fled' or 'cancel'. */
+export async function monsterDiplomacy(hero, mon, io) {
+  const s = G.s; const u = UNITS[mon.unit];
+  const p = player(hero.owner);
+  const mv = u.value * mon.count, hv = armyValue(hero.army) * (1 + hero.level * 0.04);
+  const ratio = hv / Math.max(1, mv);
+  if (mon.diploDay !== s.day) {
+    mon.diploDay = s.day;
+    const same = u.faction === hero.faction;
+    const lead = skillVal(hero, 'leadership');
+    let offer = 'fight';
+    if (ratio >= 7 && G.rng.chance(0.5)) offer = 'flee';
+    else if (ratio >= 2 && G.rng.chance((same ? 0.35 : 0.12) + lead * 0.08 + (ratio >= 4 ? 0.15 : 0))) offer = same && ratio >= 4 ? 'free' : 'gold';
+    mon.diploOffer = offer;
+  }
+  const offer = mon.diploOffer;
+  if (offer === 'flee') {
+    removeObj(mon);
+    await io.msg(hero, u.plural, `${u.plural} flygter i panik ved synet af ${hero.name}s hær!`);
+    return 'fled';
+  }
+  if (offer === 'free' || offer === 'gold') {
+    const price = offer === 'free' ? 0 : Math.max(50, Math.round((mon.count * (u.cost.gold || 100) * 0.6) / 50) * 50);
+    const can = canAddUnits(hero.army, mon.unit);
+    const text = (offer === 'free' ? `${mon.count} ${u.plural} er imponerede over ${hero.name} og tilbyder at slutte sig til hæren uden betaling.` : `${mon.count} ${u.plural} tilbyder at slutte sig til ${hero.name}s hær for ${price} guld.`) + (can ? '' : '\n\n(Der er ingen ledig plads i hæren.)');
+    const c = await io.choice(hero, `${u.plural} vil slutte sig til dig`, text, [offer === 'free' ? 'Tag imod' : `Betal ${price} guld`, 'Angrib', 'Lad dem være'], () => (can && p.resources.gold >= price + 500 ? 0 : 1));
+    if (c === 0) {
+      if (!can) { await io.msg(hero, u.plural, 'Der er ikke plads i hæren. Flyt eller slå flokke sammen først.'); return 'cancel'; }
+      if (p.resources.gold < price) { await io.msg(hero, u.plural, 'Ikke nok guld.'); return 'cancel'; }
+      p.resources.gold -= price;
+      addUnits(hero.army, mon.unit, mon.count); removeObj(mon); hero.maxMovement = maxMovement(hero);
+      if (hero.owner === 0) s.stats.joined = (s.stats.joined || 0) + mon.count;
+      log(`${mon.count} ${u.plural} sluttede sig til ${hero.name}.`, hero.owner);
+      await io.pickup(hero, `${mon.count} ${u.plural} slutter sig til hæren`, 'gold');
+      return 'joined';
+    }
+    if (c === 2) return 'cancel';
+  }
+  return 'fight';
+}
+
+/** Battle statistics for the human player. */
+function trackBattle(res, humanSide) {
+  if (humanSide < 0) return;
+  const st = G.s.stats;
+  const sum = (c) => Object.values(c || {}).reduce((a, b) => a + b, 0);
+  if (res.winner === humanSide) st.won = (st.won || 0) + 1; else st.lost = (st.lost || 0) + 1;
+  st.kills = (st.kills || 0) + sum(res.casualties[1 - humanSide]);
+  st.losses = (st.losses || 0) + sum(res.casualties[humanSide]);
 }
 
 export function weekOf(day) { return Math.floor((day - 1) / 7) + 1; }
@@ -277,6 +398,7 @@ export async function fightMonster(hero, mon, io) {
   };
   const { res, battle } = await runBattle(setup, io.battleIO(setup));
   s.stats.battles++;
+  trackBattle(res, hero.owner === 0 ? 0 : -1);
   syncArmy(hero.army, battle, 0);
   hero.mana = battle.heroes[0].mana;
   hero.flags.luck = 0; hero.flags.morale = 0;
@@ -307,6 +429,7 @@ export async function fightHero(hero, enemy, io) {
   };
   const { res, battle } = await runBattle(setup, io.battleIO(setup));
   s.stats.battles++;
+  trackBattle(res, hero.owner === 0 ? 0 : enemy.owner === 0 ? 1 : -1);
   syncArmy(hero.army, battle, 0);
   syncArmy(enemy.army, battle, 1);
   hero.mana = battle.heroes[0].mana; enemy.mana = battle.heroes[1].mana;
@@ -349,6 +472,7 @@ export async function attackTown(hero, town, io) {
   };
   const { res, battle } = await runBattle(setup, io.battleIO(setup));
   s.stats.battles++;
+  trackBattle(res, hero.owner === 0 ? 0 : town.owner === 0 ? 1 : -1);
   syncArmy(hero.army, battle, 0);
   syncArmy(town.garrison, battle, 1);
   hero.mana = battle.heroes[0].mana;
@@ -394,6 +518,7 @@ export function captureTown(town, newOwner) {
   }
   town.owner = newOwner;
   town.visiting = null;
+  if (newOwner === 0) s.stats.townsTaken = (s.stats.townsTaken || 0) + 1;
   s.players[newOwner].towns.push(town.id);
   s.players[newOwner].daysWithoutTown = 0;
   revealAround(s, s.players[newOwner], town.x, town.y, 7);

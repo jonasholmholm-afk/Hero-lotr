@@ -3,7 +3,7 @@ import { el, fmtMove } from '../core/utils.js';
 import { G } from '../game/state.js';
 import { UNITS } from '../data/units.js';
 import { SKILLS, SKILL_LEVELS } from '../data/skills.js';
-import { ARTIFACTS, SLOTS, SLOT_NAMES, bonusStr } from '../data/artifacts.js';
+import { ARTIFACTS, SLOTS, SLOT_NAMES, bonusStr, ARTIFACT_SETS } from '../data/artifacts.js';
 import { SPELLS } from '../data/spells.js';
 import { HEROES, STAT_NAMES, STAT_IDS } from '../data/heroes.js';
 import { heroStat, maxMana, maxMovement, expForNext, className, specialtyText, heroMorale, heroLuck, equipFromBackpack, unequip } from '../game/hero.js';
@@ -149,7 +149,18 @@ export function openHeroScreen(app, hero) {
         } else box.append(el('span.slot-name', SLOT_NAMES[sl]));
         slots.append(box);
       }
-      right.append(slots, el('h3', 'Rygsæk'));
+      right.append(slots);
+      // artifact sets
+      const eq = SLOTS.map((sl) => hero.artifacts[sl]).filter(Boolean);
+      const setList = el('div.set-list');
+      for (const set of Object.values(ARTIFACT_SETS)) {
+        const have = set.items.filter((i) => eq.includes(i)).length;
+        if (!have) continue;
+        const full = have === set.items.length;
+        setList.append(el('div.set-row' + (full ? '.active' : ''), { title: set.lore + '\nDele: ' + set.items.map((i) => ARTIFACTS[i].name).join(', ') }, el('span.set-name', `${set.name} ${have}/${set.items.length}`), el('span.set-bonus', full ? bonusStr(set.bonus) : 'ufuldstændigt')));
+      }
+      if (setList.childElementCount) right.append(el('h3', 'Artefaktsæt'), setList);
+      right.append(el('h3', 'Rygsæk'));
       const bp = el('div.art-grid');
       if (!hero.backpack.length) bp.append(el('div.muted', 'Tom.'));
       hero.backpack.forEach((id, idx) => {

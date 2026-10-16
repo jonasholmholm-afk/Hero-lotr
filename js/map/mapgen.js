@@ -5,6 +5,7 @@ import { UNITS, NEUTRAL_UNITS } from '../data/units.js';
 import { ARTIFACT_IDS, ARTIFACTS } from '../data/artifacts.js';
 import { FACTIONS } from '../data/factions.js';
 import { OBJ } from '../data/objects.js';
+import { SKILL_IDS } from '../data/skills.js';
 import { SPELL_IDS, SPELLS } from '../data/spells.js';
 import { findPath } from './pathfinding.js';
 import { clamp, chebyshev } from '../core/utils.js';
@@ -249,6 +250,7 @@ export function generateMap({ seed, size, factions }) {
 
   // ---------- Starting areas ----------
   const place = (o, pos) => (pos ? addObj({ ...o, x: pos.x, y: pos.y }) : null);
+  const removeAt = (o) => { objAt[I(o.x, o.y)] = 0; delete objects[o.id]; };
   for (const t of towns) {
     const fac = FACTIONS[t.faction];
     place({ type: OBJ.MINE, res: 'wood', owner: -1 }, findSpot(t.x, t.y, 4, 7));
@@ -324,6 +326,29 @@ export function generateMap({ seed, size, factions }) {
       if (type === OBJ.RUNESTONE) o.visited = {};
       if (type === OBJ.WINDMILL) o.visitedWeek = {};
       if (type === OBJ.TOWER) o.visitedBy = {};
+    }
+  }
+
+  // ---------- New sites: portals, traders, smithies, waterfalls, signposts, seers, vaults, boards ----------
+  const pairs = size >= 56 ? 2 : 1;
+  for (let k = 0; k < pairs; k++) {
+    const a = place({ type: OBJ.PORTAL }, anySpot(1, 5));
+    let b = null;
+    for (let tries = 0; tries < 30 && !b; tries++) { const sp = anySpot(1, 5); if (sp && a && Math.hypot(sp.x - a.x, sp.y - a.y) > size * 0.45) b = place({ type: OBJ.PORTAL }, sp); }
+    if (a && b) { a.pair = b.id; b.pair = a.id; } else if (a) removeAt(a);
+  }
+  const sites = [
+    [OBJ.MARKET, size >= 48 ? 2 : 1], [OBJ.SMITHY, size >= 48 ? 2 : 1], [OBJ.WATERFALL, 2], [OBJ.SIGNPOST, 2],
+    [OBJ.WITCH, size >= 48 ? 3 : 2], [OBJ.GATE, size >= 48 ? 2 : 1], [OBJ.BOARD, 2],
+  ];
+  for (const [type, n] of sites) {
+    for (let k = 0; k < n; k++) {
+      const o = place({ type }, anySpot(1, 4));
+      if (!o) continue;
+      if (type === OBJ.SMITHY) o.artifact = rng.pick(ARTIFACT_IDS.filter((id) => ARTIFACTS[id].rarity <= 2));
+      if (type === OBJ.SIGNPOST) o.visitedBy = {};
+      if (type === OBJ.WITCH) { o.visited = {}; o.skill = rng.pick(SKILL_IDS); }
+      if (type === OBJ.GATE) { o.looted = 0; o.gold = rng.int(30, 50) * 100; o.artifact = rng.pick(ARTIFACT_IDS.filter((id) => ARTIFACTS[id].rarity >= 2)); guard(o, 2.4); }
     }
   }
 

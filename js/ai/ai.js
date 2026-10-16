@@ -142,6 +142,11 @@ function targetValue(p, h, o, strength) {
     case OBJ.FOUNTAIN: return h.flags.luck ? 0 : 250;
     case OBJ.CAMP: return h.flags.morale ? 0 : 250;
     case OBJ.WINDMILL: return 500;
+    case OBJ.SMITHY: return o.artifact && p.resources.gold >= 6000 ? 1500 : 0;
+    case OBJ.WATERFALL: return h.flags.waterfallWeek ? 0 : (h.mana < 10 && h.cls === 'magic' ? 700 : 250);
+    case OBJ.SIGNPOST: return 150;
+    case OBJ.WITCH: return o.visited[h.id] ? 0 : 900;
+    case OBJ.GATE: return o.looted ? 0 : 6000;
     default: return 0;
   }
 }

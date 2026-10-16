@@ -86,9 +86,16 @@ const app = {
     if (w === null) return false;
     const won = w === 0;
     deleteSave();
-    await dialog({ title: won ? 'Sejr!' : 'Nederlag', cls: won ? 'victory' : 'defeat', closable: false, body: won
-      ? `Dine fjender er knust og landet er dit. ${G.s.players[0].name} hersker nu over både skov og jern.\n\nSpillet varede ${G.s.day} dage og ${G.s.stats.battles} slag.`
-      : `Dit rige er faldet. Skyggen breder sig over landet…\n\nSpillet varede ${G.s.day} dage.`, buttons: [{ label: 'Til hovedmenu', value: true, primary: true }] });
+    const st = G.s.stats || {};
+    const score = Math.max(0, (won ? 5000 : 0) + (st.won || 0) * 100 + (st.kills || 0) + (st.townsTaken || 0) * 2000 + (st.artifacts || 0) * 300 - G.s.day * 10);
+    const rows = [['Dage', G.s.day], ['Slag vundet', st.won || 0], ['Slag tabt', st.lost || 0], ['Fjender fældet', st.kills || 0], ['Egne tab', st.losses || 0], ['Byer erobret', st.townsTaken || 0], ['Artefakter fundet', st.artifacts || 0], ['Væsner der sluttede sig til dig', st.joined || 0], ['Point', score]];
+    const table = document.createElement('table'); table.className = 'k-table chronicle';
+    for (const [k, v] of rows) { const tr = document.createElement('tr'); const a = document.createElement('td'); a.textContent = k; const b = document.createElement('td'); b.textContent = String(v); tr.append(a, b); table.append(tr); }
+    const body = document.createElement('div');
+    const text = document.createElement('div'); text.className = 'dialog-text';
+    text.textContent = won ? `Dine fjender er knust og landet er dit. ${G.s.players[0].name} hersker nu over både skov og jern.` : 'Dit rige er faldet. Skyggen breder sig over landet…';
+    body.append(text, table);
+    await dialog({ title: won ? 'Sejr!' : 'Nederlag', cls: won ? 'victory' : 'defeat', closable: false, body, buttons: [{ label: 'Til hovedmenu', value: true, primary: true }] });
     this.toMenu();
     return true;
   },

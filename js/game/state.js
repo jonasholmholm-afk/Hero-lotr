@@ -37,7 +37,8 @@ export function newGame({ seed, size = 'medium', playerFaction = 'elves', diffic
       mkPlayer(0, playerFaction, false, diff.player, playerName),
       mkPlayer(1, aiFaction, true, diff.ai, FACTIONS[aiFaction].name + ' (AI)'),
     ],
-    heroes: {}, nextHeroId: 1, log: [], rngState: 0, stats: { battles: 0, daysPlayed: 0 },
+    heroes: {}, nextHeroId: 1, log: [], rngState: 0, stats: { battles: 0, daysPlayed: 0, won: 0, lost: 0, kills: 0, losses: 0, townsTaken: 0, artifacts: 0, joined: 0 },
+    week: { n: 1, kind: 'calm', name: 'Første uge', text: 'Riget vågner. Udforsk landet og saml dine styrker.' },
     options: { animSpeed: 1 },
   };
   G.s = s; G.rng = rng;

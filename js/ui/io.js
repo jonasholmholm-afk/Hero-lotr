@@ -15,6 +15,10 @@ import { silentIO } from '../combat/runner.js';
 import { skillIcon, artifactIcon, spellIcon } from '../render/icons.js';
 import { unitCard, costRow, portraitImg } from './common.js';
 import { isRevealed } from '../game/fog.js';
+import { RES } from '../data/resources.js';
+import { tradeRate } from '../game/town.js';
+import { resIcon } from './common.js';
+import { OBJ } from '../data/objects.js';
 
 export class GameIO {
   constructor(app) { this.app = app; }
@@ -27,6 +31,7 @@ export class GameIO {
     let icon = null;
     if (extra.artifact) icon = el('img', { src: artifactIcon(extra.artifact, 64).toDataURL(), width: 56, height: 56 });
     if (extra.spell) icon = el('img', { src: spellIcon(extra.spell, 64).toDataURL(), width: 56, height: 56 });
+    if (extra.skill) icon = el('img', { src: skillIcon(extra.skill, 64).toDataURL(), width: 56, height: 56 });
     await info(title, text, icon);
     this.app.hud.refresh();
   }
@@ -53,6 +58,38 @@ export class GameIO {
       if (got > 0) toast(`${got} ${u.plural} sluttede sig til ${hero.name}`, 2000, 'good');
       else toast('Ingen plads i hæren');
     }
+    this.app.hud.refresh();
+  }
+  async teleport(hero) {
+    if (!this.isHuman(hero)) return;
+    this.app.renderer.centerOn(hero.x, hero.y);
+    this.app.renderer.invalidateFog();
+    await wait(250);
+  }
+  /** Travelling merchant: trade resources at the rate of (own markets + 1). */
+  async trade(hero) {
+    if (!this.isHuman(hero)) return;
+    const p = G.s.players[hero.owner];
+    const nMarkets = Math.max(2, p.towns.map((id) => G.s.map.objects[id]).filter((t) => t && t.buildings.market).length + 1);
+    let from = 'wood', to = 'gold';
+    const box = el('div.market');
+    let closeFn = null;
+    const draw = () => {
+      box.innerHTML = '';
+      const sel = (cur, cb) => { const r = el('div.res-select'); for (const k of RES) r.append(el('button.btn.small' + (k === cur ? '.primary' : ''), { onclick: () => cb(k) }, resIcon(k, 16), ` ${p.resources[k]}`)); return r; };
+      box.append(el('div', 'Giv:'), sel(from, (k) => { from = k; if (to === k) to = k === 'gold' ? 'wood' : 'gold'; draw(); }));
+      box.append(el('div', 'Få:'), sel(to, (k) => { to = k; if (from === k) from = k === 'gold' ? 'wood' : 'gold'; draw(); }));
+      const r = tradeRate(from, to, nMarkets);
+      const maxTrades = Math.floor(p.resources[from] / r);
+      box.append(el('div.notice.small', `Købmandens kurs: ${r} ${RES_INFO[from].name} → 1 ${RES_INFO[to].name}`));
+      box.append(el('button.btn.primary', { disabled: maxTrades <= 0, onclick: async () => {
+        const n = await numberPicker({ title: 'Handel', body: `Hvor mange ${RES_INFO[to].name} vil du købe?`, max: maxTrades, okLabel: 'Byt', costFn: (k) => `Koster ${k * r} ${RES_INFO[from].name}` });
+        if (n > 0) { p.resources[from] -= n * r; p.resources[to] += n; toast(`Byttede ${n * r} ${RES_INFO[from].name} til ${n} ${RES_INFO[to].name}`, 1800, 'good'); }
+        draw();
+      } }, 'Byt'));
+    };
+    draw();
+    await dialog({ title: 'Handelsplads', body: el('div', el('div.dialog-text', 'En omrejsende købmand slår sin bod op og tilbyder at bytte varer.'), box), buttons: [{ label: 'Farvel', value: null }], init: (c) => { closeFn = c; } });
     this.app.hud.refresh();
   }
   async enterTown(hero, town) {

@@ -2,7 +2,7 @@
 
 ## Ark-prompts (5 motiver pr. billede)
 
-38 prompts dækker alle 171 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
+40 prompts dækker alle 179 pladser. Lav ét billede pr. prompt (bredt format, fx 5:2 eller 16:9, så stor opløsning som muligt) og send billederne videre, så bliver de automatisk delt op, renset for magenta baggrund, beskåret og navngivet.
 
 **Negativ prompt (hvis værktøjet understøtter det):** text, watermark, signature, frame, border, blurry, low detail, cropped, multiple subjects, photo, 3d render, overlapping figures, collage frame, grid lines
 
@@ -97,11 +97,25 @@ Indhold fra venstre mod højre: 1. Runesten, 2. Hellig Kilde, 3. Visdommens Træ
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a tall standing stone carved with glowing blue runes; 2) an old stone well with a wooden roof and glowing blue water; 3) a magical tree of wisdom with glowing pale blue leaves and floating lights; 4) a wooden horse stable of Rohan with a horse-head sign; 5) a tall stone watchtower with a flag. No text, numbers, labels, frames or watermarks.
 ```
 
-### Ark `objekter-5` – Objekter (4 motiver)
-Indhold fra venstre mod højre: 1. Lykkebrønd, 2. Vandrerlejr, 3. Vindmølle, 4. Forladt Ruin
+### Ark `objekter-5` – Objekter (5 motiver)
+Indhold fra venstre mod højre: 1. Lykkebrønd, 2. Vandrerlejr, 3. Vindmølle, 4. Forladt Ruin, 5. Elverport
 
 ```
-Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Four separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a small stone fountain with a golden glowing light; 2) a travellers camp with a tent and a campfire; 3) a wooden windmill with cloth sails; 4) ruined ancient stone columns overgrown with ivy. No text, numbers, labels, frames or watermarks.
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a small stone fountain with a golden glowing light; 2) a travellers camp with a tent and a campfire; 3) a wooden windmill with cloth sails; 4) ruined ancient stone columns overgrown with ivy; 5) an ancient stone archway with a swirling blue magical portal inside, ivy on the stones. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `objekter-6` – Objekter (5 motiver)
+Indhold fra venstre mod højre: 1. Handelsplads, 2. Smedje, 3. Helligt Vandfald, 4. Vejviser, 5. Sandsigerskens Bål
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Five separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) a travelling merchant stall with a red and white striped awning, crates of fruit and barrels; 2) a small stone and timber blacksmith forge with a glowing furnace, an anvil and hanging tools; 3) a small waterfall over mossy rocks into a clear pool, with a tree on top; 4) a wooden signpost with several blank arrow-shaped signs pointing in different directions, ivy on the post; 5) a camp fire with a black iron cauldron hanging from a wooden tripod, glowing embers and stumps. No text, numbers, labels, frames or watermarks.
+```
+
+### Ark `objekter-7` – Objekter (2 motiver)
+Indhold fra venstre mod højre: 1. Glemt Skatkammer, 2. Opslagstavle
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. One wide image (about 5:2). Two separate objects in one horizontal row, left to right, evenly spaced, not overlapping, each fully visible, front view from slightly above, bases on the same ground line, on a flat solid magenta (#FF00FF) background, no ground, no cast shadows. From left to right: 1) an old stone gate arch with heavy wooden doors standing open, lanterns and a shield emblem above; 2) a wooden notice board with a small roof and pinned parchment notes and a lantern. No text, numbers, labels, frames or watermarks.
 ```
 
 ### Ark `natur-1` – Natur (5 motiver)
@@ -700,6 +714,54 @@ Hand-painted fantasy game art in the style of Heroes of Might and Magic III and 
 
 ```
 Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: ruined ancient stone columns overgrown with ivy. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Elverport** – `assets/objects/portal.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: an ancient stone archway with a swirling blue magical portal inside, ivy on the stones. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Handelsplads** – `assets/objects/market.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: a travelling merchant stall with a red and white striped awning, crates of fruit and barrels. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Smedje** – `assets/objects/smithy.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: a small stone and timber blacksmith forge with a glowing furnace, an anvil and hanging tools. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Helligt Vandfald** – `assets/objects/waterfall.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: a small waterfall over mossy rocks into a clear pool, with a tree on top. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Vejviser** – `assets/objects/signpost.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: a wooden signpost with several blank arrow-shaped signs pointing in different directions, ivy on the post. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Sandsigerskens Bål** – `assets/objects/witch_hut.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: a camp fire with a black iron cauldron hanging from a wooden tripod, glowing embers and stumps. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Glemt Skatkammer** – `assets/objects/gate.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: an old stone gate arch with heavy wooden doors standing open, lanterns and a shield emblem above. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
+```
+
+**Opslagstavle** – `assets/objects/board.png` (mindst 160×168 px, magenta baggrund)
+
+```
+Hand-painted fantasy game art in the style of Heroes of Might and Magic III and Warhammer Fantasy illustrations: detailed, semi-realistic, painterly, rich colours, soft light from the upper left, crisp silhouettes. Small map object for a strategy game: a wooden notice board with a small roof and pinned parchment notes and a lantern. Front-side view from slightly above, whole object visible, base at the bottom. Single subject, centred, isolated on a flat solid magenta (#FF00FF) background, no ground, no shadow on the background.
 ```
 
 

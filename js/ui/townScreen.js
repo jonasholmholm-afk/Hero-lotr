@@ -18,6 +18,8 @@ import { figure } from '../render/figures.js';
 import { mk, poly, circle, ellipse, rrect, line, lgrad, rgrad, shade, lighten } from '../render/draw.js';
 import { townSprite } from '../render/sprites.js';
 import { drawTownBanner } from '../render/scenes.js';
+import { rumours } from '../game/rumours.js';
+import { tradeRate } from '../game/town.js';
 
 export function openTownScreen(app, town) {
   return new Promise((resolve) => {
@@ -135,9 +137,12 @@ export function openTownScreen(app, town) {
         c.append(card);
       } else c.append(el('div.muted', 'Ingen helte søger tjeneste i denne uge.'));
       // rumours / log
+      const rum = el('div.log');
+      for (const line of rumours(p, 3)) rum.append(el('div.log-line', `“${line}”`));
+      c.append(el('h3', 'Rygter fra kroen'), rum);
       const logBox = el('div.log');
       for (const l of s.log.slice(-6).reverse()) logBox.append(el('div.log-line', `Dag ${l.day}: ${l.text}`));
-      c.append(el('h3', 'Rygter fra kroen'), logBox);
+      c.append(el('h3', 'Seneste nyt'), logBox);
     };
 
     const renderMage = (c, hero) => {
@@ -161,15 +166,7 @@ export function openTownScreen(app, town) {
       if (!town.buildings.market) { c.append(el('div.muted', `Byg ${bname(town, 'market')} for at handle.`)); return; }
       const markets = heroesOf(p.id).length; // not used
       const nMarkets = p.towns.map((id) => s.map.objects[id]).filter((t) => t && t.buildings.market).length;
-      const rate = (from, to) => {
-        // units of `from` per 1 `to`
-        const base = (from === 'gold' ? 1 : 1) ;
-        const val = { gold: 1, wood: 250, ore: 250, mithril: 500, warpstone: 500, gems: 500 };
-        let r = val[to] / val[from];
-        r *= [0, 2.5, 2, 1.6, 1.3, 1.1][Math.min(5, nMarkets)] || 1.1;
-        if (from === 'gold') return Math.ceil(r);
-        return Math.max(1, Math.round(r));
-      };
+      const rate = (from, to) => tradeRate(from, to, nMarkets);
       let from = 'wood', to = 'gold';
       const box = el('div.market');
       const draw = () => {

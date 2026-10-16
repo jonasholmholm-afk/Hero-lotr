@@ -426,6 +426,12 @@ export function objectSprite(o, ownerColor) {
       case 'camp': return campSprite();
       case 'windmill': return windmillSprite();
       case 'ruin': return ruinSprite();
+      case 'portal': case 'board': return shrineSprite();
+      case 'market': case 'witch_hut': return campSprite();
+      case 'smithy': return stablesSprite();
+      case 'waterfall': return wellSprite();
+      case 'signpost': return runestoneSprite();
+      case 'gate': return towerSprite();
       default: return mkS(1, 1);
     }
   });

@@ -131,4 +131,12 @@ export function townArmyForDefense(t, heroes) {
   if (t.visiting && heroes[t.visiting]) return { hero: heroes[t.visiting], army: heroes[t.visiting].army };
   return { hero: null, army: t.garrison };
 }
+/** Units of `from` needed for 1 `to`, given the number of markets the player controls. */
+export function tradeRate(from, to, nMarkets) {
+  const val = { gold: 1, wood: 250, ore: 250, mithril: 500, warpstone: 500, gems: 500 };
+  let r = val[to] / val[from];
+  r *= [0, 2.5, 2, 1.6, 1.3, 1.1][Math.min(5, nMarkets)] || 1.1;
+  if (from === 'gold') return Math.ceil(r);
+  return Math.max(1, Math.round(r));
+}
 export function hasGarrison(t) { return t.garrison.some((s) => s && s.count > 0); }

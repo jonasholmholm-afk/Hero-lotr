@@ -84,6 +84,14 @@ const OBJ_PROMPT = {
   camp: 'a travellers camp with a tent and a campfire',
   windmill: 'a wooden windmill with cloth sails',
   ruin: 'ruined ancient stone columns overgrown with ivy',
+  portal: 'an ancient stone archway with a swirling blue magical portal inside, ivy on the stones',
+  market: 'a travelling merchant stall with a red and white striped awning, crates of fruit and barrels',
+  smithy: 'a small stone and timber blacksmith forge with a glowing furnace, an anvil and hanging tools',
+  waterfall: 'a small waterfall over mossy rocks into a clear pool, with a tree on top',
+  signpost: 'a wooden signpost with several blank arrow-shaped signs pointing in different directions, ivy on the post',
+  witch_hut: 'a camp fire with a black iron cauldron hanging from a wooden tripod, glowing embers and stumps',
+  gate: 'an old stone gate arch with heavy wooden doors standing open, lanterns and a shield emblem above',
+  board: 'a wooden notice board with a small roof and pinned parchment notes and a lantern',
 };
 const DECOR_LABEL = { pine: 'Gran', leafy: 'Løvtræ', golden: 'Gyldent træ', dead: 'Dødt træ', mountain: 'Bjerg', rock: 'Klipper', flowers: 'Blomster', mushroom: 'Svampe', stump: 'Træstub', reeds: 'Siv', snowpine: 'Snegran', bush: 'Busk', pebbles: 'Småsten' };
 const TERRAIN_LABEL = { water: 'Vand', grass: 'Græs', dirt: 'Jord', rough: 'Ujævnt', swamp: 'Sump', snow: 'Sne', ash: 'Aske' };

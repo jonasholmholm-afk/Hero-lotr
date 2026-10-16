@@ -265,3 +265,21 @@ canvas.minimap { border-radius: 6px; box-shadow: var(--frame-sm); image-renderin
 /* battle zoom button */
 .battle-zoom { position: absolute; right: calc(8px + var(--sar)); top: calc(62px + var(--sat)); z-index: 3; opacity: 0.85; }
 .town-banner { height: 190px; }
+
+/* kingdom overview */
+.kingdom { max-height: 62vh; overflow: auto; padding-right: 4px; }
+.kingdom h3 { margin: 10px 0 4px; }
+.k-income { display: flex; flex-wrap: wrap; gap: 10px; font-size: 0.9rem; }
+.k-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.k-table th { text-align: left; color: var(--muted); font-weight: normal; padding: 3px 6px; border-bottom: 1px solid #3a3326; }
+.k-table td { padding: 4px 6px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+.k-table tr:hover td { background: rgba(227,197,106,0.08); cursor: pointer; }
+.k-table.chronicle td:last-child { text-align: right; color: var(--gold); font-family: var(--font-head); }
+.k-table.chronicle tr:hover td { background: none; cursor: default; }
+.k-stats { font-size: 0.85rem; color: #cfc8b8; }
+.kingdom-dialog .dialog { width: min(96vw, 760px); }
+/* artifact sets */
+.set-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; }
+.set-row { display: flex; justify-content: space-between; gap: 8px; font-size: 0.82rem; padding: 4px 8px; border-radius: 6px; background: rgba(255,255,255,0.03); color: var(--muted); }
+.set-row.active { background: rgba(227,197,106,0.12); color: #ffe9b0; box-shadow: 0 0 0 1px #5a4420; }
+.set-row .set-name { font-family: var(--font-head); }

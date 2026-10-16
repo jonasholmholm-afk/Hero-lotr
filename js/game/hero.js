@@ -2,7 +2,7 @@ import { HEROES, LEVEL_XP, STAT_IDS } from '../data/heroes.js';
 import { FACTIONS } from '../data/factions.js';
 import { UNITS } from '../data/units.js';
 import { SKILLS, SKILL_IDS, SKILL_WEIGHTS, skillVal } from '../data/skills.js';
-import { ARTIFACTS, SLOTS } from '../data/artifacts.js';
+import { ARTIFACTS, SLOTS, activeSets } from '../data/artifacts.js';
 import { SPELLS } from '../data/spells.js';
 import { clamp } from '../core/utils.js';
 
@@ -52,12 +52,14 @@ export function placeHeroInTown(s, hero, town) {
   hero.inTavern = false;
 }
 
+export function equippedArtifacts(hero) { return SLOTS.map((sl) => hero.artifacts[sl]).filter(Boolean); }
 export function artifactBonus(hero, key) {
   let b = 0;
   for (const sl of SLOTS) {
     const id = hero.artifacts[sl];
     if (id && ARTIFACTS[id].bonus[key]) b += ARTIFACTS[id].bonus[key];
   }
+  for (const set of activeSets(equippedArtifacts(hero))) if (set.bonus[key]) b += set.bonus[key];
   return b;
 }
 export function heroStat(hero, stat) {

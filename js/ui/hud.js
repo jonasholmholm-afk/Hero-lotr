@@ -17,6 +17,12 @@ import { townSprite } from '../render/sprites.js';
 import { fortLevel } from '../game/town.js';
 import { T } from '../data/terrain.js';
 import { dialog as dlg } from './dialogs.js';
+import { rumours } from '../game/rumours.js';
+import { isNewWeek } from '../game/turn.js';
+import { BUILD_ORDER } from '../data/buildings.js';
+import { bname, townIncome, hallLevel } from '../game/town.js';
+import { FACTIONS } from '../data/factions.js';
+import { HEROES } from '../data/heroes.js';
 
 function moveBar(cur, max, planned) {
   const pct = (v) => Math.max(0, Math.min(100, (v / max) * 100));
@@ -57,7 +63,9 @@ export class Hud {
     for (const r of RES) resBox.append(el('span.res', { title: `${RES_INFO[r].name} (+${inc[r]}/dag)` }, resIcon(r, 16), el('span', String(p.resources[r]))));
     top.append(resBox);
     const d = ordinalDay(s.day);
-    top.append(el('div.date', `Dag ${d.d} · Uge ${d.w} · Måned ${d.m}`));
+    const wk = s.week && s.week.kind !== 'calm' ? ` · ${s.week.name}` : '';
+    top.append(el('div.date', { title: s.week ? `${s.week.name}: ${s.week.text}` : '' }, `Dag ${d.d} · Uge ${d.w} · Måned ${d.m}${wk}`));
+    top.append(el('button.btn.small', { title: 'Rigeoversigt', onclick: () => this.openKingdom() }, '👑'));
     top.append(el('button.btn.small', { onclick: () => this.openMinimap() }, '🗺'));
     top.append(el('button.btn.small', { onclick: () => this.app.openMenu() }, '☰'));
     // right column: heroes + towns
@@ -95,6 +103,40 @@ export class Hud {
     bottom.append(btns);
   }
 
+  openKingdom() {
+    const s = G.s, p = human();
+    const inc = incomeOf(p);
+    const body = el('div.kingdom');
+    const d = ordinalDay(s.day);
+    body.append(el('div.k-head', el('b', `Dag ${s.day} · Uge ${d.w}, måned ${d.m}`), el('span.muted', s.week ? ` · ${s.week.name}: ${s.week.text}` : '')));
+    const incRow = el('div.k-income');
+    for (const r of RES) incRow.append(el('span.res', resIcon(r, 16), ` ${p.resources[r]} `, el('span.muted', `(+${inc[r]})`)));
+    body.append(el('h3', 'Indtægt pr. dag'), incRow);
+    body.append(el('h3', `Helte (${heroesOf(p.id).length})`));
+    const ht = el('table.k-table');
+    ht.append(el('tr', el('th', ''), el('th', 'Helt'), el('th', 'Niveau'), el('th', 'Hærstyrke'), el('th', 'Skridt'), el('th', 'Hvor')));
+    for (const h of heroesOf(p.id)) {
+      const t = townsOf(p.id).find((tw) => tw.visiting === h.id);
+      ht.append(el('tr', { onclick: () => { this.select(h); if (closeFn) closeFn(null); } }, el('td', portraitImg(h.defId, 28)), el('td', h.name), el('td', String(h.level)), el('td', String(Math.round(armyValue(h.army)))), el('td', `${fmtMove(h.movement)} / ${fmtMove(h.maxMovement || maxMovement(h))}`), el('td', t ? t.name : `${h.x}, ${h.y}`)));
+    }
+    if (!heroesOf(p.id).length) ht.append(el('tr', el('td', { colspan: 6 }, el('span.muted', 'Ingen helte. Hyr en i tavernen.'))));
+    body.append(ht);
+    body.append(el('h3', `Byer (${townsOf(p.id).length})`));
+    const tt = el('table.k-table');
+    tt.append(el('tr', el('th', 'By'), el('th', 'Rådhus'), el('th', 'Guld/dag'), el('th', 'Bygninger'), el('th', 'Garnison'), el('th', 'Klar til hvervning')));
+    for (const t of townsOf(p.id)) {
+      const built = BUILD_ORDER.filter((id) => t.buildings[id]).length;
+      const avail = Object.values(t.available).reduce((a, b) => a + b, 0);
+      tt.append(el('tr', { onclick: () => { if (closeFn) closeFn(null); this.r.centerOn(t.x, t.y); this.app.openTown(t).then(() => this.refresh()); } }, el('td', t.name), el('td', bname(t, 'hall' + hallLevel(t))), el('td', String(townIncome(t))), el('td', `${built} / ${BUILD_ORDER.length}`), el('td', String(Math.round(armyValue(t.garrison)))), el('td', String(avail))));
+    }
+    body.append(tt);
+    const mines = Object.values(s.map.objects).filter((o) => o.type === OBJ.MINE && o.owner === p.id).length;
+    const st = s.stats || {};
+    body.append(el('h3', 'Krønike'), el('div.k-stats', `Miner: ${mines} · Slag: ${(st.won || 0)} vundet, ${(st.lost || 0)} tabt · Fjender fældet: ${st.kills || 0} · Egne tab: ${st.losses || 0} · Byer erobret: ${st.townsTaken || 0} · Artefakter: ${st.artifacts || 0}`));
+    body.append(el('h3', 'Rygter'), el('div.log', ...rumours(p, 3).map((l) => el('div.log-line', `“${l}”`))));
+    let closeFn = null;
+    dlg({ title: `${p.name}s rige`, body, cls: 'kingdom-dialog', buttons: [{ label: 'Luk', value: null, primary: true }], init: (c) => { closeFn = c; } });
+  }
   openMinimap() {
     const s = G.s, m = s.map, p = human();
     const maxW = Math.min(window.innerWidth - 60, 520), maxH = Math.min(window.innerHeight - 140, 400);
@@ -286,7 +328,8 @@ export class Hud {
     if (!(await this.app.checkEnd())) {
       saveGame();
       const d = ordinalDay(G.s.day);
-      toast(`Dag ${d.d}, uge ${d.w}, måned ${d.m}` + (d.d === 1 ? ' – ny uge: nye rekrutter!' : ''), 2000);
+      if (isNewWeek(G.s.day) && G.s.week) await info(`Uge ${d.w} begynder`, `${G.s.week.name}\n${G.s.week.text}\n\nNye rekrutter venter i byerne og boligerne.`);
+      else toast(`Dag ${d.d}, uge ${d.w}, måned ${d.m}`, 2000);
       // select first hero with movement
       const hs = heroesOf(0);
       if (hs.length && !(this.selected && G.s.heroes[this.selected])) this.select(hs[0]);

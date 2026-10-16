@@ -31,6 +31,17 @@ export const ARTIFACTS = {
   spellbook_saruman: a('spellbook_saruman', { name: 'Sarumans Skrifter', slot: 'misc', bonus: { power: 2 }, lore: 'Mange-farvede skrifter fuld af ringlore.', art: { c: '#c0c0ff', g: 'book' } }),
 };
 export const ARTIFACT_IDS = Object.keys(ARTIFACTS);
+/** Sets: wearing every piece at once grants the extra bonus. */
+export const ARTIFACT_SETS = {
+  erebor: { name: 'Erebors Arv', items: ['orcrist', 'mithril_shirt'], bonus: { attack: 2, defense: 2 }, lore: 'Thorins gaver: sværdet fra Gondolin og brynjen fra Bjerget.' },
+  light: { name: 'Lysets Vogtere', items: ['glamdring', 'phial', 'evenstar'], bonus: { power: 2, luck: 1 }, lore: 'Eärendils lys i tre skikkelser.' },
+  lorien: { name: 'Lóriens Gaver', items: ['elven_cloak', 'bow_galadhrim'], bonus: { luck: 1, movement: 200 }, lore: 'Galadriels gaver til vandrerne.' },
+  isengard: { name: 'Isengards Arv', items: ['uruk_shield', 'iron_helm', 'spellbook_saruman'], bonus: { power: 2, knowledge: 2 }, lore: 'Den Hvide Hånds samlede kraft.' },
+  waaagh: { name: 'Gork og Morks Gunst', items: ['gorks_club', 'morks_tooth', 'waaagh_banner'], bonus: { attack: 3, morale: 1 }, lore: 'Når begge guder griner, brøler hele horden.' },
+  numenor: { name: 'Númenors Arv', items: ['ring_barahir', 'gondor_horn', 'palantir'], bonus: { defense: 2, knowledge: 1, scouting: 2 }, lore: 'Kongernes arvestykker fra det sunkne rige.' },
+  shadow: { name: 'Skyggens Kroner', items: ['iron_crown', 'one_ring', 'black_armor'], bonus: { power: 3, defense: 2 }, lore: 'Mørkets samlede herredømme. Prisen er høj.' },
+};
+export function activeSets(equipped) { return Object.values(ARTIFACT_SETS).filter((s) => s.items.every((i) => equipped.includes(i))); }
 export const BONUS_NAMES = { attack: 'Angreb', defense: 'Forsvar', power: 'Magt', knowledge: 'Viden', morale: 'Moral', luck: 'Held', movement: 'Bevægelse', scouting: 'Synsvidde' };
 export function bonusStr(b) {
   return Object.entries(b).map(([k, v]) => `${v > 0 ? '+' : ''}${v} ${BONUS_NAMES[k] || k}`).join(', ');
