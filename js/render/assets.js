@@ -177,3 +177,76 @@ export async function exportZip() {
   const end = new Uint8Array([...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cdSize), ...u32(offset), ...u16(0)]);
   return new Blob([...parts, ...central, end], { type: 'application/zip' });
 }
+
+// ---------------- Sheet import (several subjects in one image) ----------------
+/** Splits an image with `n` subjects in a row into n cropped canvases (after chroma keying). */
+export function splitSheet(img, n) {
+  const keyed = chromaKey(img);
+  const w = keyed.width, h = keyed.height;
+  const d = keyed.getContext('2d').getImageData(0, 0, w, h).data;
+  const col = new Uint32Array(w);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 40) col[x]++;
+  const thr = Math.max(2, h * 0.01);
+  // runs of occupied columns
+  let runs = [], start = -1;
+  for (let x = 0; x <= w; x++) {
+    const occ = x < w && col[x] > thr;
+    if (occ && start < 0) start = x;
+    if (!occ && start >= 0) { runs.push([start, x - 1]); start = -1; }
+  }
+  // drop specks, merge runs separated by tiny gaps
+  const minW = w * 0.02;
+  runs = runs.filter((r) => r[1] - r[0] >= minW);
+  const merged = [];
+  for (const r of runs) { if (merged.length && r[0] - merged[merged.length - 1][1] < w * 0.012) merged[merged.length - 1][1] = r[1]; else merged.push([...r]); }
+  runs = merged;
+  while (runs.length > n) { // merge the pair with the smallest gap
+    let bi = 0, bg = Infinity;
+    for (let i = 0; i + 1 < runs.length; i++) { const gap = runs[i + 1][0] - runs[i][1]; if (gap < bg) { bg = gap; bi = i; } }
+    runs[bi][1] = runs[bi + 1][1]; runs.splice(bi + 1, 1);
+  }
+  while (runs.length < n && runs.length > 0) { // split the widest run evenly
+    let wi = 0; for (let i = 0; i < runs.length; i++) if (runs[i][1] - runs[i][0] > runs[wi][1] - runs[wi][0]) wi = i;
+    const [a, b] = runs[wi]; const mid = Math.round((a + b) / 2);
+    runs.splice(wi, 1, [a, mid], [mid + 1, b]);
+  }
+  if (!runs.length) { const step = w / n; for (let i = 0; i < n; i++) runs.push([Math.round(i * step), Math.round((i + 1) * step) - 1]); }
+  return runs.map(([x0, x1]) => {
+    let y0 = h, y1 = 0;
+    for (let y = 0; y < h; y++) for (let x = x0; x <= x1; x++) if (d[(y * w + x) * 4 + 3] > 40) { if (y < y0) y0 = y; if (y > y1) y1 = y; break; }
+    if (y1 < y0) { y0 = 0; y1 = h - 1; }
+    const pad = 2;
+    const cw = x1 - x0 + 1 + pad * 2, ch = y1 - y0 + 1 + pad * 2;
+    const c = mk(cw, ch); c.getContext('2d').drawImage(keyed, x0 - pad, y0 - pad, cw, ch, 0, 0, cw, ch);
+    return c;
+  });
+}
+/** Processes a whole sheet: returns [{key, canvas}] fitted to each slot. */
+export function processSheet(img, sheet) {
+  const parts = splitSheet(img, sheet.slots.length);
+  return sheet.slots.map((slot, i) => {
+    const part = parts[i];
+    let src = part;
+    if (!slot.keying) { // portraits / terrain: fill transparent edge pixels with their own content (opaque crop)
+      const c = mk(part.width, part.height); const x = c.getContext('2d');
+      x.fillStyle = '#1a1a1a'; x.fillRect(0, 0, c.width, c.height); x.drawImage(part, 0, 0);
+      src = c;
+    }
+    return { key: slot.key, canvas: fitToSlot(src, slot.size[0], slot.size[1], slot.baseline, slot.keying) };
+  });
+}
+export async function importSheet(file, sheet) {
+  const url = URL.createObjectURL(file);
+  const img = await loadImage(url);
+  URL.revokeObjectURL(url);
+  if (!img) return 0;
+  const results = processSheet(img, sheet);
+  let n = 0;
+  for (const { key, canvas } of results) {
+    const blob = await new Promise((r) => canvas.toBlob(r, 'image/png'));
+    await dbPut(key, blob);
+    const final = await loadImage(URL.createObjectURL(blob));
+    if (final) { images.set(key, final); userKeys.add(key); n++; }
+  }
+  return n;
+}

@@ -1,8 +1,8 @@
 // Grafikværksted: import your own images per slot, preview them in game size,
 // copy prompts and export everything as a ZIP for the repository.
 import { el } from '../core/utils.js';
-import { buildCatalog, CATEGORIES, STYLE, NEGATIVE } from '../data/assetCatalog.js';
-import { hasAsset, isUserAsset, assetImage, importAsset, removeAsset, clearUserAssets, exportZip } from '../render/assets.js';
+import { buildCatalog, buildSheets, CATEGORIES, STYLE, NEGATIVE } from '../data/assetCatalog.js';
+import { hasAsset, isUserAsset, assetImage, importAsset, importSheet, removeAsset, clearUserAssets, exportZip } from '../render/assets.js';
 import { clearArtCaches } from '../render/cacheControl.js';
 import { figure } from '../render/figures.js';
 import { portrait } from '../render/portraits.js';
@@ -57,6 +57,19 @@ export function openAssetStudio(app) {
       } }, '⬇ Download ZIP'));
       tools.append(el('button.btn.small.danger', { onclick: async () => { if (await confirm('Fjern alle egne billeder?', 'Spillet går tilbage til den tegnede grafik på denne enhed.')) { await clearUserAssets(); refreshGame(); render(); } } }, 'Nulstil alle'));
       root.append(tools);
+      // sheet import (5 subjects per image)
+      const sheets = buildSheets();
+      const sel = el('select.sheet-select');
+      for (const sh of sheets) sel.append(el('option', { value: sh.id }, `${sh.id}: ${sh.slots.map((x) => x.label).join(', ')}`));
+      const sheetInput = el('input', { type: 'file', accept: 'image/*', style: { display: 'none' }, onchange: async (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const sh = sheets.find((x) => x.id === sel.value);
+        toast('Deler arket op…', 2000);
+        const n = await importSheet(f, sh);
+        refreshGame(); toast(`${n} billeder importeret fra ${sh.id}`, 2000, 'good'); filter = sh.category; render();
+      } });
+      root.append(el('div.card.sheet-box', el('div.card-title', 'Importér ark (5 motiver pr. billede)'), el('div.muted.small', 'Vælg hvilket ark billedet svarer til, og vælg billedet. Det deles automatisk op fra venstre mod højre.'),
+        el('div.studio-row', sel, el('button.btn.small.primary', { onclick: () => sheetInput.click() }, 'Vælg ark-billede'), el('button.btn.small', { onclick: () => copy(sheets.find((x) => x.id === sel.value).prompt, 'Ark-prompt kopieret') }, '📋 Ark-prompt'), sheetInput)));
       const tabs = el('div.tabs');
       for (const c of CATEGORIES) tabs.append(el('button.tab' + (filter === c ? '.active' : ''), { onclick: () => { filter = c; render(); } }, `${c} (${catalog.filter((s) => s.category === c && hasAsset(s.key)).length}/${catalog.filter((s) => s.category === c).length})`));
       root.append(tabs);
