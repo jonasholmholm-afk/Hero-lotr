@@ -1,14 +1,17 @@
 {
   "files": [
+    "decor/bush.png",
     "decor/dead.png",
     "decor/flowers.png",
     "decor/golden.png",
     "decor/leafy.png",
     "decor/mountain.png",
     "decor/mushroom.png",
+    "decor/pebbles.png",
     "decor/pine.png",
     "decor/reeds.png",
     "decor/rock.png",
+    "decor/snowpine.png",
     "decor/stump.png",
     "heroes/elves.png",
     "heroes/orcs.png",
