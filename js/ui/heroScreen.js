@@ -1,5 +1,5 @@
 // Hero overview: stats, skills, army management, artifacts, spells.
-import { el } from '../core/utils.js';
+import { el, fmtMove } from '../core/utils.js';
 import { G } from '../game/state.js';
 import { UNITS } from '../data/units.js';
 import { SKILLS, SKILL_LEVELS } from '../data/skills.js';
@@ -105,7 +105,7 @@ export function openHeroScreen(app, hero) {
       left.append(el('div.hero-meta',
         el('div', `Erfaring: ${hero.exp} / ${expForNext(hero)}`), statBar(hero.exp, expForNext(hero), 'exp'),
         el('div', `Mana: ${hero.mana} / ${maxMana(hero)}`), statBar(hero.mana, maxMana(hero), 'mana'),
-        el('div', `Bevægelse: ${hero.movement} / ${hero.maxMovement || maxMovement(hero)}`), statBar(hero.movement, hero.maxMovement || maxMovement(hero), 'move'),
+        el('div', `Bevægelse: ${fmtMove(hero.movement)} / ${fmtMove(hero.maxMovement || maxMovement(hero))} skridt`), statBar(hero.movement, hero.maxMovement || maxMovement(hero), 'move'),
         el('div', `Moral: ${fmtMod(heroMorale(hero))} · Held: ${fmtMod(heroLuck(hero))}`),
         el('div.spec', `Speciale: ${specialtyText(hero)}`),
         el('div.lore', def.lore)));
