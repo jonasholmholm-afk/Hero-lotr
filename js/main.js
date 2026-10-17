@@ -146,5 +146,6 @@ if ('serviceWorker' in navigator && location.protocol !== 'file:') {
 function checkOrientation() { document.body.classList.toggle('portrait', window.innerHeight > window.innerWidth && window.innerWidth < 700); }
 window.addEventListener('resize', checkOrientation); checkOrientation();
 
-loadAssets().finally(() => renderMenu(app));
+app.setOverlay('Henter grafik…');
+loadAssets('./assets/', (n, total) => app.setOverlay(`Henter grafik… ${Math.round((n / total) * 100)} %`)).finally(() => { app.setOverlay(null); renderMenu(app); });
 window.__app = app; window.__G = G;

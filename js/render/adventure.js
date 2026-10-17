@@ -44,7 +44,7 @@ export class AdventureRenderer {
     this.time = 0;
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     this.CS = Math.min(1.5, this.dpr); // chunk render scale
-    this.minZoom = 0.45; this.maxZoom = 1.8;
+    this.minZoom = 0.45; this.maxZoom = 3.2;
     this.fogTex = this.makeFogTexture();
     this.resize();
   }

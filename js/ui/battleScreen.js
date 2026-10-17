@@ -118,7 +118,7 @@ export class BattleScreen {
     c.onwheel = (e) => { e.preventDefault(); const [x, y] = this.evPos(e); this.r.zoomAt(x, y, e.deltaY < 0 ? 1.15 : 1 / 1.15); };
   }
   cycleZoom() {
-    const levels = [1, 1.6, 2.2];
+    const levels = [1, 1.6, 2.4, 3.4];
     const cur = this.r.view.zoom;
     const next = levels.find((z) => z > cur + 0.05) || 1;
     const st = this.pending ? this.pending.st : this.b.current;

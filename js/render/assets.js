@@ -35,7 +35,7 @@ function loadImage(src) {
 }
 const userKeys = new Set();
 
-export async function loadAssets(base = './assets/') {
+export async function loadAssets(base = './assets/', onProgress = null) {
   // 1) device-local imports
   const local = await dbAll();
   for (const [key, blob] of local) {
@@ -49,11 +49,11 @@ export async function loadAssets(base = './assets/') {
     if (res.ok) {
       const manifest = await res.json();
       const files = Array.isArray(manifest.files) ? manifest.files : [];
+      let done = 0;
       await Promise.all(files.map(async (f) => {
         const key = f.replace(/\.[a-z0-9]+$/i, '');
-        if (images.has(key)) return;
-        const img = await loadImage(base + f);
-        if (img) images.set(key, img);
+        if (!images.has(key)) { const img = await loadImage(base + f); if (img) images.set(key, img); }
+        done++; if (onProgress) onProgress(done, files.length);
       }));
     }
   } catch { /* offline or no manifest */ }

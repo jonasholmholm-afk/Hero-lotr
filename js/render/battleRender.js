@@ -50,7 +50,7 @@ export class BattleRenderer {
     this.flash = new Map();
     this.shake = 0;
     this.bg = null;
-    this.view = { zoom: 1, x: 0, y: 0 }; this.minZoom = 1; this.maxZoom = 2.4;
+    this.view = { zoom: 1, x: 0, y: 0 }; this.minZoom = 1; this.maxZoom = 4;
     this.speed = animMult();
     this.resize();
   }
