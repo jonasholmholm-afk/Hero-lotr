@@ -23,6 +23,7 @@ import { BUILD_ORDER } from '../data/buildings.js';
 import { bname, townIncome, hallLevel } from '../game/town.js';
 import { FACTIONS } from '../data/factions.js';
 import { HEROES } from '../data/heroes.js';
+import { getSetting, setSetting } from '../game/settings.js';
 
 function moveBar(cur, max, planned) {
   const pct = (v) => Math.max(0, Math.min(100, (v / max) * 100));
@@ -65,6 +66,7 @@ export class Hud {
     const d = ordinalDay(s.day);
     const wk = s.week && s.week.kind !== 'calm' ? ` · ${s.week.name}` : '';
     top.append(el('div.date', { title: s.week ? `${s.week.name}: ${s.week.text}` : '' }, `Dag ${d.d} · Uge ${d.w} · Måned ${d.m}${wk}`));
+    top.append(el('button.btn.small' + (this.r && this.r.highlight ? '.primary' : ''), { title: 'Fremhæv ting du kan bruge (dæmper træer og klipper)', onclick: () => { this.r.highlight = !this.r.highlight; setSetting('highlight', this.r.highlight); toast(this.r.highlight ? 'Aktive elementer fremhæves' : 'Fremhævning slået fra', 1500); this.refresh(); } }, '✨'));
     top.append(el('button.btn.small', { title: 'Rigeoversigt', onclick: () => this.openKingdom() }, '👑'));
     top.append(el('button.btn.small', { onclick: () => this.openMinimap() }, '🗺'));
     top.append(el('button.btn.small', { onclick: () => this.app.openMenu() }, '☰'));

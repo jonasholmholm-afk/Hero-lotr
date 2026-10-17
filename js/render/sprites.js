@@ -160,7 +160,16 @@ const DECOR_SIZES = { pine: [60, 92], leafy: [68, 90], golden: [68, 90], dead: [
 export function decorSprite(kind, variant = 0) {
   return cached(`decor:${kind}:${variant}`, () => {
     const dk = DECOR_KEYS[kind];
-    if (dk) { const a = assetCanvas(`decor/${dk}_${variant}`, ...DECOR_SIZES[dk]) || assetCanvas(`decor/${dk}`, ...DECOR_SIZES[dk]); if (a) return a; }
+    if (dk) {
+      const a = assetCanvas(`decor/${dk}_${variant}`, ...DECOR_SIZES[dk]) || assetCanvas(`decor/${dk}`, ...DECOR_SIZES[dk]);
+      if (a) {
+        // scenery is muted a touch (less saturation and contrast) so interactive objects stand out
+        const m = mk(a.width, a.height); m.lw = a.lw; m.lh = a.lh;
+        const x = m.getContext('2d');
+        x.filter = 'saturate(0.8) contrast(0.92) brightness(0.96)'; x.drawImage(a, 0, 0); x.filter = 'none';
+        return m;
+      }
+    }
     const r = art_rng(kind * 101 + variant * 13 + 5);
     switch (kind) {
       case D.PINE: return pine(r, '#163f22', '#2d7a3c', '#6fbf63', '#4b3320');

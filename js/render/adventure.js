@@ -8,6 +8,7 @@ import { UNITS } from '../data/units.js';
 import { OBJ } from '../data/objects.js';
 import { fortLevel } from '../game/town.js';
 import { clamp, fmtMove } from '../core/utils.js';
+import { getSetting } from '../game/settings.js';
 import { Noise } from '../core/noise.js';
 
 const CHUNK = 10; // tiles per chunk side
@@ -45,6 +46,7 @@ export class AdventureRenderer {
     this.dpr = Math.min(2, window.devicePixelRatio || 1);
     this.CS = Math.min(1.5, this.dpr); // chunk render scale
     this.minZoom = 0.45; this.maxZoom = 3.2;
+    this.highlight = getSetting('highlight') === true;
     this.fogTex = this.makeFogTexture();
     this.resize();
   }
@@ -496,7 +498,9 @@ export class AdventureRenderer {
         if (d && DECOR_BLOCKS.has(d) && d !== D.BLOCK) {
           const sp = decorSprite(d, (x * 3 + y * 5) & 3);
           const sway = (d === D.MOUNTAIN || d === D.ROCK) ? 0 : Math.sin(now * 1.2 + x * 0.7 + y * 0.3) * 1.2;
+          if (this.highlight) ctx.globalAlpha = 0.62;
           blit(ctx, sp, x * TILE + TILE / 2 - sp.lw / 2 + (((x * 7 + y * 3) & 3) - 1.5) * 3 + sway, y * TILE + TILE - sp.lh + 6);
+          ctx.globalAlpha = 1;
         }
         const oid = m.objAt[i];
         if (oid) this.drawObject(m.objects[oid], x, y, viewer);
@@ -533,9 +537,35 @@ export class AdventureRenderer {
     }
   }
 
+  /** Soft light on the ground under things the player can use, and a marker in highlight mode. */
+  objectCue(o, px, py, w) {
+    const { ctx } = this;
+    const mon = o.type === OBJ.MONSTER;
+    const col = mon ? '#ff6a4a' : '#ffe6a8';
+    const pulse = 0.5 + 0.5 * Math.sin(this.time * 2.2 + (o.x * 7 + o.y * 3) % 10);
+    ctx.save();
+    ctx.globalAlpha = (this.highlight ? 0.42 : 0.22) + pulse * 0.06;
+    const g = ctx.createRadialGradient(px, py - 4, 2, px, py - 4, w * 0.6);
+    g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(px, py - 4, w * 0.6, w * 0.26, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+  objectMarker(o, px, top) {
+    const { ctx } = this;
+    const mon = o.type === OBJ.MONSTER;
+    const pickup = o.type === OBJ.RESOURCE || o.type === OBJ.CHEST || o.type === OBJ.ARTIFACT;
+    const claim = (o.type === OBJ.MINE || o.type === OBJ.DWELLING) && o.owner !== 0;
+    const bob = Math.sin(this.time * 3 + o.x) * 2;
+    const y = top - 10 + bob;
+    const col = mon ? '#ff5a46' : pickup ? '#ffd872' : claim ? '#8fe0a0' : '#9fd3ff';
+    glow(ctx, px, y, 16, col, 0.45);
+    ctx.beginPath(); ctx.moveTo(px, y - 9); ctx.lineTo(px + 7.5, y); ctx.lineTo(px, y + 9); ctx.lineTo(px - 7.5, y); ctx.closePath();
+    ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = 'rgba(0,0,0,0.7)'; ctx.lineWidth = 1.2; ctx.stroke();
+  }
   drawObject(o, x, y, viewer) {
     const { ctx, s } = this;
     const px = x * TILE + TILE / 2, py = y * TILE + TILE;
+    if (o.type !== OBJ.TOWN) this.objectCue(o, px, py, o.type === OBJ.MONSTER ? 60 : 72);
     if (o.type === OBJ.TOWN) {
       const col = o.owner >= 0 ? s.players[o.owner].color : null;
       const sp = townSprite(o.faction, fortLevel(o), col);
@@ -550,6 +580,7 @@ export class AdventureRenderer {
       const n = u.tier >= 6 ? 1 : o.count >= 20 ? 3 : o.count >= 6 ? 2 : 1;
       const spots = n === 1 ? [[0, 0, 1]] : n === 2 ? [[-9, -6, 0.82], [8, 2, 0.86]] : [[-12, -8, 0.74], [10, -6, 0.74], [-1, 3, 0.78]];
       for (const [ox, oy, sc] of spots) { const s2 = 72 * sc; blit(ctx, f, px + ox - s2 / 2, py + oy + 6 - s2 * 0.92 + bob, s2, s2); }
+      if (this.highlight) this.objectMarker(o, px, py - 64);
       return;
     }
     const col = o.owner >= 0 ? s.players[o.owner].color : null;
@@ -561,6 +592,7 @@ export class AdventureRenderer {
     }
     if (o.type === OBJ.CAMP) { const f = 0.6 + 0.4 * Math.sin(this.time * 9 + x); glow(ctx, px + 20, py - 22, 26, '#ff9a40', 0.25 * f); }
     if (o.type === OBJ.SHRINE || o.type === OBJ.TREE || o.type === OBJ.RUNESTONE) { const f = 0.5 + 0.5 * Math.sin(this.time * 2 + y); glow(ctx, px, py - 30, 30, '#8fd3ff', 0.12 * f); }
+    if (this.highlight) this.objectMarker(o, px, py - sp.lh + 8);
   }
 
   drawHero(h, viewer) {

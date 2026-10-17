@@ -104,7 +104,7 @@ export function showHelp() {
 <p><b>Helte:</b> Får erfaring af kampe og stiger i niveau: +1 egenskab og en valgfri færdighed. Artefakter giver bonusser. Hastigheden af den langsomste enhed bestemmer bevægelsen pr. dag.</p>
 <p><b>Monstre</b> bevogter felterne omkring sig – man kan ikke snige sig forbi. Lyt til tallene: "Flok (10-19)" fortæller cirka hvor mange de er. Står du med en langt stærkere hær, kan flokken flygte eller tilbyde at slutte sig til dig, især væsner af din egen slags. Lederskab øger chancen.</p>
 <p><b>Steder på kortet:</b> Elverporte fører lynhurtigt til hinanden. Handelspladsen bytter ressourcer, Smedjen sælger ét artefakt, det Hellige Vandfald fylder mana og giver held og moral, Vejviseren afslører egnen, Sandsigerskens Bål lærer en færdighed, og Glemte Skatkamre gemmer store skatte bag stærke vagter. Opslagstavler og tavernen giver rygter om fjenden.</p>
-<p><b>Uger:</b> Hver ny uge bringer en begivenhed: en væsenuge med dobbelt vækst, pest, rig høst eller karavaner. Tryk på 👑 for Rigeoversigten med helte, byer, indtægt og din krønike.</p>
+<p><b>Uger:</b> Hver ny uge bringer en begivenhed: en væsenuge med dobbelt vækst, pest, rig høst eller karavaner. Tryk på 👑 for Rigeoversigten med helte, byer, indtægt og din krønike. Tryk på ✨ for at fremhæve alt, du kan bruge på kortet: rødt er fjender, guld er skatte, grønt er miner og boliger, blåt er særlige steder.</p>
 <p><b>Artefaktsæt:</b> Visse artefakter hører sammen (f.eks. Erebors Arv). Bær alle dele, og helten får en ekstra bonus. Se dem på helteskærmen.</p>
 <p><b>Tip:</b> Installer spillet på hjemmeskærmen via Chrome-menuen "Føj til startskærm" – så kører det i fuld skærm og offline.</p>` });
   return dialog({ title: 'Sådan spiller du', body, cls: 'help-dialog' });
