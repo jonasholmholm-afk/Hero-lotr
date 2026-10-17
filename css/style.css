@@ -287,3 +287,8 @@ canvas.minimap { border-radius: 6px; box-shadow: var(--frame-sm); image-renderin
 .dialog-buttons .btn { touch-action: manipulation; }
 .dialog.shake { animation: dlgShake .3s; }
 @keyframes dlgShake { 0%, 100% { transform: translateX(0) scale(1); } 25% { transform: translateX(-6px) scale(1); } 75% { transform: translateX(6px) scale(1); } }
+
+.req-link { text-decoration: underline dotted; cursor: pointer; }
+.req-link:hover { color: var(--gold); }
+.card.flash { animation: cardFlash 1.2s ease-out; }
+@keyframes cardFlash { 0% { box-shadow: 0 0 0 3px var(--gold), 0 0 24px rgba(227,197,106,0.8); } 100% { box-shadow: none; } }

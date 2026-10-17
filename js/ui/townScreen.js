@@ -58,24 +58,27 @@ export function openTownScreen(app, town) {
 
     const renderBuild = (c) => {
       if (town.builtToday) c.append(el('div.notice', 'Der er allerede bygget i dag. Nye bygninger kan opføres i morgen.'));
+      c.append(el('div.muted.small', 'Bygninger låses op i rækkefølge. Tryk på et krav for at hoppe til den bygning, der mangler.'));
       const list = el('div.card-list');
+      const jumpTo = (bid) => { const card = list.querySelector(`[data-b="${bid}"]`); if (!card) return; card.scrollIntoView({ behavior: 'smooth', block: 'center' }); card.classList.remove('flash'); void card.offsetWidth; card.classList.add('flash'); };
       for (const id of BUILD_ORDER) {
         if (id === 'hall1') continue;
         const built = town.buildings[id];
         const chk = canBuild(town, id, p.resources);
         // hide far-future buildings whose requirements are not met except next tier
-        const card = el('div.card' + (built ? '.built' : chk.ok ? '.ok' : '.locked'));
+        const card = el('div.card' + (built ? '.built' : chk.ok ? '.ok' : '.locked'), { 'data-b': id });
         const iconSrc = id.startsWith('dw') ? figure(UNITS[dwellingUnit(town, id)], 72).toDataURL() : buildingIcon(id, town.faction, 88).toDataURL();
         card.append(el('div.card-head', el('img.card-icon', { src: iconSrc, width: 44, height: 44 }), el('div.card-title', bname(town, id) + (built ? ' ✓' : ''))));
         card.append(el('div.card-desc', bdesc(town, id)));
         if (!built) {
           card.append(costRow(buildingCost(town, id), p.resources));
-          const reqs = BUILDINGS[id].req.filter((r) => !town.buildings[r]).map((r) => bname(town, r));
-          if (reqs.length) card.append(el('div.card-req', 'Kræver: ' + reqs.join(', ')));
-          card.append(el('button.btn.small' + (chk.ok ? '.primary' : ''), { disabled: !chk.ok, onclick: async () => {
+          const reqs = BUILDINGS[id].req.filter((r) => !town.buildings[r]);
+          if (reqs.length) { const row = el('div.card-req', 'Kræver: '); reqs.forEach((r, i) => { if (i) row.append(', '); row.append(el('span.req-link', { onclick: (e) => { e.stopPropagation(); jumpTo(r); } }, bname(town, r))); }); card.append(row); }
+          const btnLabel = chk.ok ? 'Byg' : reqs.length ? 'Mangler ' + bname(town, reqs[0]) : chk.reason;
+          card.append(el('button.btn.small' + (chk.ok ? '.primary' : ''), { disabled: !chk.ok, title: chk.ok ? '' : chk.reason, onclick: async () => {
             const r = build(town, id, p.resources);
             if (r.ok) { toast(`${bname(town, id)} er bygget!`); render(); } else toast(r.reason);
-          } }, chk.ok ? 'Byg' : chk.reason));
+          } }, btnLabel));
         }
         list.append(card);
       }
