@@ -1,5 +1,5 @@
 // Service worker: cache-first for app files so the game works offline once installed.
-const VERSION = 'tsj-v1.7.0';
+const VERSION = 'tsj-v1.7.1';
 const FILES = [
   './', './index.html', './manifest.webmanifest', './css/style.css', './icons/icon.svg', './icons/icon-192.png', './icons/icon-512.png',
   './js/main.js',
@@ -13,8 +13,16 @@ const FILES = [
   './js/ui/dialogs.js', './js/ui/common.js', './js/ui/battleScreen.js', './js/ui/heroScreen.js', './js/ui/townScreen.js', './js/ui/hud.js', './js/ui/io.js', './js/ui/menu.js',
 ];
 self.addEventListener('install', (e) => {
-  // cache files one by one: a single missing file must never block an update
-  e.waitUntil(caches.open(VERSION).then((c) => Promise.all(FILES.map((f) => c.add(f).catch(() => null)))).then(() => self.skipWaiting()));
+  // cache files one by one: a single missing file must never block an update.
+  // The painted art listed in assets/manifest.json is cached too, so the game is fully playable offline.
+  e.waitUntil(caches.open(VERSION).then(async (c) => {
+    await Promise.all(FILES.map((f) => c.add(f).catch(() => null)));
+    try {
+      const m = await (await fetch('./assets/manifest.json', { cache: 'no-cache' })).json();
+      const files = Array.isArray(m.files) ? m.files : [];
+      for (let i = 0; i < files.length; i += 12) await Promise.all(files.slice(i, i + 12).map((f) => c.add('./assets/' + f).catch(() => null)));
+    } catch { /* offline during install: art is cached on first use instead */ }
+  }).then(() => self.skipWaiting()));
 });
 self.addEventListener('activate', (e) => {
   e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
