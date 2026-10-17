@@ -36,7 +36,7 @@ export const BUILDING_NAMES = {
     tavern: 'Mjødhallen', market: 'Byttemarked', silo: 'Mithril-lager',
     mage1: 'Sangtårn I', mage2: 'Sangtårn II', mage3: 'Sangtårn III', mage4: 'Sangtårn IV', mage5: 'Sangtårn V',
     special: 'Verdensrødderne',
-    dw1: 'Dryadernes Lund', dw2: 'Vogterposten', dw3: 'Den Evige Hal', dw4: 'Loecs Dansplads',
+    dw1: 'Dryadernes Lund', dw2: 'Vogterposten', dw3: 'Den Evige Hal', dw4: 'Krigsdansernes Plads',
     dw5: 'Den Vilde Jagts Lejr', dw6: 'Ørnereden', dw7: 'Oldskoven',
   },
   orcs: {
